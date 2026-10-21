@@ -2,13 +2,15 @@
 
 宠物仓库 + 桌面端。宠物放在本地的宠物仓库里，桌面端里挑一只，它就会站到你的任务栏上，走来走去、做动作、打盹，可以拖、可以甩、可以点；也可以一键装进 Codex，当 Codex 的宠物用。
 
+另提供 [Snapshot 公开素材库](catalog/README.md)：11 套桌宠、小预览图和事件动作参考。GIF ZIP 放在 [GitHub Release](https://github.com/Maxworkinghard/Pets/releases/tag/snapshot-assets-v1)，应用通过 [catalog.json](catalog.json) 按需下载。Snapshot 的「桌面伴侣 → 素材库」可直接导入。
+
 ## 功能（v0.1）
 
 **宠物仓库**（[`pets/`](pets/)）
 
 - 每只宠物一个文件夹：`pet.json` + 素材。格式说明见 [pets/README.md](pets/README.md)，编辑器补全用 [schema/pet.schema.json](schema/pet.schema.json)。
 - 三种素材都能直接用：GIF / APNG / WebP 动图、PNG 帧序列（每帧可设时长和偏移）、精灵图。
-- **宠物包不进 Git**：`pets/` 下的宠物文件夹被 `.gitignore` 忽略，只在本地使用；Git 里只有格式说明。
+- **本机宠物包不进 Git**：`pets/` 下的宠物文件夹被 `.gitignore` 忽略；经确认公开的 Snapshot 素材包通过 Releases 分发，Git 只保留目录、预览与清单。
 - 兼容 Codex / Petdex 宠物：`pet.json` + 8×9 精灵图的文件夹放进来就能用，`~/.codex/pets` 会被自动识别。
 
 **桌面端**（[`desktop/`](desktop/)，Electron）
@@ -116,4 +118,4 @@ npm run dev           # 带调试日志启动
 
 ## 许可
 
-待定。宠物素材不在本仓库中，各自的授权写在对应 `pet.json` 的 `license` 字段。
+代码许可待定。本机 `pets/` 素材的授权写在对应 `pet.json` 的 `license` 字段。公开素材库目前没有单独声明素材许可，状态记录在 `catalog.json` 和每个 ZIP 的 `ASSET-LICENSE.txt` 中，详见[素材许可](catalog/README.md#素材许可)。

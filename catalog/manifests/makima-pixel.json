@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "base": {
+    "width": 202,
+    "height": 292,
+    "anchor": [
+      116.5,
+      287
+    ]
+  },
+  "animations": {
+    "makima_pixel/gifs/makima_idle.gif": {
+      "anchor": [
+        116.5,
+        287
+      ]
+    },
+    "makima_pixel/gifs/makima_walk_right.gif": {
+      "anchor": [
+        116.5,
+        287
+      ]
+    },
+    "makima_pixel/gifs/makima_walk_left.gif": {
+      "anchor": [
+        116.5,
+        287
+      ]
+    },
+    "makima_pixel/gifs/makima_wave.gif": {
+      "anchor": [
+        116.5,
+        287
+      ]
+    },
+    "makima_pixel/gifs/makima_jump.gif": {
+      "anchor": [
+        116.5,
+        287
+      ]
+    },
+    "makima_pixel/gifs/makima_peek.gif": {
+      "anchor": [
+        116.5,
+        287
+      ]
+    },
+    "makima_pixel/gifs/makima_think.gif": {
+      "anchor": [
+        116.5,
+        287
+      ]
+    },
+    "feedback/success.gif": {
+      "anchor": [
+        116.5,
+        287
+      ]
+    },
+    "feedback/failure.gif": {
+      "anchor": [
+        116.5,
+        287
+      ]
+    },
+    "feedback/recording.gif": {
+      "anchor": [
+        116.5,
+        287
+      ]
+    },
+    "feedback/paused.gif": {
+      "anchor": [
+        116.5,
+        287
+      ]
+    }
+  },
+  "events": {
+    "capture.success": "feedback/success.gif",
+    "polish.success": "feedback/success.gif",
+    "recording.stopped": "feedback/success.gif",
+    "capture.failure": "feedback/failure.gif",
+    "polish.failure": "feedback/failure.gif",
+    "recording.failure": "feedback/failure.gif",
+    "recording.started": "feedback/success.gif",
+    "shortcuts.resumed": "feedback/success.gif",
+    "shortcuts.paused": "feedback/paused.gif"
+  },
+  "states": {
+    "shortcuts-paused": "feedback/paused.gif",
+    "recording": "feedback/recording.gif"
+  }
+}

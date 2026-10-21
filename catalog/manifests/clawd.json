@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "base": {
+    "width": 256,
+    "height": 256,
+    "anchor": [
+      128.0,
+      184
+    ]
+  },
+  "animations": {
+    "clawd_gifs/clawd-build.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-carry.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-cheer.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-crabwalk.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-dance.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-error.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-idle.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-jump-happy.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-point.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-sleep.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-sweep.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-think.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-type-keyboard.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-type.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-wave.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-wink.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-xmas-dance.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-xmas-idle.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-xmas-jump-happy.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-xmas-sleep.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-xmas-type-keyboard.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd_gifs/clawd-xmas-wave.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "clawd-listening.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "feedback/success.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "feedback/failure.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "feedback/recording.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "feedback/paused.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    },
+    "feedback/resumed.gif": {
+      "anchor": [
+        128.0,
+        184
+      ]
+    }
+  },
+  "events": {
+    "capture.success": "feedback/success.gif",
+    "polish.success": "feedback/success.gif",
+    "recording.stopped": "feedback/success.gif",
+    "capture.failure": "feedback/failure.gif",
+    "polish.failure": "feedback/failure.gif",
+    "recording.failure": "feedback/failure.gif",
+    "recording.started": "feedback/resumed.gif",
+    "shortcuts.resumed": "feedback/resumed.gif",
+    "shortcuts.paused": "feedback/paused.gif"
+  },
+  "states": {
+    "shortcuts-paused": "feedback/paused.gif",
+    "recording": "feedback/recording.gif"
+  }
+}

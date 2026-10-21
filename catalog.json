@@ -1,0 +1,194 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "makima-pixel",
+      "name": "玛奇玛 · 像素",
+      "description": "透明像素风，挥手回应截图，思考陪伴录制。",
+      "tags": [
+        "像素",
+        "人物"
+      ],
+      "version": "1.0.0",
+      "file": "makima-pixel-1.0.0.zip",
+      "sizeBytes": 1703009,
+      "sha256": "ed050e6b79df94d1c6f7fa275373d18e24e61a983debd7262574ee01c83ca4f6",
+      "sourceSha256": "31f2499d9ae657aa164008501f7c284150a23cf76d7fbacd87ddcf05baefac66",
+      "downloadUrl": "https://github.com/Maxworkinghard/Pets/releases/download/snapshot-assets-v1/makima-pixel-1.0.0.zip",
+      "previewUrl": "https://raw.githubusercontent.com/Maxworkinghard/Pets/main/catalog/previews/makima-pixel.png",
+      "licenseStatus": "未单独声明素材许可"
+    },
+    {
+      "id": "yamada-clerk",
+      "name": "山田 · 店员",
+      "description": "店员与日常装扮，带挥手、跳跃和探头动作。",
+      "tags": [
+        "像素",
+        "人物",
+        "多装扮"
+      ],
+      "version": "1.0.0",
+      "file": "yamada-clerk-1.0.0.zip",
+      "sizeBytes": 1646810,
+      "sha256": "093bdaaae01a209b341605805e09008a69e319955c2d69a2d509da6c019083ac",
+      "sourceSha256": "e7e1b9f0701bb7823ac4ce3872aa8170525da28aad662fe9b18116a6a9fcd8f2",
+      "downloadUrl": "https://github.com/Maxworkinghard/Pets/releases/download/snapshot-assets-v1/yamada-clerk-1.0.0.zip",
+      "previewUrl": "https://raw.githubusercontent.com/Maxworkinghard/Pets/main/catalog/previews/yamada-clerk.png",
+      "licenseStatus": "未单独声明素材许可"
+    },
+    {
+      "id": "grok-pixel",
+      "name": "Grok · 像素",
+      "description": "黑白装扮的像素角色，带思考和左右走路动作。",
+      "tags": [
+        "像素",
+        "人物"
+      ],
+      "version": "1.0.0",
+      "file": "grok-pixel-1.0.0.zip",
+      "sizeBytes": 344225,
+      "sha256": "9ef966ed045cd1ecce37ec16cca43fc8e00539fd4675f28e19de9088a7f326cf",
+      "sourceSha256": "81eeb9743e8d56db6c0834d778cc01bd0e928e9e443a411b09c2e48a9e283228",
+      "downloadUrl": "https://github.com/Maxworkinghard/Pets/releases/download/snapshot-assets-v1/grok-pixel-1.0.0.zip",
+      "previewUrl": "https://raw.githubusercontent.com/Maxworkinghard/Pets/main/catalog/previews/grok-pixel.png",
+      "licenseStatus": "未单独声明素材许可"
+    },
+    {
+      "id": "yamada-pixel",
+      "name": "山田 · 像素",
+      "description": "日常装扮，挥手、探头和坐下休息。",
+      "tags": [
+        "像素",
+        "人物"
+      ],
+      "version": "1.0.0",
+      "file": "yamada-pixel-1.0.0.zip",
+      "sizeBytes": 980516,
+      "sha256": "4ed42629a3a958963d1c683a6fbf3fd9b853163de555396c3e26c5ff6e1c3713",
+      "sourceSha256": "2716cdf0255df771cbdfcfcca122a8c1987bb1041b341cce6f3821da5bf617cd",
+      "downloadUrl": "https://github.com/Maxworkinghard/Pets/releases/download/snapshot-assets-v1/yamada-pixel-1.0.0.zip",
+      "previewUrl": "https://raw.githubusercontent.com/Maxworkinghard/Pets/main/catalog/previews/yamada-pixel.png",
+      "licenseStatus": "未单独声明素材许可"
+    },
+    {
+      "id": "clawd",
+      "name": "Clawd",
+      "description": "小螃蟹敲键盘、欢呼、报错和打盹，也有节日装扮。",
+      "tags": [
+        "像素",
+        "螃蟹",
+        "多装扮"
+      ],
+      "version": "1.0.0",
+      "file": "clawd-1.0.0.zip",
+      "sizeBytes": 102141,
+      "sha256": "5fbf6ad2692fdd042e59209ce97cd40c566d3d47c75527e5c90729d083c38fd6",
+      "sourceSha256": "5e89e738dea5c60387db1d3e65520adb1f4b77bb991d7258527285c48a2435be",
+      "downloadUrl": "https://github.com/Maxworkinghard/Pets/releases/download/snapshot-assets-v1/clawd-1.0.0.zip",
+      "previewUrl": "https://raw.githubusercontent.com/Maxworkinghard/Pets/main/catalog/previews/clawd.png",
+      "licenseStatus": "未单独声明素材许可"
+    },
+    {
+      "id": "nashor-v1",
+      "name": "纳什 · 初版",
+      "description": "怪兽的待机、展示、升星和胜利动作。",
+      "tags": [
+        "怪兽",
+        "特效"
+      ],
+      "version": "1.0.0",
+      "file": "nashor-v1-1.0.0.zip",
+      "sizeBytes": 6849558,
+      "sha256": "d157543d0f958d017b4d6792ac00c55bc9d9db56f147a1db9ec99d50e2043f53",
+      "sourceSha256": "cfdf220dae09a97c37ec020e2a83a4f7b217aa32d7cb17d99f23c4cafc527154",
+      "downloadUrl": "https://github.com/Maxworkinghard/Pets/releases/download/snapshot-assets-v1/nashor-v1-1.0.0.zip",
+      "previewUrl": "https://raw.githubusercontent.com/Maxworkinghard/Pets/main/catalog/previews/nashor-v1.png",
+      "licenseStatus": "未单独声明素材许可"
+    },
+    {
+      "id": "nashor-v2",
+      "name": "纳什 · 进阶",
+      "description": "加入钻地移动与连招，胜利动作回应任务完成。",
+      "tags": [
+        "怪兽",
+        "特效"
+      ],
+      "version": "1.0.0",
+      "file": "nashor-v2-1.0.0.zip",
+      "sizeBytes": 8862216,
+      "sha256": "0a5e04f67bcc36cdecbac9c7d871131369cfb73510d477d03a52e5efc7f49869",
+      "sourceSha256": "8ecdff9f1e9753b8ea21704c255650411b3b129aaa1c48d433da1ffcf38c27fc",
+      "downloadUrl": "https://github.com/Maxworkinghard/Pets/releases/download/snapshot-assets-v1/nashor-v2-1.0.0.zip",
+      "previewUrl": "https://raw.githubusercontent.com/Maxworkinghard/Pets/main/catalog/previews/nashor-v2.png",
+      "licenseStatus": "未单独声明素材许可"
+    },
+    {
+      "id": "shuangyan-crate-duo",
+      "name": "双燕 · 箱中搭档",
+      "description": "双人搭档，含等待、审阅、失败和跳跃反馈。",
+      "tags": [
+        "双人",
+        "像素"
+      ],
+      "version": "1.0.0",
+      "file": "shuangyan-crate-duo-1.0.0.zip",
+      "sizeBytes": 1563689,
+      "sha256": "03a85bee6c42f786e66b045f6785fc7fc10a8dd0c9ad60010c33f3db5a8a42b8",
+      "sourceSha256": "757c71bd40ff72a8971175ec32e3317509f3258c3168202fd71588615bf2bbb2",
+      "downloadUrl": "https://github.com/Maxworkinghard/Pets/releases/download/snapshot-assets-v1/shuangyan-crate-duo-1.0.0.zip",
+      "previewUrl": "https://raw.githubusercontent.com/Maxworkinghard/Pets/main/catalog/previews/shuangyan-crate-duo.png",
+      "licenseStatus": "未单独声明素材许可"
+    },
+    {
+      "id": "hoop-23",
+      "name": "Hoop 23",
+      "description": "运球、后仰与扣篮；大动作保留脚底定位。",
+      "tags": [
+        "篮球",
+        "人物"
+      ],
+      "version": "1.0.0",
+      "file": "hoop-23-1.0.0.zip",
+      "sizeBytes": 4826951,
+      "sha256": "f164e37576989b080b26b6bf125a9037c929197642e216fc9a2c94754e21d6f1",
+      "sourceSha256": "0f9b788a4222f0bbd3de93308852e291999b05d6a891c1aaf654277f7f83b9b3",
+      "downloadUrl": "https://github.com/Maxworkinghard/Pets/releases/download/snapshot-assets-v1/hoop-23-1.0.0.zip",
+      "previewUrl": "https://raw.githubusercontent.com/Maxworkinghard/Pets/main/catalog/previews/hoop-23.png",
+      "licenseStatus": "未单独声明素材许可"
+    },
+    {
+      "id": "kuro-blade",
+      "name": "Kuro · 持刀客",
+      "description": "持刀角色，挥手、拔刀与探头动作。",
+      "tags": [
+        "人物",
+        "像素"
+      ],
+      "version": "1.0.0",
+      "file": "kuro-blade-1.0.0.zip",
+      "sizeBytes": 2513706,
+      "sha256": "d44c0c65d5b3f7e340328049d8984c92012dd2857c4c759b219f21a52d44a974",
+      "sourceSha256": "ac328a5f2bc0b55c219af8e2620fb53cd04217b036381723c6b923d5553d90c5",
+      "downloadUrl": "https://github.com/Maxworkinghard/Pets/releases/download/snapshot-assets-v1/kuro-blade-1.0.0.zip",
+      "previewUrl": "https://raw.githubusercontent.com/Maxworkinghard/Pets/main/catalog/previews/kuro-blade.png",
+      "licenseStatus": "未单独声明素材许可"
+    },
+    {
+      "id": "momo",
+      "name": "Momo",
+      "description": "小巧的像素伙伴，用挥手回应成功。",
+      "tags": [
+        "可爱",
+        "像素"
+      ],
+      "version": "1.0.0",
+      "file": "momo-1.0.0.zip",
+      "sizeBytes": 810384,
+      "sha256": "96350193f21bf58d216c1d0d3c3b69f48e582d636b0c8fe40636fda52124b59c",
+      "sourceSha256": "5304db9ca693f41386a5237d58268cdc2a32f803b1ed1eaf5594a5eae199473c",
+      "downloadUrl": "https://github.com/Maxworkinghard/Pets/releases/download/snapshot-assets-v1/momo-1.0.0.zip",
+      "previewUrl": "https://raw.githubusercontent.com/Maxworkinghard/Pets/main/catalog/previews/momo.png",
+      "licenseStatus": "未单独声明素材许可"
+    }
+  ]
+}

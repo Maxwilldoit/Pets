@@ -18,3 +18,8 @@ jobs:
         run: node --test "desktop/test/*.test.js"
       - name: 校验宠物仓库
         run: node desktop/scripts/validate-pets.js
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 校验公开素材库目录
+        run: python scripts/build-snapshot-library.py --check

@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "base": {
+    "width": 314,
+    "height": 314,
+    "anchor": [
+      174.5,
+      303
+    ]
+  },
+  "animations": {
+    "hoop-23-arms-crossed.gif": {
+      "anchor": [
+        174.5,
+        303
+      ]
+    },
+    "hoop-23-dribble.gif": {
+      "anchor": [
+        174.5,
+        303
+      ]
+    },
+    "hoop-23-drive-dunk.gif": {
+      "anchor": [
+        174.5,
+        519
+      ]
+    },
+    "hoop-23-fadeaway.gif": {
+      "anchor": [
+        174.5,
+        587
+      ]
+    },
+    "hoop-23-idle.gif": {
+      "anchor": [
+        174.5,
+        303
+      ]
+    },
+    "hoop-23-spin-ball.gif": {
+      "anchor": [
+        174.5,
+        303
+      ]
+    },
+    "hoop-23-walk-left.gif": {
+      "anchor": [
+        174.5,
+        303
+      ]
+    },
+    "hoop-23-walk-right.gif": {
+      "anchor": [
+        174.5,
+        303
+      ]
+    },
+    "hoop-23-wave.gif": {
+      "anchor": [
+        174.5,
+        353
+      ]
+    },
+    "feedback/success.gif": {
+      "anchor": [
+        174.5,
+        353
+      ]
+    },
+    "feedback/recording.gif": {
+      "anchor": [
+        174.5,
+        303
+      ]
+    },
+    "feedback/paused.gif": {
+      "anchor": [
+        174.5,
+        303
+      ]
+    },
+    "feedback/resumed.gif": {
+      "anchor": [
+        174.5,
+        353
+      ]
+    }
+  },
+  "events": {
+    "capture.success": "feedback/success.gif",
+    "polish.success": "feedback/success.gif",
+    "recording.stopped": "feedback/success.gif",
+    "recording.started": "feedback/resumed.gif",
+    "shortcuts.resumed": "feedback/resumed.gif",
+    "shortcuts.paused": "feedback/paused.gif"
+  },
+  "states": {
+    "shortcuts-paused": "feedback/paused.gif",
+    "recording": "feedback/recording.gif"
+  }
+}

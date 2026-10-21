@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "base": {
+    "width": 220,
+    "height": 359,
+    "anchor": [
+      104.5,
+      355
+    ]
+  },
+  "animations": {
+    "kuro-blade-idle.gif": {
+      "anchor": [
+        104.5,
+        355
+      ]
+    },
+    "kuro-blade-walk-right.gif": {
+      "anchor": [
+        104.5,
+        355
+      ]
+    },
+    "kuro-blade-walk-left.gif": {
+      "anchor": [
+        104.5,
+        355
+      ]
+    },
+    "kuro-blade-wave.gif": {
+      "anchor": [
+        104.5,
+        355
+      ]
+    },
+    "kuro-blade-jump.gif": {
+      "anchor": [
+        104.5,
+        355
+      ]
+    },
+    "kuro-blade-peek.gif": {
+      "anchor": [
+        104.5,
+        355
+      ]
+    },
+    "kuro-blade-draw-sword.gif": {
+      "anchor": [
+        104.5,
+        355
+      ]
+    },
+    "feedback/success.gif": {
+      "anchor": [
+        104.5,
+        355
+      ]
+    },
+    "feedback/recording.gif": {
+      "anchor": [
+        104.5,
+        355
+      ]
+    },
+    "feedback/paused.gif": {
+      "anchor": [
+        104.5,
+        355
+      ]
+    },
+    "feedback/resumed.gif": {
+      "anchor": [
+        104.5,
+        355
+      ]
+    }
+  },
+  "events": {
+    "capture.success": "feedback/success.gif",
+    "polish.success": "feedback/success.gif",
+    "recording.stopped": "feedback/success.gif",
+    "recording.started": "feedback/resumed.gif",
+    "shortcuts.resumed": "feedback/resumed.gif",
+    "shortcuts.paused": "feedback/paused.gif"
+  },
+  "states": {
+    "shortcuts-paused": "feedback/paused.gif",
+    "recording": "feedback/recording.gif"
+  }
+}

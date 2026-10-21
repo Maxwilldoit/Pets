@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "base": {
+    "width": 420,
+    "height": 420,
+    "anchor": [
+      212.5,
+      390
+    ]
+  },
+  "animations": {
+    "nashor_pet_v1/gifs/nashor_attack.gif": {
+      "anchor": [
+        212.5,
+        390
+      ]
+    },
+    "nashor_pet_v1/gifs/nashor_idle.gif": {
+      "anchor": [
+        212.5,
+        390
+      ]
+    },
+    "nashor_pet_v1/gifs/nashor_showcase.gif": {
+      "anchor": [
+        212.5,
+        390
+      ]
+    },
+    "nashor_pet_v1/gifs/nashor_starup.gif": {
+      "anchor": [
+        212.5,
+        390
+      ]
+    },
+    "nashor_pet_v1/gifs/nashor_sway.gif": {
+      "anchor": [
+        212.5,
+        390
+      ]
+    },
+    "nashor_pet_v1/gifs/nashor_ultimate_acid.gif": {
+      "anchor": [
+        200.5,
+        415
+      ]
+    },
+    "nashor_pet_v1/gifs/nashor_ultimate_slam.gif": {
+      "anchor": [
+        212.5,
+        390
+      ]
+    },
+    "nashor_pet_v1/gifs/nashor_victory.gif": {
+      "anchor": [
+        212.5,
+        390
+      ]
+    },
+    "feedback/success.gif": {
+      "anchor": [
+        212.5,
+        390
+      ]
+    },
+    "feedback/recording.gif": {
+      "anchor": [
+        212.5,
+        390
+      ]
+    },
+    "feedback/paused.gif": {
+      "anchor": [
+        212.5,
+        390
+      ]
+    },
+    "feedback/resumed.gif": {
+      "anchor": [
+        212.5,
+        390
+      ]
+    }
+  },
+  "events": {
+    "capture.success": "feedback/success.gif",
+    "polish.success": "feedback/success.gif",
+    "recording.stopped": "feedback/success.gif",
+    "recording.started": "feedback/resumed.gif",
+    "shortcuts.resumed": "feedback/resumed.gif",
+    "shortcuts.paused": "feedback/paused.gif"
+  },
+  "states": {
+    "shortcuts-paused": "feedback/paused.gif",
+    "recording": "feedback/recording.gif"
+  }
+}

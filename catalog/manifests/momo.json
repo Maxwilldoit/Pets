@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "base": {
+    "width": 200,
+    "height": 206,
+    "anchor": [
+      99.5,
+      202
+    ]
+  },
+  "animations": {
+    "momo-idle.gif": {
+      "anchor": [
+        99.5,
+        202
+      ]
+    },
+    "momo-walk-right.gif": {
+      "anchor": [
+        99.5,
+        202
+      ]
+    },
+    "momo-walk-left.gif": {
+      "anchor": [
+        99.5,
+        202
+      ]
+    },
+    "momo-waving.gif": {
+      "anchor": [
+        99.5,
+        202
+      ]
+    },
+    "feedback/success.gif": {
+      "anchor": [
+        99.5,
+        202
+      ]
+    },
+    "feedback/paused.gif": {
+      "anchor": [
+        99.5,
+        202
+      ]
+    },
+    "feedback/resumed.gif": {
+      "anchor": [
+        99.5,
+        202
+      ]
+    }
+  },
+  "events": {
+    "capture.success": "feedback/success.gif",
+    "polish.success": "feedback/success.gif",
+    "recording.stopped": "feedback/success.gif",
+    "recording.started": "feedback/resumed.gif",
+    "shortcuts.resumed": "feedback/resumed.gif",
+    "shortcuts.paused": "feedback/paused.gif"
+  },
+  "states": {
+    "shortcuts-paused": "feedback/paused.gif"
+  }
+}

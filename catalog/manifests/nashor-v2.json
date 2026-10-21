@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "base": {
+    "width": 473,
+    "height": 473,
+    "anchor": [
+      128.5,
+      458
+    ]
+  },
+  "animations": {
+    "nashor_pet_v2/gifs/nashor_idle.gif": {
+      "anchor": [
+        128.5,
+        458
+      ]
+    },
+    "nashor_pet_v2/gifs/nashor_sway.gif": {
+      "anchor": [
+        128.5,
+        458
+      ]
+    },
+    "nashor_pet_v2/gifs/nashor_starup.gif": {
+      "anchor": [
+        128.5,
+        458
+      ]
+    },
+    "nashor_pet_v2/gifs/nashor_showcase.gif": {
+      "anchor": [
+        128.5,
+        458
+      ]
+    },
+    "nashor_pet_v2/gifs/nashor_attack_v2.gif": {
+      "anchor": [
+        128.5,
+        458
+      ]
+    },
+    "nashor_pet_v2/gifs/nashor_victory_v2.gif": {
+      "anchor": [
+        128.5,
+        458
+      ]
+    },
+    "nashor_pet_v2/gifs/nashor_ultimate_acid_v2.gif": {
+      "anchor": [
+        128.5,
+        458
+      ]
+    },
+    "nashor_pet_v2/gifs/nashor_ultimate_combo_v2.gif": {
+      "anchor": [
+        128.5,
+        458
+      ]
+    },
+    "nashor_pet_v2/gifs/nashor_burrow_left.gif": {
+      "anchor": [
+        128.5,
+        458
+      ]
+    },
+    "nashor_pet_v2/gifs/nashor_burrow_right.gif": {
+      "anchor": [
+        128.5,
+        458
+      ]
+    },
+    "feedback/success.gif": {
+      "anchor": [
+        128.5,
+        458
+      ]
+    },
+    "feedback/recording.gif": {
+      "anchor": [
+        128.5,
+        458
+      ]
+    },
+    "feedback/paused.gif": {
+      "anchor": [
+        128.5,
+        458
+      ]
+    },
+    "feedback/resumed.gif": {
+      "anchor": [
+        128.5,
+        458
+      ]
+    }
+  },
+  "events": {
+    "capture.success": "feedback/success.gif",
+    "polish.success": "feedback/success.gif",
+    "recording.stopped": "feedback/success.gif",
+    "recording.started": "feedback/resumed.gif",
+    "shortcuts.resumed": "feedback/resumed.gif",
+    "shortcuts.paused": "feedback/paused.gif"
+  },
+  "states": {
+    "shortcuts-paused": "feedback/paused.gif",
+    "recording": "feedback/recording.gif"
+  }
+}
