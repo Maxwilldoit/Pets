@@ -37,23 +37,6 @@
       "licenseStatus": "未单独声明素材许可"
     },
     {
-      "id": "grok-pixel",
-      "name": "Grok · 像素",
-      "description": "黑白装扮的像素角色，带思考和左右走路动作。",
-      "tags": [
-        "像素",
-        "人物"
-      ],
-      "version": "1.0.0",
-      "file": "grok-pixel-1.0.0.zip",
-      "sizeBytes": 344225,
-      "sha256": "9ef966ed045cd1ecce37ec16cca43fc8e00539fd4675f28e19de9088a7f326cf",
-      "sourceSha256": "81eeb9743e8d56db6c0834d778cc01bd0e928e9e443a411b09c2e48a9e283228",
-      "downloadUrl": "https://github.com/Maxworkinghard/Pets/releases/download/snapshot-assets-v1/grok-pixel-1.0.0.zip",
-      "previewUrl": "https://raw.githubusercontent.com/Maxworkinghard/Pets/main/catalog/previews/grok-pixel.png",
-      "licenseStatus": "未单独声明素材许可"
-    },
-    {
       "id": "yamada-pixel",
       "name": "山田 · 像素",
       "description": "日常装扮，挥手、探头和坐下休息。",

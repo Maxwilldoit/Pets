@@ -10,7 +10,6 @@
 |---|---|---|
 | 玛奇玛 · 像素 | <img src="previews/makima-pixel.png" width="72" alt="玛奇玛"> | 挥手、思考、探头 |
 | 山田 · 店员 | <img src="previews/yamada-clerk.png" width="72" alt="山田店员"> | 店员与日常装扮 |
-| Grok · 像素 | <img src="previews/grok-pixel.png" width="72" alt="Grok"> | 思考、挥手、原地走 |
 | 山田 · 像素 | <img src="previews/yamada-pixel.png" width="72" alt="山田"> | 日常动作、坐下休息 |
 | Clawd | <img src="previews/clawd.png" width="72" alt="Clawd"> | 工作、成功、报错、睡觉 |
 | 纳什 · 初版 | <img src="previews/nashor-v1.png" width="72" alt="纳什初版"> | 展示、升星、胜利 |
