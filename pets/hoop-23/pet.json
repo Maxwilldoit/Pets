@@ -1,0 +1,546 @@
+{
+  "$schema": "../../schema/pet.schema.json",
+  "id": "hoop-23",
+  "name": "飞人23",
+  "description": "原创篮球少年，招牌动作是飞身扣篮。",
+  "version": "1.0.0",
+  "tags": [
+    "人物",
+    "篮球"
+  ],
+  "scale": 0.55,
+  "speed": 45,
+  "behavior": {
+    "click": "spin-ball",
+    "doubleClick": "dunk"
+  },
+  "codex": {
+    "idle": "idle",
+    "running-right": "walk-right",
+    "running-left": "walk-left",
+    "waving": "wave",
+    "jumping": "dunk",
+    "waiting": "arms-crossed",
+    "running": "dribble"
+  },
+  "animations": {
+    "idle": {
+      "frames": [
+        {
+          "src": "frames/idle_g0.png",
+          "duration": 230
+        },
+        {
+          "src": "frames/idle_g1.png",
+          "duration": 230
+        },
+        {
+          "src": "frames/idle_g2.png",
+          "duration": 230
+        },
+        {
+          "src": "frames/idle_g3.png",
+          "duration": 230
+        },
+        {
+          "src": "frames/idle_g4.png",
+          "duration": 230
+        },
+        {
+          "src": "frames/idle_g5.png",
+          "duration": 230
+        },
+        {
+          "src": "frames/idle_g6.png",
+          "duration": 230
+        },
+        {
+          "src": "frames/idle_g7.png",
+          "duration": 230
+        },
+        {
+          "src": "frames/idle_g8.png",
+          "duration": 230
+        }
+      ]
+    },
+    "walk-right": {
+      "frames": [
+        {
+          "src": "frames/walkg_r_0.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/walkg_r_1.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/walkg_r_2.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/walkg_r_3.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/walkg_r_4.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/walkg_r_5.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/walkg_r_6.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/walkg_r_7.png",
+          "duration": 200
+        }
+      ]
+    },
+    "walk-left": {
+      "frames": [
+        {
+          "src": "frames/walkg_l_0.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/walkg_l_1.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/walkg_l_2.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/walkg_l_3.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/walkg_l_4.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/walkg_l_5.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/walkg_l_6.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/walkg_l_7.png",
+          "duration": 200
+        }
+      ]
+    },
+    "spin-ball": {
+      "frames": [
+        {
+          "src": "frames/spin_0.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/spin_1.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/spin_2.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/spin_3.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/spin_4.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/spin_5.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/spin_0.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/spin_1.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/spin_2.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/spin_3.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/spin_4.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/spin_5.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/spin_0.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/spin_1.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/spin_2.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/spin_3.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/spin_4.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/spin_5.png",
+          "duration": 90
+        }
+      ],
+      "label": "转球"
+    },
+    "wave": {
+      "label": "挥手",
+      "frames": [
+        {
+          "src": "frames/wave_g0.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/wave_g1.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/wave_g2.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/wave_g3.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/wave_g4.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/wave_g5.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/wave_g6.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/wave_g7.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/wave_g8.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/wave_g9.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/wave_g10.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/wave_g11.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/wave_g12.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/wave_g13.png",
+          "duration": 160
+        }
+      ]
+    },
+    "dunk": {
+      "label": "扣篮",
+      "frames": [
+        {
+          "src": "frames/dunk_h0.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/dunk_h1.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/dunk_h2.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/dunk_h3.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/dunk_h4.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/dunk_h5.png",
+          "duration": 80
+        },
+        {
+          "src": "frames/dunk_h6.png",
+          "duration": 80
+        },
+        {
+          "src": "frames/dunk_h7.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/dunk_h8.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/dunk_h9.png",
+          "duration": 240
+        },
+        {
+          "src": "frames/dunk_h10.png",
+          "duration": 100
+        },
+        {
+          "src": "frames/dunk_h11.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/dunk_h12.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/dunk_h13.png",
+          "duration": 100
+        },
+        {
+          "src": "frames/dunk_h14.png",
+          "duration": 100
+        },
+        {
+          "src": "frames/dunk_h15.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/dunk_h16.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/dunk_h17.png",
+          "duration": 160
+        }
+      ]
+    },
+    "dribble": {
+      "frames": [
+        {
+          "src": "frames/dribble_hold.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/dribble_0.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/dribble_1.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/dribble_2.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/dribble_3.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/dribble_hold.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/dribble_0.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/dribble_1.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/dribble_2.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/dribble_3.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/dribble_hold.png",
+          "duration": 160
+        }
+      ],
+      "label": "运球"
+    },
+    "arms-crossed": {
+      "frames": [
+        {
+          "src": "frames/cross_a.png",
+          "duration": 600
+        },
+        {
+          "src": "frames/cross_a.png",
+          "duration": 600,
+          "offset": [
+            0,
+            1
+          ]
+        },
+        {
+          "src": "frames/cross_a.png",
+          "duration": 600
+        },
+        {
+          "src": "frames/cross_a.png",
+          "duration": 600,
+          "offset": [
+            0,
+            1
+          ]
+        }
+      ],
+      "label": "抱臂"
+    },
+    "drive-dunk": {
+      "label": "运球扣篮",
+      "anchor": [
+        123,
+        518
+      ],
+      "frames": [
+        {
+          "src": "frames/rim_0.png",
+          "duration": 160
+        },
+        {
+          "src": "frames/rim_1.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/rim_2.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/rim_3.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/rim_4.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/rim_5.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/rim_6.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/rim_7.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/rim_8.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/rim_9.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/rim_10.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/rim_11.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/rim_12.png",
+          "duration": 100
+        },
+        {
+          "src": "frames/rim_13.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/rim_14.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/rim_15.png",
+          "duration": 80
+        },
+        {
+          "src": "frames/rim_16.png",
+          "duration": 80
+        },
+        {
+          "src": "frames/rim_17.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/rim_18.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/rim_19.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/rim_20.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/rim_21.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/rim_22.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/rim_23.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/rim_24.png",
+          "duration": 160
+        },
+        {
+          "src": "frames/rim_25.png",
+          "duration": 500
+        }
+      ]
+    }
+  }
+}

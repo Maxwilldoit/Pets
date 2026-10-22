@@ -1,0 +1,32 @@
+{
+  "$schema": "../../schema/pet.schema.json",
+  "id": "clawd",
+  "name": "Clawd",
+  "description": "橘色像素小螃蟹，会思考、敲键盘、扫地、跳舞，困了就睡。",
+  "version": "1.0.0",
+  "tags": ["像素", "螃蟹"],
+  "scale": 0.5,
+  "pixelated": true,
+  "speed": 45,
+  "behavior": {"click": "jump-happy", "doubleClick": "dance"},
+  "codex": {"waiting": "listening"},
+  "animations": {
+    "idle": {"src": "gifs/clawd-idle.gif"},
+    "walk": {"src": "gifs/clawd-crabwalk.gif", "mirror": false},
+    "sleep": {"src": "gifs/clawd-sleep.gif", "label": "睡觉", "weight": 0},
+    "think": {"src": "gifs/clawd-think.gif", "label": "思考", "repeat": 2},
+    "type": {"src": "gifs/clawd-type.gif", "label": "打字", "repeat": 3},
+    "type-keyboard": {"src": "gifs/clawd-type-keyboard.gif", "label": "敲键盘", "repeat": 3, "anchor": [128, 236]},
+    "listening": {"src": "gifs/clawd-listening.gif", "label": "戴耳机听", "repeat": 3},
+    "wave": {"src": "gifs/clawd-wave.gif", "label": "挥手"},
+    "wink": {"src": "gifs/clawd-wink.gif", "label": "眨眼"},
+    "jump-happy": {"src": "gifs/clawd-jump-happy.gif", "label": "开心跳"},
+    "cheer": {"src": "gifs/clawd-cheer.gif", "label": "欢呼"},
+    "dance": {"src": "gifs/clawd-dance.gif", "label": "跳舞", "repeat": 3},
+    "point": {"src": "gifs/clawd-point.gif", "label": "指一指"},
+    "sweep": {"src": "gifs/clawd-sweep.gif", "label": "扫地", "repeat": 3},
+    "carry": {"src": "gifs/clawd-carry.gif", "label": "搬箱子", "repeat": 3},
+    "build": {"src": "gifs/clawd-build.gif", "label": "搭积木", "repeat": 2},
+    "error": {"src": "gifs/clawd-error.gif", "label": "出错啦", "weight": 0.3}
+  }
+}

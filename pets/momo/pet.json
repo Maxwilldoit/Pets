@@ -1,0 +1,68 @@
+{
+  "$schema": "../../schema/pet.schema.json",
+  "id": "momo",
+  "name": "Momo",
+  "description": "午夜色的浣熊猫。还在生成中：目前有待机、跑动、挥手，其余状态待补。",
+  "version": "1.0.0",
+  "tags": [
+    "像素",
+    "动物",
+    "Codex",
+    "未完成"
+  ],
+  "scale": 0.75,
+  "speed": 52,
+  "behavior": {
+    "click": "waving"
+  },
+  "animations": {
+    "idle": {
+      "frames": [
+        "frames/idle/00.png",
+        "frames/idle/01.png",
+        "frames/idle/02.png",
+        "frames/idle/03.png",
+        "frames/idle/04.png",
+        "frames/idle/05.png"
+      ],
+      "fps": 5.56
+    },
+    "walk-right": {
+      "frames": [
+        "frames/walkg_r_0.png",
+        "frames/walkg_r_1.png",
+        "frames/walkg_r_2.png",
+        "frames/walkg_r_3.png",
+        "frames/walkg_r_4.png",
+        "frames/walkg_r_5.png",
+        "frames/walkg_r_6.png",
+        "frames/walkg_r_7.png"
+      ],
+      "fps": 4.35
+    },
+    "walk-left": {
+      "frames": [
+        "frames/walkg_l_0.png",
+        "frames/walkg_l_1.png",
+        "frames/walkg_l_2.png",
+        "frames/walkg_l_3.png",
+        "frames/walkg_l_4.png",
+        "frames/walkg_l_5.png",
+        "frames/walkg_l_6.png",
+        "frames/walkg_l_7.png"
+      ],
+      "fps": 4.35
+    },
+    "waving": {
+      "frames": [
+        "frames/waving/00.png",
+        "frames/waving/01.png",
+        "frames/waving/02.png",
+        "frames/waving/03.png"
+      ],
+      "fps": 4.0,
+      "label": "挥手",
+      "repeat": 2
+    }
+  }
+}

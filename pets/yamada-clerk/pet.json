@@ -1,0 +1,234 @@
+{
+  "$schema": "../../schema/pet.schema.json",
+  "id": "yamada-clerk",
+  "name": "店员山田",
+  "description": "系着红围裙的店员山田。拖着走会迈步，双击双手托腮。",
+  "version": "1.0.0",
+  "tags": [
+    "像素",
+    "人物"
+  ],
+  "scale": 0.58,
+  "speed": 43,
+  "behavior": {
+    "click": "wave",
+    "doubleClick": "peek-cute"
+  },
+  "codex": {
+    "waiting": "peek-cute"
+  },
+  "animations": {
+    "idle": {
+      "frames": [
+        {
+          "src": "frames/idle_g0.png",
+          "duration": 300
+        },
+        {
+          "src": "frames/idle_g1.png",
+          "duration": 280
+        },
+        {
+          "src": "frames/idle_g2.png",
+          "duration": 280
+        },
+        {
+          "src": "frames/idle_g3.png",
+          "duration": 280
+        },
+        {
+          "src": "frames/idle_g4.png",
+          "duration": 280
+        },
+        {
+          "src": "frames/idle_g5.png",
+          "duration": 240
+        },
+        {
+          "src": "frames/idle_g6.png",
+          "duration": 80
+        },
+        {
+          "src": "frames/idle_g7.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/idle_g8.png",
+          "duration": 80
+        },
+        {
+          "src": "frames/idle_g9.png",
+          "duration": 260
+        },
+        {
+          "src": "frames/idle_g10.png",
+          "duration": 280
+        },
+        {
+          "src": "frames/idle_g11.png",
+          "duration": 280
+        }
+      ]
+    },
+    "walk-right": {
+      "frames": [
+        "frames/walkg_r_0.png",
+        "frames/walkg_r_1.png",
+        "frames/walkg_r_2.png",
+        "frames/walkg_r_3.png",
+        "frames/walkg_r_4.png",
+        "frames/walkg_r_5.png",
+        "frames/walkg_r_6.png",
+        "frames/walkg_r_7.png"
+      ],
+      "stepDistance": 10.0,
+      "fps": 4.3
+    },
+    "walk-left": {
+      "frames": [
+        "frames/walkg_l_0.png",
+        "frames/walkg_l_1.png",
+        "frames/walkg_l_2.png",
+        "frames/walkg_l_3.png",
+        "frames/walkg_l_4.png",
+        "frames/walkg_l_5.png",
+        "frames/walkg_l_6.png",
+        "frames/walkg_l_7.png"
+      ],
+      "stepDistance": 10.0,
+      "fps": 4.3
+    },
+    "wave": {
+      "label": "打招呼",
+      "frames": [
+        {
+          "src": "frames/idle_a.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/wave_a.png",
+          "duration": 240
+        },
+        {
+          "src": "frames/wave_b.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/wave_a.png",
+          "duration": 240
+        },
+        {
+          "src": "frames/wave_b.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/idle_a.png",
+          "duration": 200
+        }
+      ]
+    },
+    "jump": {
+      "label": "跳跃",
+      "frames": [
+        {
+          "src": "frames/jump_g0.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/jump_g1.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/jump_g2.png",
+          "duration": 150
+        },
+        {
+          "src": "frames/jump_g3.png",
+          "duration": 80
+        },
+        {
+          "src": "frames/jump_g4.png",
+          "duration": 70
+        },
+        {
+          "src": "frames/jump_g5.png",
+          "duration": 170
+        },
+        {
+          "src": "frames/jump_g6.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/jump_g7.png",
+          "duration": 80
+        },
+        {
+          "src": "frames/jump_g8.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/jump_g9.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/jump_g10.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/jump_g11.png",
+          "duration": 180
+        }
+      ]
+    },
+    "peek": {
+      "label": "探头",
+      "frames": [
+        {
+          "src": "frames/idle_a.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/peek_b.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/peek_c.png",
+          "duration": 240
+        },
+        {
+          "src": "frames/peek_d.png",
+          "duration": 320
+        },
+        {
+          "src": "frames/peek_c.png",
+          "duration": 220
+        }
+      ]
+    },
+    "peek-cute": {
+      "label": "双手托腮",
+      "frames": [
+        {
+          "src": "frames/idle_a.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/cute_b.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/cute_c.png",
+          "duration": 240
+        },
+        {
+          "src": "frames/cute_d.png",
+          "duration": 320
+        },
+        {
+          "src": "frames/cute_c.png",
+          "duration": 220
+        }
+      ]
+    }
+  }
+}

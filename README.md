@@ -10,7 +10,7 @@
 
 - 每只宠物一个文件夹：`pet.json` + 素材。格式说明见 [pets/README.md](pets/README.md)，编辑器补全用 [schema/pet.schema.json](schema/pet.schema.json)。
 - 三种素材都能直接用：GIF / APNG / WebP 动图、PNG 帧序列（每帧可设时长和偏移）、精灵图。
-- **本机宠物包不进 Git**：`pets/` 下的宠物文件夹被 `.gitignore` 忽略；经确认公开的 Snapshot 素材包通过 Releases 分发，Git 只保留目录、预览与清单。
+- **素材随仓库保存**：`pets/` 包含可直接使用的宠物包，原始 ZIP 和 Momo 制作图片保存在 [`sources/`](sources/)。Snapshot 素材包继续通过 Releases 按需分发。
 - 兼容 Codex / Petdex 宠物：`pet.json` + 8×9 精灵图的文件夹放进来就能用，`~/.codex/pets` 会被自动识别。
 
 **桌面端**（[`desktop/`](desktop/)，Electron）
@@ -44,7 +44,7 @@ npm install
 npm start
 ```
 
-把宠物文件夹放进 `pets/`（或启动后用「导入宠物」）。第一次启动会打开控制面板：选一只宠物，点「设为桌面宠物」。以后启动会直接把上次的宠物放回桌面，控制面板从托盘图标打开（右键托盘图标或右键宠物也能退出）。
+仓库已包含宠物素材，也可以把新的宠物文件夹放进 `pets/`（或启动后用「导入宠物」）。第一次启动会打开控制面板：选一只宠物，点「设为桌面宠物」。以后启动会直接把上次的宠物放回桌面，控制面板从托盘图标打开（右键托盘图标或右键宠物也能退出）。
 
 ## 目录结构
 
@@ -52,7 +52,8 @@ npm start
 Pets/
 ├─ pets/                    宠物仓库：每个子文件夹一只宠物
 │  ├─ README.md             宠物格式说明
-│  └─ <id>/pet.json + 素材  只在本地，不进 Git
+│  └─ <id>/pet.json + 素材  随仓库保存
+├─ sources/                 原始 ZIP 与 Momo 制作图片
 ├─ schema/pet.schema.json   pet.json 的 JSON Schema
 ├─ desktop/                 桌面端（Electron）
 │  ├─ src/main/             主进程：窗口、托盘、菜单、设置、宠物扫描、pets:// 协议、装进 Codex
@@ -118,4 +119,4 @@ npm run dev           # 带调试日志启动
 
 ## 许可
 
-代码许可待定。本机 `pets/` 素材的授权写在对应 `pet.json` 的 `license` 字段。公开素材库目前没有单独声明素材许可，状态记录在 `catalog.json` 和每个 ZIP 的 `ASSET-LICENSE.txt` 中，详见[素材许可](catalog/README.md#素材许可)。
+代码许可待定。`pets/` 素材如有授权声明，见对应 `pet.json` 的 `license` 字段；`sources/` 保留原始素材包及其已有说明。公开素材库目前没有单独声明素材许可，状态记录在 `catalog.json` 和每个发布 ZIP 的 `ASSET-LICENSE.txt` 中，详见[素材许可](catalog/README.md#素材许可)。

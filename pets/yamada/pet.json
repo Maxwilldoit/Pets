@@ -1,0 +1,254 @@
+{
+  "$schema": "../../schema/pet.schema.json",
+  "id": "yamada",
+  "name": "山田",
+  "description": "穿皮夹克的像素山田。拖着走会迈步，双击坐下抽根烟。",
+  "version": "1.0.0",
+  "tags": [
+    "像素",
+    "人物"
+  ],
+  "scale": 0.6,
+  "speed": 43,
+  "behavior": {
+    "click": "wave",
+    "doubleClick": "smoke-sit"
+  },
+  "codex": {
+    "waiting": "peek-cute",
+    "running": "smoke"
+  },
+  "animations": {
+    "idle": {
+      "frames": [
+        {
+          "src": "frames/idle_a.png",
+          "duration": 420
+        },
+        {
+          "src": "frames/idle_b.png",
+          "duration": 420
+        }
+      ]
+    },
+    "walk-right": {
+      "frames": [
+        "frames/walkg_r_0.png",
+        "frames/walkg_r_1.png",
+        "frames/walkg_r_2.png",
+        "frames/walkg_r_3.png",
+        "frames/walkg_r_4.png",
+        "frames/walkg_r_5.png",
+        "frames/walkg_r_6.png",
+        "frames/walkg_r_7.png"
+      ],
+      "stepDistance": 10,
+      "fps": 4.3
+    },
+    "walk-left": {
+      "frames": [
+        "frames/walkg_l_0.png",
+        "frames/walkg_l_1.png",
+        "frames/walkg_l_2.png",
+        "frames/walkg_l_3.png",
+        "frames/walkg_l_4.png",
+        "frames/walkg_l_5.png",
+        "frames/walkg_l_6.png",
+        "frames/walkg_l_7.png"
+      ],
+      "stepDistance": 10,
+      "fps": 4.3
+    },
+    "wave": {
+      "label": "打招呼",
+      "frames": [
+        {
+          "src": "frames/idle_a.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/wave_1.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/wave_2.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/wave_1.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/wave_2.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/idle_a.png",
+          "duration": 200
+        }
+      ]
+    },
+    "smoke": {
+      "label": "站着抽烟",
+      "repeat": 3,
+      "frames": [
+        {
+          "src": "frames/smoke_a.png",
+          "duration": 300
+        },
+        {
+          "src": "frames/smoke_b.png",
+          "duration": 320
+        }
+      ]
+    },
+    "smoke-sit": {
+      "label": "坐下抽烟",
+      "frames": [
+        {
+          "src": "frames/idle_a.png",
+          "duration": 500
+        },
+        {
+          "src": "frames/sit_1.png",
+          "duration": 260
+        },
+        {
+          "src": "frames/sit_2.png",
+          "duration": 620
+        },
+        {
+          "src": "frames/sit_3.png",
+          "duration": 900
+        },
+        {
+          "src": "frames/sit_5.png",
+          "duration": 1160
+        },
+        {
+          "src": "frames/sit_2.png",
+          "duration": 300
+        },
+        {
+          "src": "frames/sit_7.png",
+          "duration": 260
+        },
+        {
+          "src": "frames/idle_a.png",
+          "duration": 520
+        }
+      ]
+    },
+    "jump": {
+      "label": "跳跃",
+      "frames": [
+        {
+          "src": "frames/jump_g0.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/jump_g1.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/jump_g2.png",
+          "duration": 150
+        },
+        {
+          "src": "frames/jump_g3.png",
+          "duration": 80
+        },
+        {
+          "src": "frames/jump_g4.png",
+          "duration": 70
+        },
+        {
+          "src": "frames/jump_g5.png",
+          "duration": 70
+        },
+        {
+          "src": "frames/jump_g6.png",
+          "duration": 80
+        },
+        {
+          "src": "frames/jump_g7.png",
+          "duration": 160
+        },
+        {
+          "src": "frames/jump_g8.png",
+          "duration": 80
+        },
+        {
+          "src": "frames/jump_g9.png",
+          "duration": 70
+        },
+        {
+          "src": "frames/jump_g10.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/jump_g11.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/jump_g12.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/jump_g13.png",
+          "duration": 180
+        }
+      ]
+    },
+    "peek": {
+      "label": "探头",
+      "frames": [
+        {
+          "src": "frames/idle_a.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/peek_b.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/peek_c.png",
+          "duration": 240
+        },
+        {
+          "src": "frames/peek_d.png",
+          "duration": 340
+        },
+        {
+          "src": "frames/peek_c.png",
+          "duration": 240
+        }
+      ]
+    },
+    "peek-cute": {
+      "label": "双手托腮",
+      "frames": [
+        {
+          "src": "frames/idle_a.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/cute_b.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/cute_c.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/cute_d.png",
+          "duration": 640
+        },
+        {
+          "src": "frames/cute_c.png",
+          "duration": 220
+        }
+      ]
+    }
+  }
+}

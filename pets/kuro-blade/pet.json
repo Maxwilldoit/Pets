@@ -1,0 +1,343 @@
+{
+  "$schema": "../../schema/pet.schema.json",
+  "id": "kuro-blade",
+  "name": "黑羽",
+  "description": "冷酷的黑发女剑士。",
+  "version": "1.0.0",
+  "tags": [
+    "人物",
+    "剑士"
+  ],
+  "scale": 0.55,
+  "speed": 85,
+  "behavior": {
+    "click": "wave",
+    "doubleClick": "draw-sword"
+  },
+  "animations": {
+    "idle": {
+      "frames": [
+        {
+          "src": "frames/idle_g0.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/idle_g1.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/idle_g2.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/idle_g3.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/idle_g4.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/idle_g5.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/idle_g6.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/idle_g7.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/idle_g8.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/idle_g9.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/idle_g10.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/idle_g11.png",
+          "duration": 220
+        }
+      ]
+    },
+    "walk-right": {
+      "frames": [
+        {
+          "src": "frames/walkg_r_0.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/walkg_r_1.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/walkg_r_2.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/walkg_r_3.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/walkg_r_4.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/walkg_r_5.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/walkg_r_6.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/walkg_r_7.png",
+          "duration": 180
+        }
+      ]
+    },
+    "walk-left": {
+      "frames": [
+        {
+          "src": "frames/walkg_l_0.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/walkg_l_1.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/walkg_l_2.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/walkg_l_3.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/walkg_l_4.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/walkg_l_5.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/walkg_l_6.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/walkg_l_7.png",
+          "duration": 180
+        }
+      ]
+    },
+    "wave": {
+      "label": "挥手",
+      "frames": [
+        {
+          "src": "frames/wave_g0.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/wave_g1.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/wave_g2.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/wave_g3.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/wave_g4.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/wave_g5.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/wave_g6.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/wave_g7.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/wave_g8.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/wave_g9.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/wave_g10.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/wave_g11.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/wave_g12.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/wave_g13.png",
+          "duration": 160
+        }
+      ]
+    },
+    "jump": {
+      "label": "跳跃",
+      "frames": [
+        {
+          "src": "frames/jump_g0.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/jump_g1.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/jump_g2.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/jump_g3.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/jump_g4.png",
+          "duration": 90
+        },
+        {
+          "src": "frames/jump_g5.png",
+          "duration": 100
+        },
+        {
+          "src": "frames/jump_g6.png",
+          "duration": 100
+        },
+        {
+          "src": "frames/jump_g7.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/jump_g8.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/jump_g9.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/jump_g10.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/jump_g11.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/jump_g12.png",
+          "duration": 160
+        }
+      ]
+    },
+    "peek": {
+      "label": "探头",
+      "frames": [
+        {
+          "src": "frames/peek_g0.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/peek_g1.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/peek_g2.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/peek_g3.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/peek_g4.png",
+          "duration": 800
+        },
+        {
+          "src": "frames/peek_g5.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/peek_g6.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/peek_g7.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/peek_g8.png",
+          "duration": 160
+        }
+      ]
+    },
+    "draw-sword": {
+      "frames": [
+        {
+          "src": "frames/idle_a.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/draw_grip.png",
+          "duration": 260
+        },
+        {
+          "src": "frames/draw_half.png",
+          "duration": 220
+        },
+        {
+          "src": "frames/draw_slash.png",
+          "duration": 160,
+          "offset": [
+            3,
+            0
+          ]
+        },
+        {
+          "src": "frames/draw_slash.png",
+          "duration": 700
+        },
+        {
+          "src": "frames/draw_stance.png",
+          "duration": 600
+        },
+        {
+          "src": "frames/draw_grip.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/idle_a.png",
+          "duration": 200
+        }
+      ],
+      "label": "拔刀"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build only the explicitly listed public ZIPs. Originals stay outside Git.
+"""Build only the explicitly listed public ZIPs from sources/archives.
 
 Build: python scripts/build-snapshot-library.py --source-dir /path/to/zips
 Check tracked metadata: python scripts/build-snapshot-library.py --check

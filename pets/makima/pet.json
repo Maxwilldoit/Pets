@@ -1,0 +1,327 @@
+{
+  "$schema": "../../schema/pet.schema.json",
+  "id": "makima",
+  "name": "Makima",
+  "description": "白衬衫黑领带的红发女士。",
+  "version": "1.0.0",
+  "tags": [
+    "像素",
+    "人物"
+  ],
+  "scale": 0.55,
+  "speed": 38,
+  "behavior": {
+    "click": "wave",
+    "doubleClick": "think"
+  },
+  "animations": {
+    "idle": {
+      "frames": [
+        {
+          "src": "frames/idle_g0.png",
+          "duration": 280
+        },
+        {
+          "src": "frames/idle_g1.png",
+          "duration": 250
+        },
+        {
+          "src": "frames/idle_g2.png",
+          "duration": 250
+        },
+        {
+          "src": "frames/idle_g3.png",
+          "duration": 260
+        },
+        {
+          "src": "frames/idle_g4.png",
+          "duration": 260
+        },
+        {
+          "src": "frames/idle_g5.png",
+          "duration": 240
+        },
+        {
+          "src": "frames/idle_g6.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/idle_g7.png",
+          "duration": 520
+        },
+        {
+          "src": "frames/idle_g5.png",
+          "duration": 240
+        },
+        {
+          "src": "frames/idle_g4.png",
+          "duration": 260
+        },
+        {
+          "src": "frames/idle_g3.png",
+          "duration": 250
+        },
+        {
+          "src": "frames/idle_g8.png",
+          "duration": 250
+        }
+      ]
+    },
+    "walk-right": {
+      "frames": [
+        "frames/walkg_r_0.png",
+        "frames/walkg_r_1.png",
+        "frames/walkg_r_2.png",
+        "frames/walkg_r_3.png",
+        "frames/walkg_r_4.png",
+        "frames/walkg_r_5.png",
+        "frames/walkg_r_6.png",
+        "frames/walkg_r_7.png"
+      ],
+      "stepDistance": 8.75,
+      "fps": 4.34
+    },
+    "walk-left": {
+      "frames": [
+        "frames/walkg_l_0.png",
+        "frames/walkg_l_1.png",
+        "frames/walkg_l_2.png",
+        "frames/walkg_l_3.png",
+        "frames/walkg_l_4.png",
+        "frames/walkg_l_5.png",
+        "frames/walkg_l_6.png",
+        "frames/walkg_l_7.png"
+      ],
+      "stepDistance": 8.75,
+      "fps": 4.34
+    },
+    "wave": {
+      "label": "挥手",
+      "frames": [
+        {
+          "src": "frames/wave_g0.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/wave_g1.png",
+          "duration": 110
+        },
+        {
+          "src": "frames/wave_g2.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/wave_g3.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/wave_g4.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/wave_g5.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/wave_g6.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/wave_g7.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/wave_g8.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/wave_g9.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/wave_g10.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/wave_g11.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/wave_g12.png",
+          "duration": 160
+        }
+      ]
+    },
+    "jump": {
+      "label": "跳跃",
+      "frames": [
+        {
+          "src": "frames/idle_a.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/jump_s0.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/jump_s1.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/jump_s2.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/jump_s3.png",
+          "duration": 160
+        },
+        {
+          "src": "frames/jump_s4.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/jump_s5.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/jump_s6.png",
+          "duration": 160
+        },
+        {
+          "src": "frames/jump_s7.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/jump_s8.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/jump_s9.png",
+          "duration": 200
+        },
+        {
+          "src": "frames/jump_s10.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/jump_s11.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/jump_s12.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/jump_s13.png",
+          "duration": 150
+        },
+        {
+          "src": "frames/jump_s14.png",
+          "duration": 180
+        },
+        {
+          "src": "frames/jump_s15.png",
+          "duration": 500
+        },
+        {
+          "src": "frames/jump_s16.png",
+          "duration": 300
+        },
+        {
+          "src": "frames/idle_a.png",
+          "duration": 200
+        }
+      ]
+    },
+    "peek": {
+      "label": "探头",
+      "frames": [
+        {
+          "src": "frames/peek_g0.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/peek_g1.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/peek_g2.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/peek_g3.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/peek_g4.png",
+          "duration": 700
+        },
+        {
+          "src": "frames/peek_g5.png",
+          "duration": 400
+        },
+        {
+          "src": "frames/peek_g6.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/peek_g7.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/peek_g8.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/peek_g9.png",
+          "duration": 160
+        }
+      ]
+    },
+    "think": {
+      "label": "思考",
+      "frames": [
+        {
+          "src": "frames/think_g0.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/think_g1.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/think_g2.png",
+          "duration": 120
+        },
+        {
+          "src": "frames/think_g3.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/think_g4.png",
+          "duration": 700
+        },
+        {
+          "src": "frames/think_g5.png",
+          "duration": 500
+        },
+        {
+          "src": "frames/think_g6.png",
+          "duration": 140
+        },
+        {
+          "src": "frames/think_g7.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/think_g8.png",
+          "duration": 130
+        },
+        {
+          "src": "frames/think_g9.png",
+          "duration": 160
+        }
+      ]
+    }
+  }
+}

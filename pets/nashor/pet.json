@@ -1,0 +1,26 @@
+{
+  "$schema": "../../schema/pet.schema.json",
+  "id": "nashor",
+  "name": "纳什男爵",
+  "description": "紫色虚空巨虫。会摇摆、升星、普攻、吐酸，还会遁地移动。",
+  "version": "1.0.0",
+  "tags": ["怪物", "动作"],
+  "scale": 0.45,
+  "behavior": {"click": "attack", "doubleClick": "ultimate-acid"},
+  "codex": {
+    "running-right": "sway", "running-left": "sway", "waving": "showcase", "jumping": "starup",
+    "waiting": "sway", "running": "attack", "review": "victory"
+  },
+  "animations": {
+    "idle": {"src": "gifs/nashor_idle.gif"},
+    "sway": {"src": "gifs/nashor_sway.gif", "label": "揣手摇摆", "weight": 2},
+    "starup": {"src": "gifs/nashor_starup.gif", "label": "升星"},
+    "showcase": {"src": "gifs/nashor_showcase.gif", "label": "姿态展示"},
+    "attack": {"src": "gifs/nashor_attack_v2.gif", "label": "普攻", "repeat": 2},
+    "victory": {"src": "gifs/nashor_victory_v2.gif", "label": "胜利", "repeat": 2, "anchor": [238, 439]},
+    "ultimate-acid": {"src": "gifs/nashor_ultimate_acid_v2.gif", "label": "吐酸", "anchor": [280, 444], "weight": 0.5},
+    "ultimate-combo": {"src": "gifs/nashor_ultimate_combo_v2.gif", "label": "普攻接吐酸", "anchor": [280, 445], "weight": 0.5},
+    "burrow-left": {"src": "gifs/nashor_burrow_left.gif", "label": "遁地（向左）", "anchor": [550, 435], "moveX": -400},
+    "burrow-right": {"src": "gifs/nashor_burrow_right.gif", "label": "遁地（向右）", "anchor": [550, 435], "moveX": 400}
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "../../schema/pet.schema.json",
+  "id": "yamada-q",
+  "name": "Q 版店员山田",
+  "description": "戴红头巾的 Q 版店员山田，Codex 宠物的九种状态动画。",
+  "version": "1.0.0",
+  "tags": ["Q版", "人物", "Codex"],
+  "scale": 0.8,
+  "speed": 60,
+  "behavior": {"click": "waving", "doubleClick": "jumping"},
+  "animations": {
+    "idle": {"src": "gifs/yamada-q-idle.gif"},
+    "walk-right": {"src": "gifs/yamada-q-running-right.gif"},
+    "walk-left": {"src": "gifs/yamada-q-running-left.gif"},
+    "waving": {"src": "gifs/yamada-q-waving.gif", "label": "挥手", "repeat": 2},
+    "jumping": {"src": "gifs/yamada-q-jumping.gif", "label": "跳一跳"},
+    "running": {"src": "gifs/yamada-q-running.gif", "label": "忙碌中", "repeat": 3},
+    "waiting": {"src": "gifs/yamada-q-waiting.gif", "label": "等待中", "repeat": 3},
+    "review": {"src": "gifs/yamada-q-review.gif", "label": "审阅", "repeat": 3},
+    "failed": {"src": "gifs/yamada-q-failed.gif", "label": "失败了", "repeat": 2, "weight": 0.3}
+  }
+}

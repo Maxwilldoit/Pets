@@ -56,6 +56,6 @@ for (const dir of targets) {
   }
 }
 
-if (total === 0) console.log('还没有宠物（宠物包不进 Git，放在本地 pets/ 里即可）。');
+if (total === 0) console.log('还没有宠物（把宠物包放进 pets/ 里即可）。');
 else console.log(`\n共 ${total} 只宠物，${total - failed} 只通过，${failed} 只有错误。`);
 if (failed) process.exitCode = 1;
