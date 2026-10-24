@@ -1,0 +1,61 @@
+appId: com.maxworkinghard.pets
+productName: Pets
+asar: true
+npmRebuild: false
+publish: null
+
+directories:
+  buildResources: assets
+  output: dist
+
+files:
+  - src/**/*
+  - assets/**/*
+  - package.json
+
+extraResources:
+  - from: ../pets
+    to: pets
+    filter:
+      - '**/*'
+
+win:
+  icon: assets/icon.ico
+  target:
+    - nsis
+    - portable
+
+nsis:
+  artifactName: Pets-${version}-windows-${arch}-setup.${ext}
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Pets
+
+portable:
+  artifactName: Pets-${version}-windows-${arch}-portable.${ext}
+
+mac:
+  icon: assets/icon.icns
+  category: public.app-category.utilities
+  artifactName: Pets-${version}-macos-${arch}.${ext}
+  identity: '-'
+  hardenedRuntime: false
+  notarize: false
+  target:
+    - dmg
+    - zip
+
+linux:
+  icon: assets/icon.png
+  category: Utility
+  artifactName: Pets-${version}-linux-${arch}.${ext}
+  synopsis: Desktop pets from your local pet library
+  target:
+    - AppImage
+    - deb
+
+deb:
+  maintainer: Maxworkinghard <Maxworkinghard@users.noreply.github.com>
