@@ -83,7 +83,6 @@
         "frames/walkg_r_6.png",
         "frames/walkg_r_7.png"
       ],
-      "stepDistance": 8.75,
       "fps": 4.34
     },
     "walk-left": {
@@ -97,7 +96,6 @@
         "frames/walkg_l_6.png",
         "frames/walkg_l_7.png"
       ],
-      "stepDistance": 8.75,
       "fps": 4.34
     },
     "wave": {
