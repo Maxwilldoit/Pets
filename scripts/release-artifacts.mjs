@@ -252,9 +252,24 @@ async function publish(tag, directory, expectedCommit) {
     local.set(name, { filename, size: regularFile(filename).size, hash: await sha256(filename) });
   }
   if (!release) {
-    gh('release', 'create', tag, '--repo', repository, '--verify-tag', '--draft', '--target', commit, '--title', `Pets ${tag}`, '--notes-file', notesFile(tag));
-    release = findRelease(repository, tag);
-    assert.ok(release, 'Draft creation did not return a release');
+    // Use the create response directly: the releases list may lag behind a
+    // successful creation and temporarily omit the new draft.
+    const body = {
+      tag_name: tag,
+      target_commitish: commit,
+      name: `Pets ${tag}`,
+      body: fs.readFileSync(notesFile(tag), 'utf8'),
+      draft: true,
+      prerelease: false,
+    };
+    release = JSON.parse(execFileSync('gh', ['api', '--method', 'POST', `repos/${repository}/releases`, '--input', '-'], {
+      input: JSON.stringify(body),
+      encoding: 'utf8',
+      maxBuffer: 16 * 1024 * 1024,
+    }));
+    assert.ok(release.id, 'Draft creation did not return a release ID');
+    assert.equal(release.tag_name, tag, 'Created draft tag differs');
+    assert.equal(release.draft, true, 'New release must remain a draft during uploads');
   }
   requireDraft(repository, tag, release.id);
   const existing = await checkRemoteAssets(repository, release.id, local, false);
