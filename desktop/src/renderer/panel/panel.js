@@ -1,5 +1,6 @@
 // 控制面板：浏览宠物仓库、预览动画、选择桌宠、导入到 Codex、调整设置。
 import { planCodexExport } from '../../shared/codex.js';
+import { createTranslator, localizeDiagnostic, resolveLanguage } from '../../shared/i18n.js';
 import { renderCodexAtlas } from '../lib/codex-export.js';
 import { drawFrame, loadAnimation, opaqueBounds } from '../lib/player.js';
 
@@ -8,35 +9,12 @@ const $ = (sel) => document.querySelector(sel);
 const esc = (s) =>
   String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
-const SLOT_LABELS = {
-  idle: '待机',
-  walk: '走路',
-  'walk-left': '向左走',
-  'walk-right': '向右走',
-  drag: '被拖动',
-  'drag-left': '向左拖',
-  'drag-right': '向右拖',
-  fall: '下落',
-  sleep: '睡觉',
-};
-const SOURCE_LABELS = { bundled: '仓库', user: '我的', codex: 'Codex' };
-const SOURCE_NAMES = { bundled: '仓库宠物', user: '我的宠物', codex: 'Codex 宠物' };
-const CODEX_LABELS = {
-  'running-right': '向右跑',
-  'running-left': '向左跑',
-  waving: '挥手',
-  jumping: '跳跃',
-  failed: '失败',
-  waiting: '等待',
-  running: '忙碌',
-  review: '审阅',
-};
-const FILTERS = [
-  ['all', '全部'],
-  ['bundled', '仓库'],
-  ['user', '我的'],
-  ['codex', 'Codex'],
-];
+let locale = resolveLanguage('auto', navigator.language);
+let t = createTranslator(locale);
+const SLOTS = new Set(['idle', 'walk', 'walk-left', 'walk-right', 'drag', 'drag-left', 'drag-right', 'fall', 'sleep']);
+const FILTERS = ['all', 'bundled', 'user', 'codex'];
+const countText = (type, count) => t(`count.${type}.${count === 1 ? 'one' : 'other'}`, { count });
+const diagnostic = (message) => localizeDiagnostic(message, locale);
 
 const state = { app: null, records: [], filter: 'all', query: '', selected: null, anim: 'idle', view: 'library', exporting: null };
 const els = {
@@ -49,13 +27,28 @@ const els = {
   toast: $('#toast'),
 };
 
-const animLabel = (pet, name) => pet.animations[name]?.label ?? SLOT_LABELS[name] ?? name;
+const animLabel = (pet, name) => {
+  if (pet.format === 'codex' && pet.animations[name]?.label) return t(`animation.${name}`);
+  return pet.animations[name]?.label ?? (SLOTS.has(name) ? t(`animation.${name}`) : name);
+};
 // 单击能点出来的动作：带 label 的动作，去掉待机与移动（和 brain.js 的单击循环一致）
 const NOT_AN_ACTION = new Set(['idle', 'walk', 'walk-left', 'walk-right', 'drag', 'drag-left', 'drag-right', 'fall']);
 const clickableActions = (pet) => pet.actions.filter((n) => !NOT_AN_ACTION.has(n));
 const validRecords = () => state.records.filter((r) => r.pet);
 const byKey = (key) => state.records.find((r) => r.key === key);
 const isLive = (key) => !!state.app?.visible && state.app.activeKey === key;
+
+function applyLanguage() {
+  locale = state.app?.locale ?? resolveLanguage('auto', navigator.language);
+  t = createTranslator(locale);
+  document.documentElement.lang = locale;
+  document.title = t('app.title');
+  for (const node of document.querySelectorAll('[data-i18n]')) node.textContent = t(node.dataset.i18n);
+  for (const [attribute, dataKey] of [['title', 'i18nTitle'], ['aria-label', 'i18nAria'], ['placeholder', 'i18nPlaceholder']]) {
+    const selector = `[data-${dataKey.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}]`;
+    for (const node of document.querySelectorAll(selector)) node.setAttribute(attribute, t(node.dataset[dataKey]));
+  }
+}
 
 // ---------------------------------------------------------------- 动画预览
 
@@ -103,7 +96,7 @@ class Preview {
       if (token !== this.token) return;
       Object.assign(this, { anim, fit, name, start: performance.now(), lastIdx: -1, dirty: true });
     } catch (e) {
-      if (token === this.token) toast(`预览失败：${e.message}`, 'error');
+      if (token === this.token) toast(t('toast.previewFailed', { error: diagnostic(e.message) }), 'error');
     }
   }
 
@@ -176,8 +169,8 @@ function renderFilters() {
   const counts = { all: validRecords().length };
   for (const r of validRecords()) counts[r.source] = (counts[r.source] ?? 0) + 1;
   els.filters.innerHTML = FILTERS.map(
-    ([id, label]) =>
-      `<button data-filter="${id}" class="${state.filter === id ? 'is-active' : ''}">${label}<span>${counts[id] ?? 0}</span></button>`,
+    (id) =>
+      `<button data-filter="${id}" class="${state.filter === id ? 'is-active' : ''}">${t(`filter.${id}`)}<span>${counts[id] ?? 0}</span></button>`,
   ).join('');
 }
 
@@ -188,13 +181,13 @@ function cardHtml(r) {
     .map((t) => `<span class="tag">${esc(t)}</span>`)
     .join('');
   return `<article class="card" data-key="${esc(r.key)}" tabindex="0" aria-label="${esc(p.name)}">
-    <div class="stage"><canvas></canvas><span class="badge-live">在桌面上</span></div>
+    <div class="stage"><canvas></canvas><span class="badge-live">${t('card.active')}</span></div>
     <div class="card-body">
       <div class="card-title"><span class="name">${esc(p.name)}</span>${
-        r.source === 'bundled' ? '' : `<span class="source">${SOURCE_LABELS[r.source]}</span>`
+        r.source === 'bundled' ? '' : `<span class="source">${t(`sourceShort.${r.source}`)}</span>`
       }</div>
-      <p class="card-desc">${esc(p.description || '（还没有描述）')}</p>
-      <div class="card-meta">${tags}<span class="count">${p.actions.length ? `${p.actions.length} 个动作` : ''}</span></div>
+      <p class="card-desc">${esc(p.description || t('common.noDescription'))}</p>
+      <div class="card-meta">${tags}<span class="count">${p.actions.length ? countText('actions', p.actions.length) : ''}</span></div>
     </div>
   </article>`;
 }
@@ -206,8 +199,8 @@ function renderGrid() {
   const list = validRecords().filter(matches);
   if (!list.length) {
     els.grid.innerHTML = validRecords().length
-      ? '<div class="empty"><strong>没有找到匹配的宠物</strong>换个关键词或来源试试</div>'
-      : '<div class="empty"><strong>宠物仓库是空的</strong>把宠物文件夹放进「我的宠物」目录，或者点「导入宠物」</div>';
+      ? `<div class="empty"><strong>${t('empty.searchTitle')}</strong>${t('empty.searchBody')}</div>`
+      : `<div class="empty"><strong>${t('empty.libraryTitle')}</strong>${t('empty.libraryBody')}</div>`;
   } else {
     els.grid.innerHTML = list.map(cardHtml).join('');
     for (const card of els.grid.querySelectorAll('.card')) {
@@ -231,13 +224,13 @@ function updateCards() {
 function renderProblems() {
   const bad = state.records.filter((r) => !r.pet);
   els.problems.innerHTML = bad.length
-    ? `<h3>有 ${bad.length} 只宠物无法加载</h3>` +
+    ? `<h3>${t('problems.title', { count: bad.length })}</h3>` +
       bad
         .map(
-          (r) => `<div class="problem"><b>${esc(r.dirName)}</b>（${SOURCE_NAMES[r.source]}）
+          (r) => `<div class="problem"><b>${esc(r.dirName)}</b> · ${t(`source.${r.source}`)}
             <ul>${r.errors
               .slice(0, 8)
-              .map((e) => `<li>${esc(e)}</li>`)
+              .map((e) => `<li>${esc(diagnostic(e))}</li>`)
               .join('')}</ul></div>`,
         )
         .join('')
@@ -249,13 +242,9 @@ function renderProblems() {
 let detailPreview = null;
 
 function interactionText(pet) {
-  const parts = [];
   const acts = clickableActions(pet);
-  if (pet.behavior.click) parts.push(`单击依次做动作，从「${animLabel(pet, pet.behavior.click)}」开始`);
-  else if (acts.length) parts.push('单击依次做动作');
-  if (acts.length) parts.push(`共 ${acts.length} 个动作可以点出来`);
-  parts.push('不会自己走动，没人管的时候就待机');
-  return parts.join('，');
+  if (pet.behavior.click) return t('detail.clickStart', { action: animLabel(pet, pet.behavior.click) });
+  return t(acts.length ? 'detail.clickCycle' : 'detail.dragOnly');
 }
 
 function renderDetail() {
@@ -263,7 +252,7 @@ function renderDetail() {
   detailPreview = null;
   const r = byKey(state.selected);
   if (!r?.pet) {
-    els.detail.innerHTML = '<div class="detail-empty">在左边选一只宠物，看看它会做什么</div>';
+    els.detail.innerHTML = `<div class="detail-empty">${t('detail.empty')}</div>`;
     return;
   }
   const p = r.pet;
@@ -275,10 +264,10 @@ function renderDetail() {
     })
     .join('');
   const sub = [
-    SOURCE_NAMES[r.source],
+    t(`source.${r.source}`),
     p.version && `v${esc(p.version)}`,
-    p.author && `作者 ${esc(p.author)}`,
-    p.format === 'codex' && 'Codex 格式',
+    p.author && esc(t('detail.author', { author: p.author })),
+    p.format === 'codex' && t('detail.codexFormat'),
   ]
     .filter(Boolean)
     .join(' · ');
@@ -287,27 +276,27 @@ function renderDetail() {
     <div class="detail-body">
       <h2>${esc(p.name)}</h2>
       <div class="detail-sub">${sub}</div>
-      <p class="detail-desc">${esc(p.description || '这只宠物还没有描述。')}</p>
+      <p class="detail-desc">${esc(p.description || t('common.noDescription'))}</p>
       <div class="detail-actions" id="detail-actions"></div>
       <div id="codex-box"></div>
-      <h3>动画 <small>点一下预览</small></h3>
+      <h3>${t('detail.animations')} <small>${t('detail.preview')}</small></h3>
       <div class="chips">${chips}</div>
       <div id="play-live"></div>
-      <h3>信息</h3>
+      <h3>${t('detail.information')}</h3>
       <dl class="facts">
-        <dt>动画</dt><dd>${names.length} 个${p.actions.length ? `，${p.actions.length} 个可在右键菜单里点` : ''}</dd>
-        <dt>互动</dt><dd>${esc(interactionText(p))}</dd>
+        <dt>${t('detail.animations')}</dt><dd>${countText('animations', names.length)}${p.actions.length ? ` · ${countText('actions', p.actions.length)}` : ''}</dd>
+        <dt>${t('detail.interaction')}</dt><dd>${esc(interactionText(p))}</dd>
         ${
           r.source === 'codex'
             ? ''
-            : `<dt>Codex</dt><dd title="导入到 Codex 时，Codex 的各个状态用哪个动画；可在 pet.json 的 codex 字段里修改">${esc(codexMappingText(p))}</dd>`
+            : `<dt>Codex</dt><dd title="${t('detail.mappingTitle')}">${esc(codexMappingText(p))}</dd>`
         }
         <dt>ID</dt><dd>${esc(p.id)}</dd>
-        <dt>文件夹</dt><dd><button class="link" data-action="open-folder" title="在资源管理器中打开">${esc(r.dir)}</button></dd>
+        <dt>${t('detail.folder')}</dt><dd><button class="link" data-action="open-folder" title="${t('detail.openFolder')}">${esc(r.dir)}</button></dd>
       </dl>
       ${
         r.warnings.length
-          ? `<div class="warnings"><b>提示</b><ul>${r.warnings.map((w) => `<li>${esc(w)}</li>`).join('')}</ul></div>`
+          ? `<div class="warnings"><b>${t('detail.notes')}</b><ul>${r.warnings.map((w) => `<li>${esc(diagnostic(w))}</li>`).join('')}</ul></div>`
           : ''
       }
     </div>`;
@@ -321,7 +310,7 @@ function renderDetail() {
 function codexMappingText(pet) {
   return planCodexExport(pet)
     .filter((row) => row.state !== 'idle')
-    .map((row) => `${CODEX_LABELS[row.state]}←${animLabel(pet, row.anim)}${row.flip ? '（镜像）' : ''}`)
+    .map((row) => `${t(`codexState.${row.state}`)} ← ${animLabel(pet, row.anim)}${row.flip ? t('common.mirrored') : ''}`)
     .join(' · ');
 }
 
@@ -330,18 +319,18 @@ function renderCodexBox() {
   const r = byKey(state.selected);
   if (!box || !r?.pet) return;
   if (r.source === 'codex') {
-    box.innerHTML = '<p class="hint-sm">这只宠物来自 Codex，本来就能在 Codex 里用。</p>';
+    box.innerHTML = `<p class="hint-sm">${t('codex.alreadyInstalled')}</p>`;
     return;
   }
   const busy = state.exporting === r.key;
   const done = r.codexExport;
-  const label = busy ? '正在转换…' : done ? '更新 Codex 里的版本' : '导入到 Codex';
+  const label = t(busy ? 'codex.converting' : done ? 'codex.update' : 'codex.export');
   box.innerHTML = `
     <button class="btn btn-block codex-btn" data-action="codex" ${busy ? 'disabled' : ''}>${label}</button>
     <p class="hint-sm">${
       done
-        ? `已在 Codex 中（文件夹 ${esc(done.folder)}）。在 Codex 的「设置 → 外观 → 宠物」里选择「${esc(r.pet.name)}」即可使用。`
-        : '转换成 Codex 宠物格式，装进 ~/.codex/pets；之后在 Codex 的「设置 → 外观 → 宠物」里选择它。'
+        ? esc(t('codex.installedHint', { folder: done.folder, name: r.pet.name }))
+        : t('codex.hint')
     }</p>`;
 }
 
@@ -354,9 +343,9 @@ async function exportToCodex(key) {
     const { bytes } = await renderCodexAtlas(r.pet, (name) => getAnim(r, name));
     const res = await api.installToCodex(key, bytes);
     if (!res.ok) throw new Error(res.error);
-    toast(`已导入 Codex（${res.folder}）。在 Codex 的「设置 → 外观 → 宠物」里选择「${r.pet.name}」`, 'info', 7000);
+    toast(t('toast.exported', { name: r.pet.name }));
   } catch (e) {
-    toast(`导入 Codex 失败：${e.message}`, 'error');
+    toast(t('toast.exportFailed', { error: diagnostic(e.message) }), 'error');
   } finally {
     state.exporting = null;
     renderCodexBox();
@@ -377,8 +366,8 @@ function renderDetailActions() {
   const box = $('#detail-actions');
   if (!box) return;
   box.innerHTML = isLive(state.selected)
-    ? '<button class="btn btn-lg btn-ok" disabled>✓ 正在桌面上</button><button class="btn btn-lg btn-shrink" data-action="hide">隐藏</button>'
-    : '<button class="btn btn-lg btn-primary" data-action="activate">设为桌面宠物</button>';
+    ? `<button class="btn btn-lg btn-ok" disabled>✓ ${t('detail.active')}</button><button class="btn btn-lg btn-shrink" data-action="hide">${t('detail.hide')}</button>`
+    : `<button class="btn btn-lg btn-primary" data-action="activate">${t('detail.activate')}</button>`;
   renderPlayLive();
 }
 
@@ -389,7 +378,7 @@ function renderPlayLive() {
   const a = r?.pet.animations[state.anim];
   box.innerHTML =
     isLive(state.selected) && a?.label
-      ? `<button class="btn play-live" data-action="play-live">让桌面上的 ${esc(r.pet.name)}「${esc(a.label)}」</button>`
+      ? `<button class="btn play-live" data-action="play-live">${esc(t('detail.playLive', { action: animLabel(r.pet, state.anim) }))}</button>`
       : '';
 }
 
@@ -404,28 +393,38 @@ function renderSettings() {
   const folders = state.app.sources
     .map((src) => {
       const usable = src.exists || src.id === 'user';
-      return `<div class="folder"><span class="folder-name">${esc(src.label)}</span><code>${esc(src.dir)}</code>
-        <button class="btn btn-ghost" data-open-folder="${src.id}" ${usable ? '' : 'disabled'}>${usable ? '打开' : '不存在'}</button></div>`;
+      return `<div class="folder"><span class="folder-name">${t(`source.${src.id}`)}</span><code>${esc(src.dir)}</code>
+        <button class="btn btn-ghost" data-open-folder="${src.id}" ${usable ? '' : 'disabled'}>${t(usable ? 'common.open' : 'common.unavailable')}</button></div>`;
     })
     .join('');
   els.settings.innerHTML = `<div class="settings-inner">
-    <section class="settings-group"><h2>桌宠</h2>
+    <section class="settings-group"><h2>${t('settings.application')}</h2>
       <div class="setting">
-        <div class="setting-text"><div class="setting-title">大小</div></div>
-        <div class="range"><input type="range" id="set-size" min="0.5" max="2" step="0.05" value="${s.size}" aria-label="宠物大小"><output id="size-out">${Math.round(s.size * 100)}%</output></div>
+        <label class="setting-text setting-title" for="set-language">${t('settings.language')}</label>
+        <select class="language-select" id="set-language" aria-label="${t('settings.language')}">
+          ${['auto', 'zh-CN', 'en'].map((language) => `<option value="${language}" ${(s.language ?? 'auto') === language ? 'selected' : ''}>${t(`language.${language}`)}</option>`).join('')}
+        </select>
       </div>
-      ${toggle('wander', '自由走动')}
-      ${toggle('randomActions', '随机动作')}
-      ${toggle('gravity', '重力')}
-      ${toggle('alwaysOnTop', '始终置顶')}
     </section>
-    <section class="settings-group"><h2>启动</h2>
-      ${toggle('launchAtLogin', '开机自动启动')}
+    <section class="settings-group"><h2>${t('settings.pet')}</h2>
+      <div class="setting">
+        <div class="setting-text"><div class="setting-title">${t('settings.size')}</div></div>
+        <div class="range"><input type="range" id="set-size" min="0.5" max="2" step="0.05" value="${s.size}" aria-label="${t('settings.petSize')}"><output id="size-out">${Math.round(s.size * 100)}%</output></div>
+      </div>
+      ${toggle('wander', t('settings.wander'))}
+      ${toggle('randomActions', t('settings.randomActions'))}
+      ${toggle('gravity', t('settings.gravity'))}
+      ${toggle('alwaysOnTop', t('settings.alwaysOnTop'))}
     </section>
-    <section class="settings-group"><h2>宠物文件夹</h2>
+    ${state.app.supportsLoginItem
+      ? `<section class="settings-group"><h2>${t('settings.startup')}</h2>
+          ${toggle('launchAtLogin', t('settings.launchAtLogin'))}
+        </section>`
+      : ''}
+    <section class="settings-group"><h2>${t('settings.folders')}</h2>
       ${folders}
     </section>
-    <section class="settings-group"><h2>关于</h2>
+    <section class="settings-group"><h2>${t('settings.about')}</h2>
       <div class="about"><b>Pets</b> v${esc(state.app.version)} · <button class="link" data-action="repo">${esc(state.app.repoUrl)}</button></div>
     </section>
   </div>`;
@@ -435,6 +434,8 @@ function renderSettings() {
 function syncSettings() {
   const s = state.app.settings;
   for (const input of els.settings.querySelectorAll('[data-setting]')) input.checked = !!s[input.dataset.setting];
+  const language = $('#set-language');
+  if (language && document.activeElement !== language) language.value = s.language ?? 'auto';
   const size = $('#set-size');
   if (size && document.activeElement !== size) {
     size.value = s.size;
@@ -465,8 +466,8 @@ function select(key) {
 async function activate(key) {
   const r = byKey(key);
   if (!r?.pet) return;
-  if (!(await api.activate(key))) return toast(`召唤 ${r.pet.name} 失败`, 'error');
-  toast(`${r.pet.name} 来到桌面上了`);
+  if (!(await api.activate(key))) return toast(t('toast.activateFailed', { name: r.pet.name }), 'error');
+  toast(t('toast.activated', { name: r.pet.name }));
   select(key);
 }
 
@@ -527,24 +528,25 @@ els.filters.addEventListener('click', (e) => {
 $('#btn-import').addEventListener('click', async () => {
   const res = await api.importFolder();
   if (res.canceled) return;
-  if (!res.ok) return toast(`导入失败：${res.errors?.[0] ?? '未知错误'}`, 'error');
+  if (!res.ok) return toast(t('toast.importFailed', { error: diagnostic(res.errors?.[0] ?? t('common.unknownError')) }), 'error');
   await loadRecords();
   select(res.key);
-  toast(`已导入：${res.name}`);
+  toast(t('toast.imported', { name: res.name }));
 });
 $('#btn-folder').addEventListener('click', () => api.openFolder('user'));
 $('#btn-reload').addEventListener('click', async () => {
   await api.reload();
-  toast('已重新扫描宠物文件夹');
+  toast(t('toast.refreshed'));
 });
 
 els.settings.addEventListener('input', (e) => {
   if (e.target.id === 'set-size') $('#size-out').textContent = `${Math.round(Number(e.target.value) * 100)}%`;
 });
 els.settings.addEventListener('change', (e) => {
-  const t = e.target;
-  if (t.dataset.setting) api.setSettings({ [t.dataset.setting]: t.checked });
-  else if (t.id === 'set-size') api.setSettings({ size: Number(t.value) });
+  const target = e.target;
+  if (target.id === 'set-language') api.setSettings({ language: target.value });
+  else if (target.dataset.setting) api.setSettings({ [target.dataset.setting]: target.checked });
+  else if (target.id === 'set-size') api.setSettings({ size: Number(target.value) });
 });
 els.settings.addEventListener('click', (e) => {
   const folder = e.target.closest('[data-open-folder]');
@@ -554,10 +556,12 @@ els.settings.addEventListener('click', (e) => {
 
 // ---------------------------------------------------------------- 启动
 
-async function loadRecords() {
+async function loadRecords(preserveAnimations = false) {
   state.records = await api.list();
-  animCache.clear();
-  fitCache.clear();
+  if (!preserveAnimations) {
+    animCache.clear();
+    fitCache.clear();
+  }
   if (!byKey(state.selected)?.pet) {
     const active = byKey(state.app?.activeKey);
     state.selected = active?.pet ? active.key : (validRecords()[0]?.key ?? null);
@@ -570,13 +574,24 @@ async function loadRecords() {
 }
 
 api.onState((s) => {
+  const changedLanguage = s.locale && s.locale !== locale;
   state.app = s;
+  if (changedLanguage) applyLanguage();
   updateCards();
   renderDetailActions();
-  if (state.view === 'settings') syncSettings();
+  if (state.view === 'settings') {
+    if (changedLanguage) {
+      const focused = document.activeElement?.id;
+      const scrollTop = els.settings.scrollTop;
+      renderSettings();
+      els.settings.scrollTop = scrollTop;
+      if (focused === 'set-language') $('#set-language').focus();
+    } else syncSettings();
+  }
 });
-api.onPetsChanged(() => loadRecords());
+api.onPetsChanged((change) => loadRecords(change?.reason === 'language'));
 api.onToast((t) => toast(t.text, t.type));
 
 state.app = await api.state();
+applyLanguage();
 await loadRecords();

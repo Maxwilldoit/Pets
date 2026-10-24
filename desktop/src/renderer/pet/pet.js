@@ -1,6 +1,7 @@
 // 桌宠窗口：加载动画 → 行为状态机驱动 → 移动透明窗口并绘制当前帧。
 // 窗口大小 = 舞台（能装下所有动画），宠物脚底锚点固定在舞台的 (ax, ay)，移动窗口就是移动宠物。
 import { PetBrain } from '../../shared/brain.js';
+import { createTranslator, resolveLanguage } from '../../shared/i18n.js';
 import { computeLayout, drawFrame, frameIndex, loadPetAnimations } from '../lib/player.js';
 
 const host = window.petHost;
@@ -9,15 +10,17 @@ const ctx = canvas.getContext('2d', { willReadFrequently: true });
 const ALPHA_HIT = 40;
 
 const init = await host.init();
-if (!init) throw new Error('宠物窗口初始化失败');
+if (!init) throw new Error(createTranslator(resolveLanguage('auto', navigator.language))('error.petWindowInit'));
 const pet = init.record.pet;
+document.documentElement.lang = init.locale;
+document.title = pet.name;
 let settings = init.settings;
 
 let anims;
 try {
   anims = await loadPetAnimations(pet, init.record.assetBase, (msg) => host.log('error', msg));
 } catch (e) {
-  host.log('fatal', `${pet.name}：${e.message}`);
+  host.log('fatal', e.message);
   throw e;
 }
 
@@ -180,9 +183,12 @@ host.onCommand((cmd) => {
   if (cmd.type === 'play') brain.play(cmd.name);
   else if (cmd.type === 'areas') brain.setAreas(cmd.areas);
   else if (cmd.type === 'settings') {
+    document.documentElement.lang = cmd.locale;
+    document.title = cmd.title ?? document.title;
     const resized = cmd.settings.size !== settings.size;
+    const behaviorChanged = ['wander', 'randomActions', 'gravity'].some((key) => cmd.settings[key] !== settings[key]);
     settings = cmd.settings;
-    brain.setSettings(brainSettings(settings));
+    if (behaviorChanged) brain.setSettings(brainSettings(settings));
     if (resized) {
       relayout();
       brain.setMetrics(brainMetrics());

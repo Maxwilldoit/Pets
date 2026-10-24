@@ -40,13 +40,13 @@ const isWebp = (b) =>
   b.length > 16 && String.fromCharCode(...b.subarray(0, 4)) === 'RIFF' && String.fromCharCode(...b.subarray(8, 12)) === 'WEBP';
 
 /**
- * 写入（或更新）一只 Codex 宠物。只会覆盖 Pets 自己导出过的文件夹；
+ * 写入（或更新）Codex 宠物。只会覆盖 Pets 自己导出过的文件夹；
  * 同名但不是我们导出的文件夹会被保留，改用 <id>-2、<id>-3…
- * @returns {{ok: true, folder: string, dir: string, avatarId: string} | {ok: false, error: string}}
+ * @returns {{ok: true, folder: string, dir: string, avatarId: string} | {ok: false, error: string, code: string, path?: string}}
  */
 export function installCodexPet({ petsDir = codexPetsDir(), sourceKey, pet, bytes }) {
   if (!(bytes instanceof Uint8Array) || !isWebp(bytes) || bytes.length > MAX_BYTES) {
-    return { ok: false, error: '精灵图数据无效' };
+    return { ok: false, code: 'INVALID_ATLAS', error: '精灵图数据无效' };
   }
   fs.mkdirSync(petsDir, { recursive: true });
   let folder = listExports(petsDir).get(sourceKey)?.folder;
@@ -65,13 +65,13 @@ export function installCodexPet({ petsDir = codexPetsDir(), sourceKey, pet, byte
     const manifest = { id: folder, displayName: pet.name, description: pet.description || pet.name, spritesheetPath: 'spritesheet.webp' };
     fs.writeFileSync(path.join(tmp, 'pet.json'), JSON.stringify(manifest, null, 2));
     if (fs.existsSync(dest)) {
-      if (!isPetsExport(dest)) throw new Error(`目标文件夹不是 Pets 导出的：${dest}`);
+      if (!isPetsExport(dest)) throw Object.assign(new Error(`目标文件夹不是 Pets 导出的：${dest}`), { code: 'FOREIGN_EXPORT', path: dest });
       fs.rmSync(dest, { recursive: true, force: true });
     }
     fs.renameSync(tmp, dest);
   } catch (e) {
     fs.rmSync(tmp, { recursive: true, force: true });
-    return { ok: false, error: e.message };
+    return { ok: false, code: e.code === 'FOREIGN_EXPORT' ? e.code : 'INSTALL_FAILED', error: e.message, ...(e.code === 'FOREIGN_EXPORT' ? { path: e.path } : {}) };
   }
   return { ok: true, folder, dir: dest, avatarId: `custom:${folder}` };
 }

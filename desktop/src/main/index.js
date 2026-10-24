@@ -5,7 +5,9 @@ import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, nativeTheme, sc
 import { codexPetsDir, installCodexPet, isPetsExport, listExports } from './codex-install.js';
 import { ORIGIN, assetBase, handleProtocol, registerScheme } from './protocol.js';
 import { loadPet, scanAll } from './registry.js';
-import { Settings } from './settings.js';
+import { LANGUAGE_PREFERENCES, Settings } from './settings.js';
+import { createTranslator, localizeDiagnostic, resolveLanguage } from '../shared/i18n.js';
+import { localizePet } from '../shared/pet-locales.js';
 
 const DESKTOP_ROOT = path.resolve(import.meta.dirname, '..', '..');
 const SRC = path.join(DESKTOP_ROOT, 'src');
@@ -13,7 +15,6 @@ const ICON = path.join(DESKTOP_ROOT, 'assets', 'icon.png');
 const TRAY_ICON = path.join(DESKTOP_ROOT, 'assets', 'tray.png');
 const REPO_URL = 'https://github.com/Maxworkinghard/Pets';
 const SIZES = [0.5, 0.75, 1, 1.25, 1.5, 2];
-const SOURCE_LABEL = { bundled: '仓库', user: '我的', codex: 'Codex' };
 const DEBUG = process.argv.includes('--pets-debug');
 const log = (...args) => DEBUG && console.log('[pets]', ...args);
 
@@ -30,6 +31,26 @@ let tray = null;
 let panelWin = null;
 let petWin = null;
 let petKey = null;
+let resolvedLocale = 'en';
+let t = createTranslator(resolvedLocale);
+
+function updateLocale() {
+  resolvedLocale = resolveLanguage(settings.data.language, app.getLocale());
+  t = createTranslator(resolvedLocale);
+}
+
+function displayPet(record) {
+  if (!record?.pet) return null;
+  const pet = localizePet(record.pet, resolvedLocale, record.source);
+  if (pet.format !== 'codex') return pet;
+  // Codex 格式的动作标签由 manifest 生成；名称、描述等用户数据保持原样。
+  return {
+    ...pet,
+    animations: Object.fromEntries(Object.entries(pet.animations).map(([name, animation]) => [
+      name, animation.label ? { ...animation, label: t(`animation.${name}`) } : animation,
+    ])),
+  };
+}
 
 // ---------------------------------------------------------------- 宠物来源
 
@@ -37,11 +58,11 @@ function sources() {
   return [
     {
       id: 'bundled',
-      label: '仓库宠物',
+      label: t('source.bundled'),
       dir: app.isPackaged ? path.join(process.resourcesPath, 'pets') : path.resolve(DESKTOP_ROOT, '..', 'pets'),
     },
-    { id: 'user', label: '我的宠物', dir: path.join(app.getPath('userData'), 'pets') },
-    { id: 'codex', label: 'Codex 宠物', dir: codexPetsDir() },
+    { id: 'user', label: t('source.user'), dir: path.join(app.getPath('userData'), 'pets') },
+    { id: 'codex', label: t('source.codex'), dir: codexPetsDir() },
   ];
 }
 
@@ -56,10 +77,19 @@ function rescan() {
   log('pets:', [...records.values()].map((r) => (r.pet ? r.key : `${r.key}(无效)`)).join(', '));
 }
 
-const publicRecord = (r) => ({ ...r, assetBase: assetBase(r), codexExport: codexExports.get(r.key) ?? null });
+const publicRecord = (r) => ({
+  ...r,
+  pet: displayPet(r),
+  errors: r.errors.map((message) => localizeDiagnostic(message, resolvedLocale)),
+  warnings: r.warnings.map((message) => localizeDiagnostic(message, resolvedLocale)),
+  assetBase: assetBase(r),
+  codexExport: codexExports.get(r.key) ?? null,
+});
 
 function appState() {
   return {
+    locale: resolvedLocale,
+    supportsLoginItem: process.platform === 'win32' || process.platform === 'darwin',
     activeKey: settings.data.activePet,
     visible: !!petWin,
     settings: settings.data,
@@ -76,8 +106,8 @@ function broadcast() {
 
 function petsChanged() {
   if (petKey && !records.get(petKey)?.pet) closePet();
-  panelWin?.webContents.send('pets:changed');
   broadcast();
+  panelWin?.webContents.send('pets:changed');
 }
 
 // ---------------------------------------------------------------- 桌宠窗口
@@ -92,6 +122,8 @@ function initialPosition() {
 }
 
 function lockDown(win) {
+  // 原生窗口标题由主进程本地化，避免被 HTML 的初始标题覆盖。
+  win.on('page-title-updated', (e) => e.preventDefault());
   win.webContents.on('will-navigate', (e) => e.preventDefault());
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
 }
@@ -117,7 +149,7 @@ function openPet(key) {
     focusable: false,
     alwaysOnTop: settings.data.alwaysOnTop,
     backgroundColor: '#00000000',
-    title: record.pet.name,
+    title: displayPet(record).name,
     webPreferences: {
       preload: path.join(SRC, 'preload', 'pet.cjs'),
       sandbox: true,
@@ -157,28 +189,37 @@ const sendPet = (cmd) => petWin?.webContents.send('petwin:command', cmd);
 
 function applySettings(patch) {
   const clean = {};
+  if (LANGUAGE_PREFERENCES.includes(patch.language)) clean.language = patch.language;
   if (typeof patch.size === 'number' && patch.size >= 0.25 && patch.size <= 3) clean.size = patch.size;
   for (const k of ['wander', 'randomActions', 'gravity', 'alwaysOnTop', 'launchAtLogin']) {
     if (typeof patch[k] === 'boolean') clean[k] = patch[k];
   }
+  const languageChanged = 'language' in clean && clean.language !== settings.data.language;
+  const previousLocale = resolvedLocale;
   settings.set(clean);
+  if ('language' in clean) {
+    updateLocale();
+    panelWin?.setTitle(t('app.title'));
+    petWin?.setTitle(displayPet(records.get(petKey))?.name ?? t('app.title'));
+  }
   if ('alwaysOnTop' in clean) petWin?.setAlwaysOnTop(clean.alwaysOnTop);
-  if ('launchAtLogin' in clean) {
+  if ('launchAtLogin' in clean && (process.platform === 'win32' || process.platform === 'darwin')) {
     // 源码运行时需要带上应用目录作为参数，否则开机只会启动一个空的 Electron
     const opts = app.isPackaged ? {} : { path: process.execPath, args: [DESKTOP_ROOT] };
     app.setLoginItemSettings({ openAtLogin: clean.launchAtLogin, ...opts });
   }
-  sendPet({ type: 'settings', settings: settings.data });
+  sendPet({ type: 'settings', settings: settings.data, locale: resolvedLocale, title: displayPet(records.get(petKey))?.name });
   broadcast();
+  if (languageChanged || resolvedLocale !== previousLocale) panelWin?.webContents.send('pets:changed', { reason: 'language' });
 }
 
 // ---------------------------------------------------------------- 菜单
 
 function switchItems() {
   const valid = [...records.values()].filter((r) => r.pet);
-  if (!valid.length) return [{ label: '（没有可用的宠物）', enabled: false }];
+  if (!valid.length) return [{ label: t('menu.noPets'), enabled: false }];
   return valid.map((r) => ({
-    label: r.source === 'bundled' ? r.pet.name : `${r.pet.name}（${SOURCE_LABEL[r.source]}）`,
+    label: r.source === 'bundled' ? displayPet(r).name : t('menu.petSource', { name: displayPet(r).name, source: t(`sourceShort.${r.source}`) }),
     type: 'radio',
     checked: r.key === petKey,
     click: () => openPet(r.key),
@@ -186,18 +227,18 @@ function switchItems() {
 }
 
 function petMenu() {
-  const pet = records.get(petKey)?.pet;
+  const pet = displayPet(records.get(petKey));
   const s = settings.data;
   const actions = pet?.actions ?? [];
   return Menu.buildFromTemplate([
-    { label: pet?.name ?? '宠物', enabled: false },
+    { label: pet?.name ?? t('app.title'), enabled: false },
     { type: 'separator' },
     ...(actions.length
-      ? [{ label: '动作', submenu: actions.map((n) => ({ label: pet.animations[n].label, click: () => sendPet({ type: 'play', name: n }) })) }]
+      ? [{ label: t('menu.actions'), submenu: actions.map((n) => ({ label: pet.animations[n].label, click: () => sendPet({ type: 'play', name: n }) })) }]
       : []),
-    { label: '切换宠物', submenu: switchItems() },
+    { label: t('menu.switchPet'), submenu: switchItems() },
     {
-      label: '大小',
+      label: t('menu.size'),
       submenu: SIZES.map((v) => ({
         label: `${Math.round(v * 100)}%`,
         type: 'radio',
@@ -205,35 +246,35 @@ function petMenu() {
         click: () => applySettings({ size: v }),
       })),
     },
-    { label: '自由走动', type: 'checkbox', checked: s.wander, click: (item) => applySettings({ wander: item.checked }) },
-    { label: '随机动作', type: 'checkbox', checked: s.randomActions, click: (item) => applySettings({ randomActions: item.checked }) },
+    { label: t('menu.wander'), type: 'checkbox', checked: s.wander, click: (item) => applySettings({ wander: item.checked }) },
+    { label: t('menu.randomActions'), type: 'checkbox', checked: s.randomActions, click: (item) => applySettings({ randomActions: item.checked }) },
     { type: 'separator' },
-    { label: '打开控制面板', click: showPanel },
-    { label: '隐藏宠物', click: hidePet },
-    { label: '退出 Pets', click: () => app.quit() },
+    { label: t('menu.openPanel'), click: showPanel },
+    { label: t('menu.hidePet'), click: hidePet },
+    { label: t('menu.quit'), click: () => app.quit() },
   ]);
 }
 
 function createTray() {
   const icon = nativeImage.createFromPath(TRAY_ICON);
   tray = new Tray(icon);
-  tray.setToolTip('Pets 桌面宠物');
   tray.on('click', showPanel);
   refreshTrayMenu();
 }
 
 function refreshTrayMenu() {
   if (!tray) return;
+  tray.setToolTip(t('tray.tooltip'));
   const active = records.get(settings.data.activePet);
   tray.setContextMenu(
     Menu.buildFromTemplate([
-      { label: '打开控制面板', click: showPanel },
+      { label: t('menu.openPanel'), click: showPanel },
       petWin
-        ? { label: '隐藏宠物', click: hidePet }
-        : { label: '显示宠物', enabled: !!active?.pet, click: () => openPet(active.key) },
-      { label: '切换宠物', submenu: switchItems() },
+        ? { label: t('menu.hidePet'), click: hidePet }
+        : { label: t('menu.showPet'), enabled: !!active?.pet, click: () => openPet(active.key) },
+      { label: t('menu.switchPet'), submenu: switchItems() },
       { type: 'separator' },
-      { label: '退出 Pets', click: () => app.quit() },
+      { label: t('menu.quit'), click: () => app.quit() },
     ]),
   );
 }
@@ -259,7 +300,7 @@ function showPanel() {
     minWidth: 820,
     minHeight: 560,
     show: false,
-    title: 'Pets',
+    title: t('app.title'),
     // 隐藏视觉标题，保留原生窗口按钮和任务栏/可访问性标题。
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'hidden',
     titleBarOverlay: supportsOverlayColors ? titleBarOverlay() : { height: 60 },
@@ -295,23 +336,27 @@ function notifyPanel(toast) {
 }
 
 async function importPet() {
-  const res = await dialog.showOpenDialog(panelWin ?? undefined, {
-    title: '选择宠物文件夹（里面要有 pet.json）',
-    properties: ['openDirectory'],
-  });
-  if (res.canceled || !res.filePaths[0]) return { ok: false, canceled: true };
-  const src = res.filePaths[0];
-  if (!fs.existsSync(path.join(src, 'pet.json'))) return { ok: false, errors: ['这个文件夹里没有 pet.json'] };
-  const check = loadPet('user', src);
-  if (!check.pet) return { ok: false, errors: check.errors };
-  const userDir = sourceDir('user');
-  const base = path.basename(src);
-  let dest = path.join(userDir, base);
-  for (let i = 2; fs.existsSync(dest); i++) dest = path.join(userDir, `${base}-${i}`);
-  fs.cpSync(src, dest, { recursive: true });
-  rescan();
-  petsChanged();
-  return { ok: true, key: `user/${path.basename(dest)}`, name: check.pet.name };
+  try {
+    const res = await dialog.showOpenDialog(panelWin ?? undefined, {
+      title: t('dialog.importPet'),
+      properties: ['openDirectory'],
+    });
+    if (res.canceled || !res.filePaths[0]) return { ok: false, canceled: true };
+    const src = res.filePaths[0];
+    if (!fs.existsSync(path.join(src, 'pet.json'))) return { ok: false, errors: [t('error.noManifest')] };
+    const check = loadPet('user', src);
+    if (!check.pet) return { ok: false, errors: check.errors.map((message) => localizeDiagnostic(message, resolvedLocale)) };
+    const userDir = sourceDir('user');
+    const base = path.basename(src);
+    let dest = path.join(userDir, base);
+    for (let i = 2; fs.existsSync(dest); i++) dest = path.join(userDir, `${base}-${i}`);
+    fs.cpSync(src, dest, { recursive: true });
+    rescan();
+    petsChanged();
+    return { ok: true, key: `user/${path.basename(dest)}`, name: check.pet.name };
+  } catch (error) {
+    return { ok: false, errors: [t('error.importPet', { error: localizeDiagnostic(error.message, resolvedLocale) })] };
+  }
 }
 
 // ---------------------------------------------------------------- IPC
@@ -323,7 +368,7 @@ function registerIpc() {
   ipcMain.handle('petwin:init', (e) => {
     const record = records.get(petKey);
     if (!fromPet(e) || !record) return null;
-    return { record: publicRecord(record), settings: settings.data, areas: workAreas(), position: initialPosition(), debug: DEBUG };
+    return { record: publicRecord(record), locale: resolvedLocale, settings: settings.data, areas: workAreas(), position: initialPosition(), debug: DEBUG };
   });
   ipcMain.on('petwin:ready', (e) => fromPet(e) && petWin.showInactive());
   ipcMain.on('petwin:bounds', (e, b) => {
@@ -345,9 +390,11 @@ function registerIpc() {
     if (level === 'info') return log('[pet]', msg);
     console.error('[pet]', msg);
     if (level === 'fatal' && fromPet(e)) {
+      const name = displayPet(records.get(petKey))?.name ?? t('app.title');
+      const error = localizeDiagnostic(msg, resolvedLocale);
       closePet();
       broadcast();
-      notifyPanel({ type: 'error', text: msg });
+      notifyPanel({ type: 'error', text: t('error.petLoad', { name, error }) });
     }
   });
 
@@ -383,9 +430,18 @@ function registerIpc() {
   ipcMain.handle('pets:import', importPet);
   ipcMain.handle('codex:install', (_e, key, bytes) => {
     const record = records.get(key);
-    if (!record?.pet) return { ok: false, error: '找不到这只宠物' };
-    if (record.source === 'codex') return { ok: false, error: '它本来就在 Codex 里' };
-    const res = installCodexPet({ sourceKey: key, pet: record.pet, bytes });
+    if (!record?.pet) return { ok: false, error: t('error.petNotFound') };
+    if (record.source === 'codex') return { ok: false, error: t('error.alreadyInCodex') };
+    let res;
+    try {
+      res = installCodexPet({ sourceKey: key, pet: displayPet(record), bytes });
+    } catch (error) {
+      res = { ok: false, code: 'INSTALL_FAILED', error: error.message };
+    }
+    if (!res.ok) {
+      const key = { INVALID_ATLAS: 'error.invalidAtlas', FOREIGN_EXPORT: 'error.foreignExport' }[res.code] ?? 'error.installCodex';
+      return { ...res, error: t(key, { path: res.path, error: localizeDiagnostic(res.error, resolvedLocale) }) };
+    }
     log('codex install', key, JSON.stringify(res));
     if (res.ok) {
       rescan();
@@ -403,6 +459,7 @@ function registerIpc() {
 function start() {
   app.setAppUserModelId('com.maxworkinghard.pets');
   settings = new Settings(path.join(app.getPath('userData'), 'settings.json'));
+  updateLocale();
   fs.mkdirSync(sourceDir('user'), { recursive: true });
   handleProtocol(SRC, (key) => records.get(key));
   rescan();
@@ -414,7 +471,7 @@ function start() {
   screen.on('display-removed', pushAreas);
   screen.on('display-metrics-changed', pushAreas);
 
-  // --pet=<key> 可在启动时直接召唤某只宠物（调试用）
+  // --pet=<key> 可在启动时直接显示指定宠物（调试用）
   const forced = process.argv.find((a) => a.startsWith('--pet='))?.slice(6);
   const key = forced ?? (settings.data.petVisible ? settings.data.activePet : null);
   const shown = key ? openPet(key) : false;

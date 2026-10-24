@@ -793,6 +793,25 @@ button {
   font-weight: 600;
 }
 
+.language-select {
+  min-width: 164px;
+  height: 34px;
+  padding: 0 10px;
+  font: inherit;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+}
+
+:lang(en) .facts {
+  grid-template-columns: 84px 1fr;
+}
+
+:lang(en) .folder {
+  grid-template-columns: 100px 1fr auto;
+}
+
 .range {
   display: flex;
   align-items: center;

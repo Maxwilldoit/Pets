@@ -1,7 +1,7 @@
 {
   "name": "pets-desktop",
   "productName": "Pets",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Pets 桌面端：从宠物仓库里挑一只，放到桌面上陪你。",
   "author": {
     "name": "Maxworkinghard",

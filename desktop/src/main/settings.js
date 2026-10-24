@@ -2,7 +2,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+export const LANGUAGE_PREFERENCES = ['auto', 'zh-CN', 'en'];
+
 export const DEFAULT_SETTINGS = {
+  language: 'auto',
   activePet: null, // 当前桌宠的 key，如 "bundled/my-cat"
   petVisible: true,
   size: 1, // 在宠物自身 scale 之上的整体缩放
@@ -24,10 +27,13 @@ export class Settings {
       // 首次启动或文件损坏：使用默认值
     }
     this.data = { ...DEFAULT_SETTINGS, ...saved };
+    if (!LANGUAGE_PREFERENCES.includes(this.data.language)) this.data.language = DEFAULT_SETTINGS.language;
   }
 
   set(patch) {
-    this.data = { ...this.data, ...patch };
+    const clean = { ...patch };
+    if ('language' in clean && !LANGUAGE_PREFERENCES.includes(clean.language)) delete clean.language;
+    this.data = { ...this.data, ...clean };
     fs.mkdirSync(path.dirname(this.file), { recursive: true });
     const tmp = `${this.file}.tmp`;
     fs.writeFileSync(tmp, JSON.stringify(this.data, null, 2));
