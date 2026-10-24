@@ -18,6 +18,8 @@ jobs:
         run: node --test "desktop/test/*.test.js"
       - name: 校验宠物仓库
         run: node desktop/scripts/validate-pets.js
+      - name: 校验发行包聚合
+        run: node --test scripts/release-artifacts.test.mjs
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'

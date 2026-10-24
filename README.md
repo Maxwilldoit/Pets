@@ -4,7 +4,7 @@
 
 另提供 [Snapshot 公开素材库](catalog/README.md)：11 套桌宠、小预览图和事件动作参考。GIF ZIP 放在 [GitHub Release](https://github.com/Maxworkinghard/Pets/releases/tag/snapshot-assets-v1)，应用通过 [catalog.json](catalog.json) 按需下载。Snapshot 的「桌面伴侣 → 素材库」可直接导入。
 
-## 功能（v0.1.0）
+## 功能（v0.1.1）
 
 **宠物仓库**（[`pets/`](pets/)）
 
@@ -38,14 +38,14 @@
 
 ### 发行版下载与安装
 
-v0.1.0 是首个桌面发行版，发行包内置 11 只宠物。下载入口为 [GitHub Release v0.1.0](https://github.com/Maxworkinghard/Pets/releases/tag/v0.1.0)；完整文件清单和更新内容见 [v0.1.0 发行说明](docs/releases/v0.1.0.md)。使用发行包无需安装 Node.js。
+v0.1.1 是首个桌面发行版，发行包内置 11 只宠物。下载入口为 [GitHub Release v0.1.1](https://github.com/Maxworkinghard/Pets/releases/tag/v0.1.1)；完整文件清单和更新内容见 [v0.1.1 发行说明](docs/releases/v0.1.1.md)。使用发行包无需安装 Node.js。
 
 | 系统 | 发行文件 | 安装方式 |
 | --- | --- | --- |
-| Windows x64 | `Pets-0.1.0-windows-x64-setup.exe` / `Pets-0.1.0-windows-x64-portable.exe` | 运行 `setup.exe` 安装；或直接运行 `portable.exe`。 |
-| macOS Intel（x64） | `Pets-0.1.0-macos-x64.dmg` / `Pets-0.1.0-macos-x64.zip` | 打开 DMG，将 Pets 拖入「应用程序」；或解压 ZIP 后将 Pets.app 移入「应用程序」。 |
-| macOS Apple Silicon（arm64） | `Pets-0.1.0-macos-arm64.dmg` / `Pets-0.1.0-macos-arm64.zip` | 选择 arm64 文件，安装方式同上。 |
-| Linux x64 | `Pets-0.1.0-linux-x64.AppImage` / `Pets-0.1.0-linux-x64.deb` | 为 AppImage 添加可执行权限后运行；或在 Debian / Ubuntu 等兼容系统中安装 DEB。 |
+| Windows x64 | `Pets-0.1.1-windows-x64-setup.exe` / `Pets-0.1.1-windows-x64-portable.exe` | 运行 `setup.exe` 安装；或直接运行 `portable.exe`。 |
+| macOS Intel（x64） | `Pets-0.1.1-macos-x64.dmg` / `Pets-0.1.1-macos-x64.zip` | 打开 DMG，将 Pets 拖入「应用程序」；或解压 ZIP 后将 Pets.app 移入「应用程序」。 |
+| macOS Apple Silicon（arm64） | `Pets-0.1.1-macos-arm64.dmg` / `Pets-0.1.1-macos-arm64.zip` | 选择 arm64 文件，安装方式同上。 |
+| Linux x64 | `Pets-0.1.1-linux-x86_64.AppImage` / `Pets-0.1.1-linux-amd64.deb` | 为 AppImage 添加可执行权限后运行；或在 Debian / Ubuntu 等兼容系统中安装 DEB。 |
 
 同一 Release 附带 `SHA256SUMS`，可用于核对下载文件的 SHA-256。Windows 本次没有代码签名，macOS 本次没有开发者签名，也未进行 Apple notarization（公证），系统可能提示无法验证开发者或阻止打开。
 
@@ -122,7 +122,7 @@ npm run pack          # 生成当前平台的应用目录，供本地检查
 npm run dist          # 生成当前平台的发行文件
 ```
 
-发布由版本标签触发：将与应用版本一致的标签（如 `v0.1.0`）推送到 GitHub 后，发行工作流会构建 Windows x64、macOS x64 / arm64 和 Linux x64 的发行文件，生成 `SHA256SUMS`，并上传到对应版本的 GitHub Release。
+发布由版本标签触发：将与应用版本一致的标签（如 `v0.1.1`）推送到 GitHub 后，发行工作流会构建 Windows x64、macOS x64 / arm64 和 Linux x64 的发行文件，生成 `SHA256SUMS`，并上传到对应版本的 GitHub Release。
 
 调试参数：`--pet=bundled/<id>` 启动时直接召唤 `pets/<id>` 这只宠物；`--panel` 总是打开控制面板；`--pets-gpu` 开启硬件加速；环境变量 `PETS_USER_DATA=<目录>` 使用独立的设置目录。
 

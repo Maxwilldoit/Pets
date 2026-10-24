@@ -18,7 +18,8 @@ function packageNames(tag, platform) {
     'windows-x64': [`Pets-${version}-windows-x64-setup.exe`, `Pets-${version}-windows-x64-portable.exe`],
     'macos-x64': [`Pets-${version}-macos-x64.dmg`, `Pets-${version}-macos-x64.zip`],
     'macos-arm64': [`Pets-${version}-macos-arm64.dmg`, `Pets-${version}-macos-arm64.zip`],
-    'linux-x64': [`Pets-${version}-linux-x64.AppImage`, `Pets-${version}-linux-x64.deb`],
+    // electron-builder expands ${arch} to each Linux target's native spelling.
+    'linux-x64': [`Pets-${version}-linux-x86_64.AppImage`, `Pets-${version}-linux-amd64.deb`],
   };
   if (platform) {
     assert.ok(PLATFORMS.includes(platform), `Unknown platform: ${platform}`);
@@ -101,7 +102,7 @@ async function verifyPackagedResources(tag, platform, dist) {
 
   const petIds = fs.readdirSync('pets', { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
   assert.ok(petIds.length > 0, 'The tagged source pet library is empty');
-  if (tag === 'v0.1.0') assert.equal(petIds.length, 11, 'v0.1.0 must bundle all 11 pets');
+  if (tag === 'v0.1.1') assert.equal(petIds.length, 11, 'v0.1.1 must bundle all 11 pets');
   // extraResources also copies pets/README.md; compare pet directories only.
   const packagedPetIds = fs.readdirSync(path.join(resources, 'pets'), { withFileTypes: true })
     .filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();

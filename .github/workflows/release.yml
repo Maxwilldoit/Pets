@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Existing release tag (for example, v0.1.0)'
+        description: 'Existing release tag (for example, v0.1.1)'
         required: true
         type: string
 
@@ -76,6 +76,9 @@ jobs:
       # These checks use only Node built-ins; no dependencies are needed here.
       - name: Run desktop tests
         run: npm --prefix desktop test
+
+      - name: Test release package aggregation
+        run: node --test scripts/release-artifacts.test.mjs
 
       - name: Validate all pets
         run: npm --prefix desktop run validate
