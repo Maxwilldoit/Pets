@@ -43,7 +43,7 @@ export class PetBrain {
    *        动画元数据：durationMs 为播一遍的时长；moveX 已换算成 DIP
    * @param {{click?:string, doubleClick?:string}} [o.behavior] click 是单击动作循环里的第一个动作
    * @param {number} o.speed 行走速度 DIP/s
-   * @param {{left:number, right:number, top:number}} o.body 身体相对脚底锚点向左/右/上的范围（DIP）
+   * @param {{left:number, right:number, top:number, bottom?:number}} o.body 身体相对脚底锚点向左/右/上/下的范围（DIP）
    * @param {{x:number, y:number, width:number, height:number}[]} o.areas 各显示器的工作区（DIP）
    * @param {{wander?:boolean, randomActions?:boolean, gravity?:boolean}} [o.settings]
    * @param {{x:number, y:number}} o.position 初始脚底位置
@@ -111,6 +111,8 @@ export class PetBrain {
     this.distance += Math.abs(nx - this.x);
     this.x = nx;
     this.y = py + this.grabOffset[1];
+    // 拖动时就挡在任务栏上沿，不等松手；保留抓取偏移，向上拖时仍自然跟手。
+    this.y = Math.min(this.y, this.limits().floor);
     this.samples.push([this.clock, px, py]);
     while (this.samples.length > 2 && this.samples[0][0] < this.clock - 0.12) this.samples.shift();
     this.updateDragAnim();
@@ -169,6 +171,8 @@ export class PetBrain {
     this.animTime += dt * 1000;
     const mode = this.mode;
     if (mode === 'drag') {
+      // 拖动期间工作区或宠物大小也可能变化。
+      this.y = Math.min(this.y, this.limits().floor);
       this.updateDragAnim();
       return this.view;
     }
@@ -189,9 +193,13 @@ export class PetBrain {
 
   /** 当前所在显示器的活动范围。 */
   limits() {
-    let area = this.areas[0];
+    // 向下拖到任务栏内时，优先选横坐标所在的屏幕，避免较矮副屏边缘误用主屏的地面。
+    // 上下排列的屏幕仍通过垂直距离区分。
+    const columns = this.mode === 'drag' ? this.areas.filter((a) => this.x >= a.x && this.x < a.x + a.width) : [];
+    const candidates = columns.length ? columns : this.areas;
+    let area = candidates[0];
     let best = Infinity;
-    for (const a of this.areas) {
+    for (const a of candidates) {
       const dx = this.x < a.x ? a.x - this.x : this.x > a.x + a.width ? this.x - a.x - a.width : 0;
       const y = this.y - 1;
       const dy = y < a.y ? a.y - y : y > a.y + a.height ? y - a.y - a.height : 0;
@@ -202,7 +210,7 @@ export class PetBrain {
       minX: area.x + this.body.left,
       maxX: area.x + area.width - this.body.right,
       ceil: area.y + this.body.top,
-      floor: area.y + area.height,
+      floor: area.y + area.height - (this.body.bottom ?? 0),
     };
   }
 

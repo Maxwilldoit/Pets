@@ -247,25 +247,41 @@ function showPanel() {
     panelWin.focus();
     return;
   }
-  panelWin = new BrowserWindow({
+  const supportsOverlayColors = process.platform === 'win32' || process.platform === 'linux';
+  const titleBarOverlay = () => ({
+    color: nativeTheme.shouldUseDarkColors ? '#1f1c24' : '#fffdf9',
+    symbolColor: nativeTheme.shouldUseDarkColors ? '#f1ebe4' : '#2d2620',
+    height: 60,
+  });
+  const win = new BrowserWindow({
     width: 1080,
     height: 720,
     minWidth: 820,
     minHeight: 560,
     show: false,
     title: 'Pets',
+    // 隐藏视觉标题，保留原生窗口按钮和任务栏/可访问性标题。
+    titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'hidden',
+    titleBarOverlay: supportsOverlayColors ? titleBarOverlay() : { height: 60 },
     icon: ICON,
     autoHideMenuBar: true,
     backgroundColor: nativeTheme.shouldUseDarkColors ? '#17151b' : '#f6f1ea',
     webPreferences: { preload: path.join(SRC, 'preload', 'panel.cjs'), sandbox: true, contextIsolation: true },
   });
-  panelWin.removeMenu();
-  lockDown(panelWin);
-  panelWin.once('ready-to-show', () => panelWin.show());
-  panelWin.on('closed', () => {
-    panelWin = null;
+  panelWin = win;
+  const updateTitleBar = () => {
+    // macOS 使用系统交通灯按钮；动态设置覆盖区颜色仅支持 Windows/Linux。
+    if (supportsOverlayColors && !win.isDestroyed()) win.setTitleBarOverlay(titleBarOverlay());
+  };
+  nativeTheme.on('updated', updateTitleBar);
+  win.removeMenu();
+  lockDown(win);
+  win.once('ready-to-show', () => win.show());
+  win.once('closed', () => {
+    nativeTheme.removeListener('updated', updateTitleBar);
+    if (panelWin === win) panelWin = null;
   });
-  panelWin.loadURL(`${ORIGIN}/renderer/panel/index.html`);
+  win.loadURL(`${ORIGIN}/renderer/panel/index.html`);
 }
 
 /** 给控制面板发一条提示；面板没开就先打开，等页面加载完再发。 */

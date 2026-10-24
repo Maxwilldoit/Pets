@@ -43,7 +43,6 @@ const els = {
   grid: $('#grid'),
   problems: $('#problems'),
   detail: $('#detail'),
-  status: $('#status'),
   filters: $('#filters'),
   search: $('#search'),
   settings: $('#settings'),
@@ -189,8 +188,7 @@ function cardHtml(r) {
     .map((t) => `<span class="tag">${esc(t)}</span>`)
     .join('');
   return `<article class="card" data-key="${esc(r.key)}" tabindex="0" aria-label="${esc(p.name)}">
-    <div class="stage"><canvas></canvas><span class="badge-live">在桌面上</span>
-      <button class="btn btn-primary summon" data-action="activate">召唤</button></div>
+    <div class="stage"><canvas></canvas><span class="badge-live">在桌面上</span></div>
     <div class="card-body">
       <div class="card-title"><span class="name">${esc(p.name)}</span>${
         r.source === 'bundled' ? '' : `<span class="source">${SOURCE_LABELS[r.source]}</span>`
@@ -395,30 +393,12 @@ function renderPlayLive() {
       : '';
 }
 
-// ---------------------------------------------------------------- 顶栏状态
-
-function renderStatus() {
-  const r = byKey(state.app?.activeKey);
-  if (state.app?.visible && r?.pet) {
-    els.status.className = 'status is-on';
-    els.status.innerHTML = `<span class="status-dot"></span><span class="status-text"><b>${esc(r.pet.name)}</b> 在桌面上</span>
-      <button class="btn btn-ghost" data-action="hide">隐藏</button>`;
-  } else if (r?.pet) {
-    els.status.className = 'status';
-    els.status.innerHTML = `<span class="status-dot"></span><span class="status-text"><b>${esc(r.pet.name)}</b> 已隐藏</span>
-      <button class="btn" data-action="show">显示</button>`;
-  } else {
-    els.status.className = 'status';
-    els.status.innerHTML = '<span class="status-dot"></span><span class="status-text">还没有选择桌宠</span>';
-  }
-}
-
 // ---------------------------------------------------------------- 设置
 
 function renderSettings() {
   const s = state.app.settings;
-  const toggle = (key, title, desc) => `<div class="setting">
-      <div class="setting-text"><div class="setting-title">${title}</div><div class="setting-desc">${desc}</div></div>
+  const toggle = (key, title) => `<div class="setting">
+      <div class="setting-text"><div class="setting-title">${title}</div></div>
       <label class="switch"><input type="checkbox" data-setting="${key}" ${s[key] ? 'checked' : ''} aria-label="${title}"><span></span></label>
     </div>`;
   const folders = state.app.sources
@@ -431,20 +411,19 @@ function renderSettings() {
   els.settings.innerHTML = `<div class="settings-inner">
     <section class="settings-group"><h2>桌宠</h2>
       <div class="setting">
-        <div class="setting-text"><div class="setting-title">大小</div><div class="setting-desc">在每只宠物默认大小的基础上整体缩放</div></div>
+        <div class="setting-text"><div class="setting-title">大小</div></div>
         <div class="range"><input type="range" id="set-size" min="0.5" max="2" step="0.05" value="${s.size}" aria-label="宠物大小"><output id="size-out">${Math.round(s.size * 100)}%</output></div>
       </div>
-      ${toggle('wander', '自由走动', '空闲时在屏幕底部走来走去。默认关闭：没人管的时候就待机')}
-      ${toggle('randomActions', '随机动作', '空闲时偶尔做个动作、打个盹。默认关闭：没人管的时候就待机')}
-      ${toggle('gravity', '重力', '松手后落回任务栏上；关掉后放在哪儿就停在哪儿')}
-      ${toggle('alwaysOnTop', '始终置顶', '宠物显示在其它窗口上方')}
+      ${toggle('wander', '自由走动')}
+      ${toggle('randomActions', '随机动作')}
+      ${toggle('gravity', '重力')}
+      ${toggle('alwaysOnTop', '始终置顶')}
     </section>
     <section class="settings-group"><h2>启动</h2>
-      ${toggle('launchAtLogin', '开机自动启动', '登录 Windows 后自动启动，把上次的宠物放回桌面')}
+      ${toggle('launchAtLogin', '开机自动启动')}
     </section>
     <section class="settings-group"><h2>宠物文件夹</h2>
       ${folders}
-      <p class="hint">每只宠物是一个文件夹：pet.json + 素材。放进「我的宠物」后，在宠物仓库页点刷新即可出现；Codex 宠物（~/.codex/pets）会自动识别。格式说明见仓库里的 pets/README.md。</p>
     </section>
     <section class="settings-group"><h2>关于</h2>
       <div class="about"><b>Pets</b> v${esc(state.app.version)} · <button class="link" data-action="repo">${esc(state.app.repoUrl)}</button></div>
@@ -506,8 +485,7 @@ function setView(view) {
 els.grid.addEventListener('click', (e) => {
   const card = e.target.closest('.card');
   if (!card) return;
-  if (e.target.closest('[data-action="activate"]')) activate(card.dataset.key);
-  else select(card.dataset.key);
+  select(card.dataset.key);
 });
 els.grid.addEventListener('dblclick', (e) => {
   const card = e.target.closest('.card');
@@ -530,12 +508,6 @@ els.detail.addEventListener('click', (e) => {
   else if (action === 'open-folder') api.openFolder(state.selected);
   else if (action === 'play-live') api.play(state.anim);
   else if (action === 'codex') exportToCodex(state.selected);
-});
-
-els.status.addEventListener('click', (e) => {
-  const action = e.target.closest('[data-action]')?.dataset.action;
-  if (action === 'hide') api.setVisible(false);
-  else if (action === 'show') api.setVisible(true);
 });
 
 for (const tab of document.querySelectorAll('.tab')) tab.addEventListener('click', () => setView(tab.dataset.view));
@@ -595,12 +567,10 @@ async function loadRecords() {
   renderGrid();
   renderProblems();
   renderDetail();
-  renderStatus();
 }
 
 api.onState((s) => {
   state.app = s;
-  renderStatus();
   updateCards();
   renderDetailActions();
   if (state.view === 'settings') syncSettings();

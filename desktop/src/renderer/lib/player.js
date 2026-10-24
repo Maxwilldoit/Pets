@@ -311,7 +311,7 @@ export function computeLayout(pet, anims, scale) {
     scale,
     anchors,
     stage: { w: Math.ceil(2 * half * scale), h: Math.ceil((up + down) * scale), ax: half * scale, ay: up * scale },
-    body: { left: (iax - ib.x0) * scale, right: (ib.x1 - iax) * scale, top: (iay - ib.y0) * scale, bottom: 0 },
+    body: { left: (iax - ib.x0) * scale, right: (ib.x1 - iax) * scale, top: (iay - ib.y0) * scale, bottom: down * scale },
   };
 }
 

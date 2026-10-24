@@ -92,8 +92,11 @@ button {
   align-items: center;
   height: 60px;
   padding: 0 20px;
+  padding-left: max(20px, calc(env(titlebar-area-x, 0px) + 12px));
+  padding-right: max(20px, calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw) + 12px));
   background: var(--panel);
   border-bottom: 1px solid var(--line);
+  -webkit-app-region: drag;
 }
 
 .brand {
@@ -127,6 +130,7 @@ button {
   background: var(--panel-2);
   border: 1px solid var(--line);
   border-radius: 999px;
+  -webkit-app-region: no-drag;
 }
 
 .tab {
@@ -147,40 +151,6 @@ button {
   color: var(--text);
   background: var(--panel);
   box-shadow: var(--shadow);
-}
-
-.status {
-  display: flex;
-  align-items: center;
-  justify-self: end;
-  gap: 10px;
-  min-width: 0;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.status-dot {
-  flex: none;
-  width: 8px;
-  height: 8px;
-  background: var(--faint);
-  border-radius: 50%;
-}
-
-.status.is-on .status-dot {
-  background: var(--ok);
-  box-shadow: 0 0 0 3px var(--ok-soft);
-}
-
-.status-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.status-text b {
-  font-weight: 600;
-  color: var(--text);
 }
 
 /* ------------------------------------------------------------ 按钮 */
@@ -476,29 +446,6 @@ button {
 
 .card.is-live .badge-live {
   display: inline-flex;
-}
-
-.summon {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  z-index: 2;
-  height: 28px;
-  padding: 0 12px;
-  font-size: 13px;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.15s, transform 0.15s;
-}
-
-.card:hover .summon,
-.card:focus-within .summon {
-  opacity: 1;
-  transform: none;
-}
-
-.card.is-live .summon {
-  display: none;
 }
 
 .card-body {
@@ -846,11 +793,6 @@ button {
   font-weight: 600;
 }
 
-.setting-desc {
-  font-size: 12.5px;
-  color: var(--muted);
-}
-
 .range {
   display: flex;
   align-items: center;
@@ -944,14 +886,6 @@ button {
   font-size: 12px;
   color: var(--muted);
   word-break: break-all;
-}
-
-.hint {
-  padding: 12px 18px 16px;
-  margin: 0;
-  font-size: 12.5px;
-  color: var(--muted);
-  border-top: 1px solid var(--line);
 }
 
 .about {

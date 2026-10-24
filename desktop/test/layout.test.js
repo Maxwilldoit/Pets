@@ -148,6 +148,23 @@ test('显式写 anchor 时仍然优先用 pet.json 里的值', () => {
   assert.deepEqual(layout.anchors.walk, [90, 250]);
 });
 
+test('身体底部范围包含锚点下方的可见部分，并随宠物大小缩放', () => {
+  const pet = { animations: { idle: {}, walk: { anchor: [50, 90] } } };
+  const anims = {
+    idle: anim(100, 120, [[40, 20, 60, 100]]),
+    walk: anim(100, 120, [[30, 10, 70, 110]]),
+  };
+  const layout = computeLayout(pet, anims, 0.75);
+  assert.equal(layout.body.bottom, 15); // walk 的脚底在锚点下方 20 个素材像素
+  const floor = 700;
+  const anchorY = floor - layout.body.bottom;
+  for (const [name, a] of Object.entries(anims)) {
+    const bottom = Math.max(...a.frames.map((_, i) => opaqueBounds(a, i).y1));
+    const screenBottom = anchorY + (bottom - layout.anchors[name][1]) * layout.scale;
+    assert.ok(screenBottom <= floor, name + ' 的可见底部不能越过任务栏上沿');
+  }
+});
+
 test('opaqueBounds 仍然返回整帧的不透明包围盒', () => {
   const a = anim(100, 100, [[20, 30, 60, 80]]);
   assert.deepEqual(opaqueBounds(a, 0), { x0: 20, y0: 30, x1: 60, y1: 80 });

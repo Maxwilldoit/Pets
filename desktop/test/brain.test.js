@@ -34,6 +34,15 @@ function run(brain, seconds, step = 1 / 60) {
   return brain.view;
 }
 
+function dragAndCheck(brain, px, py, x, y) {
+  brain.dragTo(px, py);
+  const expected = ['drag', x, y];
+  const v = brain.view;
+  assert.deepEqual([v.mode, v.x, v.y], expected, `dragTo(${px}, ${py}) 后立即`);
+  const next = brain.update(1 / 60);
+  assert.deepEqual([next.mode, next.x, next.y], expected, `dragTo(${px}, ${py}) 后 update`);
+}
+
 test('出生在地面上时进入待机', () => {
   const b = makeBrain();
   const v = b.update(0.016);
@@ -187,6 +196,66 @@ test('拖动：跟随指针，水平拖动时播放对应方向的走路动画�
   assert.deepEqual([b.view.anim, b.view.flip], ['walk', true]);
   run(b, TUNING.dragStill + 0.05);
   assert.equal(b.view.anim, 'idle');
+});
+
+for (const gravity of [true, false]) {
+  test(`拖动边界：${gravity ? '开启' : '关闭'}重力时，脚底立即受工作区下沿限制（缺省 bottom 为 0）`, () => {
+    const b = makeBrain({ settings: { gravity } });
+    b.grab(500, 650); // 抓在脚底上方 50px
+    for (const [py, y] of [[600, 650], [650, 700], [850, 700], [1500, 700]]) {
+      dragAndCheck(b, 500, py, 500, y);
+    }
+  });
+}
+
+test('拖动边界：越界后向上拖，仍按原抓取偏移自然返回', () => {
+  const b = makeBrain();
+  b.grab(480, 650); // 抓取点相对脚底向左 20px、向上 50px
+  for (const [px, py, x, y] of [
+    [480, 1000, 500, 700],
+    [460, 750, 480, 700], // 指针仍在边界外时，脚底继续贴住下沿
+    [450, 640, 470, 690],
+    [440, 600, 460, 650],
+  ]) {
+    dragAndCheck(b, px, py, x, y);
+  }
+});
+
+test('拖动边界：横向异高显示器切换，接缝处采用当前矮屏的下沿', () => {
+  const right = { x: 1000, y: 100, width: 800, height: 500 };
+  const b = makeBrain({ areas: [AREA, right] });
+  b.grab(500, 650);
+  for (const [x, floor] of [[1010, 600], [990, 700], [1400, 600]]) {
+    // 原始脚底 y = 900；x = 1010 已进入右屏，应贴住右屏的 600。
+    dragAndCheck(b, x, 850, x, floor);
+  }
+});
+
+test('拖动边界：含负坐标的显示器切换，采用各自工作区的下沿', () => {
+  const left = { x: -800, y: -200, width: 800, height: 600 };
+  const b = makeBrain({ areas: [AREA, left] });
+  b.grab(500, 650);
+  dragAndCheck(b, -10, 850, -10, 400);
+  dragAndCheck(b, 10, 850, 10, 700);
+  dragAndCheck(b, -400, -150, -400, -100);
+});
+
+test('拖动边界：拖动中工作区下沿上移，update 立即限制脚底', () => {
+  const b = makeBrain({ settings: { gravity: false } });
+  b.grab(500, 650);
+  dragAndCheck(b, 500, 650, 500, 700);
+  b.setAreas([{ ...AREA, height: 620 }]);
+  const v = b.update(1 / 60);
+  assert.deepEqual([v.mode, v.y], ['drag', 620]);
+});
+
+test('拖动边界：可见部分延伸到锚点下方时，y + body.bottom 不超过工作区下沿', () => {
+  const body = { ...BODY, bottom: 18 };
+  const b = makeBrain({ body });
+  b.grab(500, 650);
+  b.dragTo(500, 850);
+  assert.equal(b.view.y + body.bottom, AREA.y + AREA.height);
+  assert.equal(b.update(1 / 60).y + body.bottom, AREA.y + AREA.height);
 });
 
 test('甩出去：带着速度下落、不穿墙，最后落地待机', () => {
