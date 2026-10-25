@@ -1,6 +1,6 @@
 # Snapshot 公开素材库
 
-[浏览仓库](https://github.com/Maxworkinghard/Pets) · [下载素材包](https://github.com/Maxworkinghard/Pets/releases/tag/snapshot-assets-v1) · [机器可读目录](../catalog.json)
+[浏览仓库](https://github.com/Maxwilldoit/Pets) · [下载素材包](https://github.com/Maxwilldoit/Pets/releases/tag/snapshot-assets-v1) · [机器可读目录](../catalog.json)
 
 这里维护 Snapshot 可下载的桌宠素材：**目录、预览图与动作清单进 Git，供应用下载的 GIF ZIP 放在 GitHub Releases**。原始 ZIP 同时保存在 [`sources/archives/`](../sources/archives/)，桌面端宠物包保存在 [`pets/`](../pets/)。应用按需下载，安装包无需携带全部素材。当前目录包含 10 套素材。
 
@@ -62,7 +62,7 @@
 
 锚点表示脚底位置，单位是 GIF 像素。大画布动作应给单独锚点，动作切换时人物保持原来的比例与位置。Hoop 23 的发布包保留原始锚点。横穿宽画布的走路素材在构建时转换为与待机同画布的原地走。
 
-Snapshot 会从点击轮播中排除事件专用 GIF。本库把反馈动作复制到 `feedback/` 再映射，因此原动作仍可通过点击预览。实际例子见 [manifests/](manifests/)。完整协议也见 [Snapshot 使用说明](https://github.com/Maxworkinghard/Snapshot/blob/cursor/pet-animation-window-3f1f/README.zh-CN.md)。
+Snapshot 会从点击轮播中排除事件专用 GIF。本库把反馈动作复制到 `feedback/` 再映射，因此原动作仍可通过点击预览。实际例子见 [manifests/](manifests/)。完整协议也见 [Snapshot 使用说明](https://github.com/Maxwilldoit/Snapshot/blob/cursor/pet-animation-window-3f1f/README.zh-CN.md)。
 
 ## 维护与发布
 

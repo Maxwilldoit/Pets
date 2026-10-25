@@ -156,6 +156,9 @@ export function createTranslator(locale) {
 const diagnostics = [
   [/^pet\.json 不是一个 JSON 对象$/, 'pet.json must be a JSON object.'],
   [/^pet\.json 无法读取或不是合法 JSON：(.*)$/s, 'Cannot read pet.json or parse its JSON: $1'],
+  [/^pet\.json 校验失败：(.*)$/s, 'pet.json validation failed: $1'],
+  [/^宠物来源目录无法读取：(.*)$/s, 'Cannot read the pet source directory: $1'],
+  [/^宠物目录无法读取：(.*)$/s, 'Cannot read the pet directory: $1'],
   [/^id 无效：需要小写字母、数字、- _ \. 组成（当前：(.*)）$/s, 'Invalid id; use lowercase letters, numbers, "-", "_" or "." (received: $1).'],
   [/^id「(.*)」与目录名「(.*)」不一致，建议保持相同$/, 'Pet id "$1" differs from folder name "$2".'],
   [/^name 必填，且不能为空$/, 'name is required and must not be empty.'],

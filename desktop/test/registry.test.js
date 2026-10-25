@@ -52,6 +52,11 @@ test('素材缺失、JSON 损坏都会变成错误记录，而不是抛异常', 
 
   const b = tmpPet({ 'pet.json': '{ oops' });
   assert.ok(loadPet('user', b.petDir).errors[0].includes('JSON'));
+
+  const c = tmpPet({ 'pet.json': JSON.stringify({ id: 'cat', name: '猫', animations: 1, behavior: { click: 'idle' } }) });
+  const rc = loadPet('user', c.petDir);
+  assert.equal(rc.pet, null);
+  assert.ok(rc.errors.some((error) => error.includes('animations 必填')));
 });
 
 test('带 BOM 的 pet.json 也能读', () => {

@@ -4,14 +4,14 @@
   "version": "0.2.0",
   "description": "Pets 桌面端：从宠物仓库里挑一只，放到桌面上陪你。",
   "author": {
-    "name": "Maxworkinghard",
-    "email": "Maxworkinghard@users.noreply.github.com",
-    "url": "https://github.com/Maxworkinghard"
+    "name": "Maxwilldoit",
+    "email": "Maxwilldoit@users.noreply.github.com",
+    "url": "https://github.com/Maxwilldoit"
   },
-  "homepage": "https://github.com/Maxworkinghard/Pets",
+  "homepage": "https://github.com/Maxwilldoit/Pets",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Maxworkinghard/Pets.git"
+    "url": "https://github.com/Maxwilldoit/Pets.git"
   },
   "license": "UNLICENSED",
   "private": true,
@@ -29,7 +29,7 @@
     "node": ">=22.12.0"
   },
   "devDependencies": {
-    "electron": "44.4.5",
+    "electron": "44.9.3",
     "electron-builder": "26.18.0"
   }
 }

@@ -44,34 +44,67 @@ const isWebp = (b) =>
  * 同名但不是我们导出的文件夹会被保留，改用 <id>-2、<id>-3…
  * @returns {{ok: true, folder: string, dir: string, avatarId: string} | {ok: false, error: string, code: string, path?: string}}
  */
-export function installCodexPet({ petsDir = codexPetsDir(), sourceKey, pet, bytes }) {
+export function installCodexPet({ petsDir = codexPetsDir(), sourceKey, pet, bytes, fsOps = fs }) {
   if (!(bytes instanceof Uint8Array) || !isWebp(bytes) || bytes.length > MAX_BYTES) {
     return { ok: false, code: 'INVALID_ATLAS', error: '精灵图数据无效' };
   }
-  fs.mkdirSync(petsDir, { recursive: true });
+  fsOps.mkdirSync(petsDir, { recursive: true });
   let folder = listExports(petsDir).get(sourceKey)?.folder;
   if (!folder) {
     folder = pet.id;
-    for (let i = 2; fs.existsSync(path.join(petsDir, folder)); i++) folder = `${pet.id}-${i}`;
+    for (let i = 2; fsOps.existsSync(path.join(petsDir, folder)); i++) folder = `${pet.id}-${i}`;
   }
   const dest = path.join(petsDir, folder);
   // 先写到临时文件夹（pet.json 最后写），再整体改名，Codex 不会读到写了一半的宠物
-  const tmp = path.join(petsDir, `.${folder}.tmp-${process.pid}-${Date.now()}`);
-  fs.mkdirSync(tmp);
+  const suffix = `${process.pid}-${Date.now()}`;
+  const tmp = path.join(petsDir, `.${folder}.tmp-${suffix}`);
+  const backup = path.join(petsDir, `.${folder}.backup-${suffix}`);
+  let movedOld = false;
+  fsOps.mkdirSync(tmp);
   try {
-    fs.writeFileSync(path.join(tmp, 'spritesheet.webp'), bytes);
+    fsOps.writeFileSync(path.join(tmp, 'spritesheet.webp'), bytes);
     const marker = { exportedBy: 'Pets', sourceKey, sourceId: pet.id, exportedAt: new Date().toISOString() };
-    fs.writeFileSync(path.join(tmp, EXPORT_MARKER), JSON.stringify(marker, null, 2));
+    fsOps.writeFileSync(path.join(tmp, EXPORT_MARKER), JSON.stringify(marker, null, 2));
     const manifest = { id: folder, displayName: pet.name, description: pet.description || pet.name, spritesheetPath: 'spritesheet.webp' };
-    fs.writeFileSync(path.join(tmp, 'pet.json'), JSON.stringify(manifest, null, 2));
-    if (fs.existsSync(dest)) {
+    fsOps.writeFileSync(path.join(tmp, 'pet.json'), JSON.stringify(manifest, null, 2));
+    if (fsOps.existsSync(dest)) {
       if (!isPetsExport(dest)) throw Object.assign(new Error(`目标文件夹不是 Pets 导出的：${dest}`), { code: 'FOREIGN_EXPORT', path: dest });
-      fs.rmSync(dest, { recursive: true, force: true });
+      // Move the old export aside first. If installing the new export fails,
+      // put the old one back instead of leaving the user with neither version.
+      fsOps.renameSync(dest, backup);
+      movedOld = true;
     }
-    fs.renameSync(tmp, dest);
+    try {
+      fsOps.renameSync(tmp, dest);
+    } catch (error) {
+      if (movedOld) {
+        try {
+          fsOps.renameSync(backup, dest);
+          movedOld = false;
+        } catch (rollbackError) {
+          error.message = `${error.message}；旧版本保留在 ${backup}，恢复失败：${rollbackError.message}`;
+          error.backupPath = backup;
+        }
+      }
+      throw error;
+    }
+    if (movedOld) {
+      try {
+        fsOps.rmSync(backup, { recursive: true, force: true });
+      } catch {
+        // The new export is already complete; an old backup is safer than a
+        // failed-looking install and can be removed by a later update.
+      }
+    }
   } catch (e) {
-    fs.rmSync(tmp, { recursive: true, force: true });
-    return { ok: false, code: e.code === 'FOREIGN_EXPORT' ? e.code : 'INSTALL_FAILED', error: e.message, ...(e.code === 'FOREIGN_EXPORT' ? { path: e.path } : {}) };
+    try { fsOps.rmSync(tmp, { recursive: true, force: true }); } catch {}
+    return {
+      ok: false,
+      code: e.code === 'FOREIGN_EXPORT' ? e.code : 'INSTALL_FAILED',
+      error: e.message,
+      ...(e.code === 'FOREIGN_EXPORT' ? { path: e.path } : {}),
+      ...(e.backupPath ? { backupPath: e.backupPath } : {}),
+    };
   }
   return { ok: true, folder, dir: dest, avatarId: `custom:${folder}` };
 }

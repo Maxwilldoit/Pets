@@ -9,6 +9,15 @@ const canvas = document.getElementById('stage');
 const ctx = canvas.getContext('2d', { willReadFrequently: true });
 const ALPHA_HIT = 40;
 
+// Register before the asynchronous init/asset loading so settings changes made
+// while a pet is starting are not silently lost.
+const pendingCommands = [];
+let commandHandler = null;
+host.onCommand((cmd) => {
+  if (commandHandler) commandHandler(cmd);
+  else pendingCommands.push(cmd);
+});
+
 const init = await host.init();
 if (!init) throw new Error(createTranslator(resolveLanguage('auto', navigator.language))('error.petWindowInit'));
 const pet = init.record.pet;
@@ -68,7 +77,7 @@ function draw(v) {
   const name = anims[v.anim] ? v.anim : 'idle';
   const anim = anims[name];
   const idx = frameIndex(anim, v.animTime, v.distance / layout.scale);
-  if (!dirty && idx === shown.idx && name === shown.anim && v.flip === shown.flip) return;
+  if (!dirty && idx === shown.idx && name === shown.anim && v.flip === shown.flip) return false;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -77,6 +86,7 @@ function draw(v) {
   const src = drawFrame(ctx, anim, idx, layout.anchors[name], layout.stage.ax, layout.stage.ay, layout.scale, v.flip);
   dirty = !src?.exact; // 帧还在解码：下一拍再画
   shown = { anim: name, idx, flip: v.flip };
+  return true;
 }
 
 let prev = performance.now();
@@ -94,8 +104,13 @@ function tick() {
   if (!lastBounds || b.x !== lastBounds.x || b.y !== lastBounds.y || b.width !== lastBounds.width || b.height !== lastBounds.height) {
     host.setBounds(b);
     lastBounds = b;
+    hitTestPending = true;
   }
-  draw(v);
+  const frameChanged = draw(v);
+  if (pointer && !press && (frameChanged || hitTestPending)) {
+    setIgnore(!hit(pointer.x, pointer.y));
+    hitTestPending = false;
+  }
   if (!readySent) {
     host.ready();
     readySent = true;
@@ -126,6 +141,8 @@ function hit(clientX, clientY) {
 }
 
 let ignoring = true; // 主进程创建窗口时已设为穿透
+let pointer = null;
+let hitTestPending = true;
 function setIgnore(value) {
   if (value !== ignoring) {
     ignoring = value;
@@ -147,20 +164,25 @@ function endPress(cancelled) {
   if (!p) return;
   if (p.dragging) brain.release();
   else if (!cancelled) onClick();
+  hitTestPending = true;
 }
 
 window.addEventListener('mousemove', (e) => {
+  pointer = { x: e.clientX, y: e.clientY };
   if (!press) setIgnore(!hit(e.clientX, e.clientY));
 });
 document.addEventListener('mouseleave', () => {
+  pointer = null;
   if (!press) setIgnore(true);
 });
 canvas.addEventListener('pointerdown', (e) => {
   if (e.button !== 0 || !hit(e.clientX, e.clientY)) return;
+  pointer = { x: e.clientX, y: e.clientY };
   canvas.setPointerCapture(e.pointerId);
   press = { x: e.screenX, y: e.screenY, dragging: false };
 });
 canvas.addEventListener('pointermove', (e) => {
+  pointer = { x: e.clientX, y: e.clientY };
   if (!press) return;
   if (!press.dragging) {
     if (Math.hypot(e.screenX - press.x, e.screenY - press.y) < 4) return;
@@ -179,7 +201,7 @@ window.addEventListener('contextmenu', (e) => {
 
 // ---------------------------------------------------------------- 主进程指令
 
-host.onCommand((cmd) => {
+function applyCommand(cmd) {
   if (cmd.type === 'play') brain.play(cmd.name);
   else if (cmd.type === 'areas') brain.setAreas(cmd.areas);
   else if (cmd.type === 'settings') {
@@ -194,7 +216,10 @@ host.onCommand((cmd) => {
       brain.setMetrics(brainMetrics());
     }
   }
-});
+}
+
+commandHandler = applyCommand;
+for (const cmd of pendingCommands.splice(0)) applyCommand(cmd);
 
 // 调试（--pets-debug）：暴露内部状态，方便自动化测试
 if (init.debug) {

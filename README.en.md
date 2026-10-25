@@ -15,14 +15,14 @@ The current source (**v0.2.0**) supports Simplified Chinese and English. Choose 
 
 ## Platforms and downloads
 
-The latest stable release is [v0.1.1](https://github.com/Maxworkinghard/Pets/releases/tag/v0.1.1). It bundles **11 pets**, including **Makima 1.1.0**, and requires no separate Node.js installation.
+The latest stable release is [v0.1.1](https://github.com/Maxwilldoit/Pets/releases/tag/v0.1.1). It bundles **11 pets**, including **Makima 1.1.0**, and requires no separate Node.js installation.
 
 | Platform | Downloads | Installation |
 | --- | --- | --- |
-| Windows x64 | [Installer (.exe)](https://github.com/Maxworkinghard/Pets/releases/download/v0.1.1/Pets-0.1.1-windows-x64-setup.exe) · [Portable (.exe)](https://github.com/Maxworkinghard/Pets/releases/download/v0.1.1/Pets-0.1.1-windows-x64-portable.exe) | Run the installer or portable executable. |
-| macOS Intel (x64) | [DMG](https://github.com/Maxworkinghard/Pets/releases/download/v0.1.1/Pets-0.1.1-macos-x64.dmg) · [ZIP](https://github.com/Maxworkinghard/Pets/releases/download/v0.1.1/Pets-0.1.1-macos-x64.zip) | Move Pets.app to Applications. |
-| macOS Apple Silicon (arm64) | [DMG](https://github.com/Maxworkinghard/Pets/releases/download/v0.1.1/Pets-0.1.1-macos-arm64.dmg) · [ZIP](https://github.com/Maxworkinghard/Pets/releases/download/v0.1.1/Pets-0.1.1-macos-arm64.zip) | Move Pets.app to Applications. |
-| Linux x64 | [AppImage](https://github.com/Maxworkinghard/Pets/releases/download/v0.1.1/Pets-0.1.1-linux-x86_64.AppImage) · [DEB](https://github.com/Maxworkinghard/Pets/releases/download/v0.1.1/Pets-0.1.1-linux-amd64.deb) | Make AppImage executable; install DEB on Debian/Ubuntu-compatible systems. |
+| Windows x64 | [Installer (.exe)](https://github.com/Maxwilldoit/Pets/releases/download/v0.1.1/Pets-0.1.1-windows-x64-setup.exe) · [Portable (.exe)](https://github.com/Maxwilldoit/Pets/releases/download/v0.1.1/Pets-0.1.1-windows-x64-portable.exe) | Run the installer or portable executable. |
+| macOS Intel (x64) | [DMG](https://github.com/Maxwilldoit/Pets/releases/download/v0.1.1/Pets-0.1.1-macos-x64.dmg) · [ZIP](https://github.com/Maxwilldoit/Pets/releases/download/v0.1.1/Pets-0.1.1-macos-x64.zip) | Move Pets.app to Applications. |
+| macOS Apple Silicon (arm64) | [DMG](https://github.com/Maxwilldoit/Pets/releases/download/v0.1.1/Pets-0.1.1-macos-arm64.dmg) · [ZIP](https://github.com/Maxwilldoit/Pets/releases/download/v0.1.1/Pets-0.1.1-macos-arm64.zip) | Move Pets.app to Applications. |
+| Linux x64 | [AppImage](https://github.com/Maxwilldoit/Pets/releases/download/v0.1.1/Pets-0.1.1-linux-x86_64.AppImage) · [DEB](https://github.com/Maxwilldoit/Pets/releases/download/v0.1.1/Pets-0.1.1-linux-amd64.deb) | Make AppImage executable; install DEB on Debian/Ubuntu-compatible systems. |
 
 Compare downloaded files with the release's `SHA256SUMS`. Windows v0.1.1 binaries are unsigned; macOS packages have no developer signing or Apple notarization. The operating system may warn or block launch. See the [release notes](docs/releases/v0.1.1.md) for installation and checksum commands.
 
@@ -60,10 +60,12 @@ Build output is in `desktop/dist/`. Package on the target operating system; the 
 
 Each pet is a folder containing `pet.json` and its assets. Supported animations include GIF/APNG/WebP, PNG frame sequences, and sprite sheets. See the [format guide](pets/README.md) and [JSON Schema](schema/pet.schema.json).
 
-The separate [Snapshot asset library](catalog/README.md) provides a [catalog](catalog.json) and [downloadable GIF packages](https://github.com/Maxworkinghard/Pets/releases/tag/snapshot-assets-v1). These packages use Snapshot's manifest format. Original materials are documented in [sources](sources/README.md).
+The separate [Snapshot asset library](catalog/README.md) provides a [catalog](catalog.json) and [downloadable GIF packages](https://github.com/Maxwilldoit/Pets/releases/tag/snapshot-assets-v1). These packages use Snapshot's manifest format. Original materials are documented in [sources](sources/README.md).
 
 ## License
 
 Code licensing is **UNLICENSED**, as declared in [desktop/package.json](desktop/package.json); no open-source code license is provided. Pet artwork and source materials follow their individual `pet.json` license fields and accompanying notices.
 
 The public asset library currently declares no separate asset license. See [asset licensing](catalog/README.md#素材许可) and each ZIP's `ASSET-LICENSE.txt`. Public availability does not grant an open or commercial-use license.
+
+`node scripts/check-pet-licenses.mjs` lists assets whose licensing has not been verified. The release workflow runs it with `--strict` and blocks a new public release until explicit asset licenses are recorded.
