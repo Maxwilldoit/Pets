@@ -2,19 +2,52 @@
   "$schema": "../../schema/pet.schema.json",
   "id": "clawd-xmas",
   "name": "Clawd 圣诞版",
-  "description": "戴圣诞帽的 Clawd。只待在原地，不会到处走。",
-  "version": "1.0.0",
+  "description": "戴圣诞帽的 Clawd，支持左右行走。",
+  "version": "1.1.0",
   "tags": ["像素", "螃蟹", "节日"],
   "scale": 0.5,
+  "speed": 45,
   "pixelated": true,
   "behavior": {"click": "jump-happy", "doubleClick": "dance"},
-  "codex": {"review": "dance"},
+  "codex": {"review": "dance", "running-left": "walk-left", "running-right": "walk-right"},
   "animations": {
     "idle": {"src": "gifs/clawd-xmas-idle.gif"},
     "sleep": {"src": "gifs/clawd-xmas-sleep.gif", "label": "睡觉", "weight": 0},
     "wave": {"src": "gifs/clawd-xmas-wave.gif", "label": "挥手"},
     "jump-happy": {"src": "gifs/clawd-xmas-jump-happy.gif", "label": "开心跳"},
     "dance": {"src": "gifs/clawd-xmas-dance.gif", "label": "跳舞", "repeat": 3},
-    "type-keyboard": {"src": "gifs/clawd-xmas-type-keyboard.gif", "label": "敲键盘", "repeat": 3}
+    "type-keyboard": {"src": "gifs/clawd-xmas-type-keyboard.gif", "label": "敲键盘", "repeat": 3},
+    "walk-left": {
+      "frames": [
+        "frames/walk-left/00.png",
+        "frames/walk-left/01.png",
+        "frames/walk-left/02.png",
+        "frames/walk-left/03.png",
+        "frames/walk-left/04.png",
+        "frames/walk-left/05.png",
+        "frames/walk-left/06.png",
+        "frames/walk-left/07.png"
+      ],
+      "fps": 8,
+      "anchor": [128, 192],
+      "label": "向左行走",
+      "weight": 0
+    },
+    "walk-right": {
+      "frames": [
+        "frames/walk-right/00.png",
+        "frames/walk-right/01.png",
+        "frames/walk-right/02.png",
+        "frames/walk-right/03.png",
+        "frames/walk-right/04.png",
+        "frames/walk-right/05.png",
+        "frames/walk-right/06.png",
+        "frames/walk-right/07.png"
+      ],
+      "fps": 8,
+      "anchor": [128, 192],
+      "label": "向右行走",
+      "weight": 0
+    }
   }
 }

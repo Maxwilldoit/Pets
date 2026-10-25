@@ -1,0 +1,47 @@
+{
+  "pet": "clawd-xmas",
+  "version": "1.1.0",
+  "generator": "built-in image_gen",
+  "references": [
+    "pets/clawd/frames/walk-right/00.png–07.png",
+    "pets/clawd/frames/walk-left/00.png–07.png",
+    "pets/clawd-xmas/gifs/clawd-xmas-idle.gif",
+    "pets/clawd-xmas/gifs/clawd-xmas-wave.gif",
+    "pets/clawd-xmas/gifs/clawd-xmas-jump-happy.gif",
+    "pets/clawd-xmas/gifs/clawd-xmas-dance.gif"
+  ],
+  "sourceSheet": "walk-generated-sheet.png",
+  "sourceSheetSize": [
+    1254,
+    1254
+  ],
+  "layout": {
+    "columns": 4,
+    "rows": 4,
+    "readingOrder": [
+      "walk-right frames 0–7 (top two rows)",
+      "walk-left frames 0–7 (bottom two rows)"
+    ]
+  },
+  "frameSize": [
+    256,
+    256
+  ],
+  "fps": 8,
+  "anchor": [
+    128,
+    192
+  ],
+  "pixelGrid": 8,
+  "palette": [
+    "#d87656",
+    "#be684d",
+    "#000000",
+    "#c42a30",
+    "#961c22",
+    "#f5f5f5",
+    "transparent"
+  ],
+  "preparation": "Extract the generated Santa cap from the first cell onto a 32×32 pixel grid and restore the original Christmas red, dark-red and off-white colors. Attach this canonical cap to the existing Clawd directional PNG poses, mirroring the cap for the left direction and aligning it to each frame's head bob. Preserve the existing body, eye and leg pixels below the hat band, the shared foot baseline and the 8px grid. Save 256×256 PNG frames with binary alpha. The GIF previews alternate 120/130 ms because GIF timing has 10 ms precision.",
+  "finalPrompt": "Use case: precise-object-edit / identity-preserve. Input1 is the EDIT TARGET: a clean 4-by-4 sprite sheet of existing Clawd walking in-place, top eight frames face right, bottom eight face left. Input2 is a REFERENCE ONLY for the existing Clawd CHRISTMAS HAT: a small stepped red Santa cap, narrow off-white rectangular band and a small off-white square pom-pom. Create the CHRISTMAS VARIANT of Input1 by adding this exact simple pixel-art Santa cap to the head of EACH of the 16 existing crab sprites. Keep every existing body, eye, arm, leg, color and frame pose from Input1 unchanged. Preserve exactly the 4x4 cell layout, same sprite centers, same body scale and common foot baseline; each cell256x256 in a1024x1024sheet. The Santa hat follows the slight head bob in every frame, always firmly attached, and the hat band sits across the top of the head without covering the eyes. Fit the complete cap and pom inside each cell. Hat tip points right for right-facing frames and left for left-facing frames, using the same hat design mirrored, and has only a very subtle sway. Match the REFERENCE hat's rectangular stepped silhouette, solid bright red #c42a30, small dark-red #961c22 accent, off-white #f5f5f5 band and square pom. The body keeps flat orange #d87656, lower body #be684d and pure black square eyes. Very crisp low-resolution block/pixel art, hard horizontal and vertical edges, consistent8pxgrid, no outlines, no texture, no gradients, no shiny lighting, no snow or extra objects. Convert Input1's slate reference display backdrop to genuine fully transparent PNG alpha; it must not appear in output. No text, labels, numbers, grids, shadows or ground. Every body and hat is fully opaque with flat fills. Output only the complete transparent sprite sheet for the desktop pet."
+}
