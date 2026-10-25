@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, nativeTheme, screen, shell, Tray } from 'electron';
 import { codexPetsDir, installCodexPet, isPetsExport, listExports } from './codex-install.js';
+import { loginItemOptions } from './login-item.js';
 import { ORIGIN, assetBase, handleProtocol, registerScheme } from './protocol.js';
 import { loadPet, scanAll } from './registry.js';
 import { LANGUAGE_PREFERENCES, Settings } from './settings.js';
@@ -13,7 +14,7 @@ const DESKTOP_ROOT = path.resolve(import.meta.dirname, '..', '..');
 const SRC = path.join(DESKTOP_ROOT, 'src');
 const ICON = path.join(DESKTOP_ROOT, 'assets', 'icon.png');
 const TRAY_ICON = path.join(DESKTOP_ROOT, 'assets', 'tray.png');
-const REPO_URL = 'https://github.com/Maxworkinghard/Pets';
+const REPO_URL = 'https://github.com/Maxwilldoit/Pets';
 const SIZES = [0.5, 0.75, 1, 1.25, 1.5, 2];
 const DEBUG = process.argv.includes('--pets-debug');
 const log = (...args) => DEBUG && console.log('[pets]', ...args);
@@ -204,8 +205,13 @@ function applySettings(patch) {
   }
   if ('alwaysOnTop' in clean) petWin?.setAlwaysOnTop(clean.alwaysOnTop);
   if ('launchAtLogin' in clean && (process.platform === 'win32' || process.platform === 'darwin')) {
-    // 源码运行时需要带上应用目录作为参数，否则开机只会启动一个空的 Electron
-    const opts = app.isPackaged ? {} : { path: process.execPath, args: [DESKTOP_ROOT] };
+    const opts = loginItemOptions({
+      packaged: app.isPackaged,
+      platform: process.platform,
+      execPath: process.execPath,
+      appRoot: DESKTOP_ROOT,
+      portableExecutableFile: process.env.PORTABLE_EXECUTABLE_FILE,
+    });
     app.setLoginItemSettings({ openAtLogin: clean.launchAtLogin, ...opts });
   }
   sendPet({ type: 'settings', settings: settings.data, locale: resolvedLocale, title: displayPet(records.get(petKey))?.name });

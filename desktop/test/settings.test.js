@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
 import { installCodexPet, isPetsExport, listExports } from '../src/main/codex-install.js';
+import { loginItemOptions } from '../src/main/login-item.js';
 import { loadPet } from '../src/main/registry.js';
 import { DEFAULT_SETTINGS, LANGUAGE_PREFERENCES, Settings } from '../src/main/settings.js';
 import { createTranslator, localizeDiagnostic, resolveLanguage } from '../src/shared/i18n.js';
@@ -51,6 +52,30 @@ test('语言偏好可以保存及重新加载，只接受三个约定值', (t) =
     assert.equal(new Settings(file).data.size, 2);
   }
   assert.ok(!fs.existsSync(`${file}.tmp`));
+});
+
+test('合法 JSON 中的错误设置类型会回退到安全值', (t) => {
+  const file = path.join(temporaryDirectory(t), 'settings.json');
+  fs.writeFileSync(file, JSON.stringify({
+    language: 'fr',
+    activePet: 42,
+    petVisible: 'false',
+    size: -3,
+    wander: 'yes',
+    position: { x: 'left', y: null },
+  }));
+  const settings = new Settings(file);
+  assert.equal(settings.data.language, 'auto');
+  assert.equal(settings.data.activePet, null);
+  assert.equal(settings.data.petVisible, true);
+  assert.equal(settings.data.size, 1);
+  assert.equal(settings.data.wander, false);
+  assert.equal(settings.data.position, null);
+
+  settings.set({ size: -1, wander: 'yes', position: { x: 20, y: 30 } });
+  assert.equal(settings.data.size, 1);
+  assert.equal(settings.data.wander, false);
+  assert.deepEqual(settings.data.position, { x: 20, y: 30 });
 });
 
 const MAIN_DIR = path.resolve(import.meta.dirname, '../src/main');
@@ -130,7 +155,7 @@ function mainHarness(t, { systemLocale = 'zh-CN', saved = {}, active = false } =
     screen: Object.assign(new EventEmitter(), { getAllDisplays: () => [{ workArea: { x: 0, y: 0, width: 1920, height: 1080 } }], getPrimaryDisplay: () => ({ workArea: { x: 0, y: 0, width: 1920, height: 1080 } }) }),
     shell: {}, process: { argv: [], env: {}, platform: 'win32' }, console: { error() {} },
     codexPetsDir: () => codexDir, installCodexPet: (options) => installCodexPet({ ...options, petsDir: codexDir }),
-    isPetsExport, listExports: () => listExports(codexDir),
+    isPetsExport, listExports: () => listExports(codexDir), loginItemOptions,
     ORIGIN: 'pets://app', assetBase: (r) => `pets://app/assets/${r.key}/`, handleProtocol() {}, registerScheme() {},
     loadPet, scanAll: () => fixtures, Settings, LANGUAGE_PREFERENCES, createTranslator, resolveLanguage, localizeDiagnostic, localizePet,
   });

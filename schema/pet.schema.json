@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/Maxworkinghard/Pets/main/schema/pet.schema.json",
+  "$id": "https://raw.githubusercontent.com/Maxwilldoit/Pets/main/schema/pet.schema.json",
   "title": "Pets 宠物清单（pet.json）",
   "description": "一只宠物 = 一个文件夹：pet.json + 素材。完整说明见 pets/README.md。",
   "type": "object",

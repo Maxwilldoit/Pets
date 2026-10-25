@@ -83,6 +83,9 @@ jobs:
       - name: Validate all pets
         run: npm --prefix desktop run validate
 
+      - name: Require explicit asset licenses
+        run: node scripts/check-pet-licenses.mjs --strict
+
       - name: Check the public snapshot library
         run: python3 scripts/build-snapshot-library.py --check
 

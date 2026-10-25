@@ -30,6 +30,26 @@ test('再次导入会原地更新自己导出的版本', () => {
   assert.deepEqual(fs.readdirSync(petsDir), ['cat']);
 });
 
+test('更新失败时恢复旧导出，而不是删除它', () => {
+  const petsDir = tmpPets();
+  installCodexPet({ petsDir, sourceKey: 'bundled/cat', pet, bytes: webp('A') });
+  const oldManifest = fs.readFileSync(path.join(petsDir, 'cat', 'pet.json'), 'utf8');
+  const failingFs = {
+    ...fs,
+    renameSync(from, to) {
+      if (path.basename(from).startsWith('.cat.tmp-')) {
+        throw Object.assign(new Error('simulated replacement failure'), { code: 'EPERM' });
+      }
+      return fs.renameSync(from, to);
+    },
+  };
+  const res = installCodexPet({ petsDir, sourceKey: 'bundled/cat', pet, bytes: webp('B'), fsOps: failingFs });
+  assert.equal(res.ok, false);
+  assert.equal(fs.readFileSync(path.join(petsDir, 'cat', 'pet.json'), 'utf8'), oldManifest);
+  assert.ok(fs.readFileSync(path.join(petsDir, 'cat', 'spritesheet.webp'), 'latin1').includes('AAAA'));
+  assert.deepEqual(fs.readdirSync(petsDir), ['cat']);
+});
+
 test('不会覆盖同名的、不是 Pets 导出的 Codex 宠物', () => {
   const petsDir = tmpPets();
   fs.mkdirSync(path.join(petsDir, 'cat'));

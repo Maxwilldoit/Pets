@@ -17,8 +17,8 @@ from pathlib import Path, PurePosixPath
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 ROOT = Path(__file__).resolve().parents[1]
-REPOSITORY = "https://github.com/Maxworkinghard/Pets"
-RAW = "https://raw.githubusercontent.com/Maxworkinghard/Pets/main"
+REPOSITORY = "https://github.com/Maxwilldoit/Pets"
+RAW = "https://raw.githubusercontent.com/Maxwilldoit/Pets/main"
 LICENSE = "未单独声明素材许可"
 VERSION = "1.0.0"
 EVENTS = {"capture.success", "capture.failure", "recording.started", "recording.stopped",

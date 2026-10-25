@@ -50,18 +50,49 @@ export function loadPet(source, petDir) {
     return record;
   }
   const cache = new Map();
-  const res = normalizeManifest(raw, { dirName, fileExists: (rel) => fileExistsExact(petDir, rel, cache) });
-  return { ...record, ...res };
+  try {
+    const res = normalizeManifest(raw, { dirName, fileExists: (rel) => fileExistsExact(petDir, rel, cache) });
+    return { ...record, ...res };
+  } catch (e) {
+    record.errors.push(`pet.json 校验失败：${e.message}`);
+    return record;
+  }
 }
 
 /** 扫描一个来源目录：每个含 pet.json 的子目录是一只宠物。 */
 export function scanSource(source, dir) {
   if (!dir || !fs.existsSync(dir)) return [];
   const records = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+  let entries;
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch (e) {
+    return [{
+      key: `${source}/.scan-error`,
+      source,
+      dirName: path.basename(dir) || dir,
+      dir,
+      pet: null,
+      errors: [`宠物来源目录无法读取：${e.message}`],
+      warnings: [],
+    }];
+  }
+  for (const entry of entries) {
     if (!entry.isDirectory() || entry.name.startsWith('.')) continue;
     const petDir = path.join(dir, entry.name);
-    if (fs.existsSync(path.join(petDir, 'pet.json'))) records.push(loadPet(source, petDir));
+    try {
+      if (fs.existsSync(path.join(petDir, 'pet.json'))) records.push(loadPet(source, petDir));
+    } catch (e) {
+      records.push({
+        key: `${source}/${entry.name}`,
+        source,
+        dirName: entry.name,
+        dir: petDir,
+        pet: null,
+        errors: [`宠物目录无法读取：${e.message}`],
+        warnings: [],
+      });
+    }
   }
   return records.sort((a, b) => (a.pet?.name ?? a.dirName).localeCompare(b.pet?.name ?? b.dirName, 'zh-CN'));
 }

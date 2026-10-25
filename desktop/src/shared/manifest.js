@@ -52,6 +52,13 @@ export function fromCodexManifest(raw, dirName) {
 
 function isNum(v) { return typeof v === 'number' && Number.isFinite(v); }
 function isPair(v) { return Array.isArray(v) && v.length === 2 && v.every(isNum); }
+const describe = (value) => {
+  try {
+    return JSON.stringify(value) ?? String(value);
+  } catch {
+    return '<unserializable>';
+  }
+};
 
 /** 相对路径检查：只允许宠物目录内的相对路径。返回规范化后的路径或 null。 */
 export function safeRelPath(p) {
@@ -101,8 +108,9 @@ export function normalizeManifest(raw, opts = {}) {
     errors.push('tags 必须是字符串数组');
   }
 
-  const animations = {};
   const rawAnims = raw.animations;
+  const animationTable = rawAnims && typeof rawAnims === 'object' && !Array.isArray(rawAnims) ? rawAnims : null;
+  const animationEntries = [];
   if (!rawAnims || typeof rawAnims !== 'object' || Array.isArray(rawAnims)) {
     errors.push('animations 必填，且必须是对象');
   } else {
@@ -110,10 +118,14 @@ export function normalizeManifest(raw, opts = {}) {
       const res = normalizeAnimation(name, def, { fileExists });
       errors.push(...res.errors);
       warnings.push(...res.warnings);
-      if (res.anim) animations[name] = res.anim;
+      if (res.anim) animationEntries.push([name, res.anim]);
     }
-    if (!rawAnims.idle) errors.push('缺少 idle 动画：每只宠物至少需要 idle');
+    if (!Object.hasOwn(rawAnims, 'idle')) errors.push('缺少 idle 动画：每只宠物至少需要 idle');
   }
+  // Object.fromEntries preserves names such as `constructor` and `__proto__` as
+  // data properties, unlike assigning them to a normal object.
+  const animations = Object.fromEntries(animationEntries);
+  const hasAnimation = (name) => !!animationTable && Object.hasOwn(animationTable, name);
 
   const behavior = {};
   const rawBehavior = raw.behavior ?? {};
@@ -123,8 +135,8 @@ export function normalizeManifest(raw, opts = {}) {
     for (const key of ['click', 'doubleClick']) {
       const v = rawBehavior[key];
       if (v === undefined) continue;
-      if (typeof v !== 'string' || !(v in (rawAnims || {}))) {
-        errors.push(`behavior.${key} 指向不存在的动画「${v}」`);
+      if (typeof v !== 'string' || !hasAnimation(v)) {
+        errors.push(`behavior.${key} 指向不存在的动画「${describe(v)}」`);
       } else {
         behavior[key] = v;
       }
@@ -139,14 +151,14 @@ export function normalizeManifest(raw, opts = {}) {
     } else {
       for (const [state, anim] of Object.entries(raw.codex)) {
         if (!CODEX_STATE_NAMES.includes(state)) errors.push(`codex.${state} 不是 Codex 的状态（可选：${CODEX_STATE_NAMES.join(' ')}）`);
-        else if (typeof anim !== 'string' || !(anim in (rawAnims || {}))) errors.push(`codex.${state} 指向不存在的动画「${anim}」`);
+        else if (typeof anim !== 'string' || !hasAnimation(anim)) errors.push(`codex.${state} 指向不存在的动画「${describe(anim)}」`);
         else codex[state] = anim;
       }
     }
   }
 
-  const walkPair = ('walk-left' in animations) !== ('walk-right' in animations);
-  if (walkPair && !animations.walk) {
+  const walkPair = Object.hasOwn(animations, 'walk-left') !== Object.hasOwn(animations, 'walk-right');
+  if (walkPair && !Object.hasOwn(animations, 'walk')) {
     warnings.push('只定义了 walk-left / walk-right 其中之一，另一方向将无法行走（可补一个 walk 作为兜底）');
   }
 

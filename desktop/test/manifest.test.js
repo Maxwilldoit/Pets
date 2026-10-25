@@ -67,6 +67,46 @@ test('behavior 只能指向已有动画；有 label 的动画成为可选动作'
   assert.equal(pet.animations.idle.weight, 0);
 });
 
+test('畸形 animations 不会让校验抛异常', () => {
+  assert.doesNotThrow(() => normalizeManifest({
+    id: 'cat',
+    name: '猫',
+    animations: 1,
+    behavior: { click: 'idle' },
+  }));
+  const { pet, errors } = normalizeManifest({ id: 'cat', name: '猫', animations: 1, behavior: { click: 'idle' } });
+  assert.equal(pet, null);
+  assert.ok(errors.some((error) => error.includes('animations 必填')));
+});
+
+test('behavior 与 codex 不会接受 Object 原型上的属性', () => {
+  const { pet, errors } = normalizeManifest({
+    id: 'cat',
+    name: '猫',
+    animations: { idle: { src: 'idle.png' } },
+    behavior: { click: 'constructor' },
+    codex: { waving: 'toString' },
+  });
+  assert.equal(pet, null);
+  assert.ok(errors.some((error) => error.includes('behavior.click 指向不存在')));
+  assert.ok(errors.some((error) => error.includes('codex.waving 指向不存在')));
+});
+
+test('动画名可以安全使用对象特殊属性名', () => {
+  const { pet, errors } = normalizeManifest({
+    id: 'cat',
+    name: '猫',
+    animations: {
+      idle: { src: 'idle.png' },
+      constructor: { src: 'constructor.png', label: '特殊动作' },
+      ['__proto__']: { src: 'proto.png' },
+    },
+  });
+  assert.deepEqual(errors, []);
+  assert.ok(Object.hasOwn(pet.animations, 'constructor'));
+  assert.ok(Object.hasOwn(pet.animations, '__proto__'));
+});
+
 test('未知字段只给警告；id 与目录名不一致给警告', () => {
   const raw = minimal();
   raw.animations.idle.speeed = 3;

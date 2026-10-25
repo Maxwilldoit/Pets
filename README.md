@@ -15,14 +15,14 @@ Pets 是一款适用于 Windows、macOS 和 Linux 的桌面宠物应用，提供
 
 ## 平台与下载
 
-最新正式版为 [v0.1.1](https://github.com/Maxworkinghard/Pets/releases/tag/v0.1.1)，内置 **11 只宠物**，包含 **Makima 1.1.0**。使用发行包无需另装 Node.js。
+最新正式版为 [v0.1.1](https://github.com/Maxwilldoit/Pets/releases/tag/v0.1.1)，内置 **11 只宠物**，包含 **Makima 1.1.0**。使用发行包无需另装 Node.js。
 
 | 平台 | 下载 | 安装方式 |
 | --- | --- | --- |
-| Windows x64 | [安装版（.exe）](https://github.com/Maxworkinghard/Pets/releases/download/v0.1.1/Pets-0.1.1-windows-x64-setup.exe) · [便携版（.exe）](https://github.com/Maxworkinghard/Pets/releases/download/v0.1.1/Pets-0.1.1-windows-x64-portable.exe) | 运行安装程序，或直接运行便携版。 |
-| macOS Intel（x64） | [DMG](https://github.com/Maxworkinghard/Pets/releases/download/v0.1.1/Pets-0.1.1-macos-x64.dmg) · [ZIP](https://github.com/Maxworkinghard/Pets/releases/download/v0.1.1/Pets-0.1.1-macos-x64.zip) | 打开 DMG 或解压 ZIP，将 Pets.app 移入「应用程序」。 |
-| macOS Apple Silicon（arm64） | [DMG](https://github.com/Maxworkinghard/Pets/releases/download/v0.1.1/Pets-0.1.1-macos-arm64.dmg) · [ZIP](https://github.com/Maxworkinghard/Pets/releases/download/v0.1.1/Pets-0.1.1-macos-arm64.zip) | 打开 DMG 或解压 ZIP，将 Pets.app 移入「应用程序」。 |
-| Linux x64 | [AppImage](https://github.com/Maxworkinghard/Pets/releases/download/v0.1.1/Pets-0.1.1-linux-x86_64.AppImage) · [DEB](https://github.com/Maxworkinghard/Pets/releases/download/v0.1.1/Pets-0.1.1-linux-amd64.deb) | 为 AppImage 添加可执行权限后运行；DEB 适用于 Debian / Ubuntu 等兼容系统。 |
+| Windows x64 | [安装版（.exe）](https://github.com/Maxwilldoit/Pets/releases/download/v0.1.1/Pets-0.1.1-windows-x64-setup.exe) · [便携版（.exe）](https://github.com/Maxwilldoit/Pets/releases/download/v0.1.1/Pets-0.1.1-windows-x64-portable.exe) | 运行安装程序，或直接运行便携版。 |
+| macOS Intel（x64） | [DMG](https://github.com/Maxwilldoit/Pets/releases/download/v0.1.1/Pets-0.1.1-macos-x64.dmg) · [ZIP](https://github.com/Maxwilldoit/Pets/releases/download/v0.1.1/Pets-0.1.1-macos-x64.zip) | 打开 DMG 或解压 ZIP，将 Pets.app 移入「应用程序」。 |
+| macOS Apple Silicon（arm64） | [DMG](https://github.com/Maxwilldoit/Pets/releases/download/v0.1.1/Pets-0.1.1-macos-arm64.dmg) · [ZIP](https://github.com/Maxwilldoit/Pets/releases/download/v0.1.1/Pets-0.1.1-macos-arm64.zip) | 打开 DMG 或解压 ZIP，将 Pets.app 移入「应用程序」。 |
+| Linux x64 | [AppImage](https://github.com/Maxwilldoit/Pets/releases/download/v0.1.1/Pets-0.1.1-linux-x86_64.AppImage) · [DEB](https://github.com/Maxwilldoit/Pets/releases/download/v0.1.1/Pets-0.1.1-linux-amd64.deb) | 为 AppImage 添加可执行权限后运行；DEB 适用于 Debian / Ubuntu 等兼容系统。 |
 
 下载后可与 Release 附带的 `SHA256SUMS` 核对。v0.1.1 的 Windows 发行文件没有代码签名；macOS 发行文件没有开发者签名，也未经过 Apple 公证，系统可能提示警告或阻止打开。安装与校验命令见 [发行说明](docs/releases/v0.1.1.md)。
 
@@ -60,10 +60,12 @@ npm run dist -- --publish never # 在本地生成发行文件
 
 每只宠物是一个包含 `pet.json` 和素材的文件夹，支持 GIF / APNG / WebP 动图、PNG 帧序列和精灵图。字段与示例见 [宠物格式说明](pets/README.md) 和 [JSON Schema](schema/pet.schema.json)。
 
-独立的 [Snapshot 公开素材库](catalog/README.md) 提供 [素材目录](catalog.json) 和 [GIF 下载包](https://github.com/Maxworkinghard/Pets/releases/tag/snapshot-assets-v1)，采用 Snapshot 的清单格式。原始素材见 [sources 说明](sources/README.md)。
+独立的 [Snapshot 公开素材库](catalog/README.md) 提供 [素材目录](catalog.json) 和 [GIF 下载包](https://github.com/Maxwilldoit/Pets/releases/tag/snapshot-assets-v1)，采用 Snapshot 的清单格式。原始素材见 [sources 说明](sources/README.md)。
 
 ## 许可
 
 代码许可状态为 **UNLICENSED**，见 [desktop/package.json](desktop/package.json)，目前未提供开源代码许可。宠物素材及原始素材的授权以各自 `pet.json` 的 `license` 字段及随附说明为准。
 
 公开素材库目前未单独声明素材许可，详见 [素材许可](catalog/README.md#素材许可) 及各 ZIP 中的 `ASSET-LICENSE.txt`。公开下载不等于授予开放许可或商业使用许可。
+
+`node scripts/check-pet-licenses.mjs` 会列出许可尚未核实的素材；正式发行工作流使用 `--strict`，在补齐明确的素材许可前会阻止新发行。
