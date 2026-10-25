@@ -1,0 +1,215 @@
+{
+  "pet": "nashor",
+  "version": "1.0.1",
+  "method": "Lossless source-frame extraction",
+  "frameSize": [
+    256,
+    192
+  ],
+  "fps": 10,
+  "anchor": [
+    128.5,
+    174
+  ],
+  "preparation": "Reuse the five-phase underground bob from original GIF frames 11–15. Crop each opaque head around its horizontal center to remove the baked-in 400px travel, keeping source pixels, timing and the original ground line. Frame 10 is the stationary burrow pose. Only transparent margins are removed; no artwork is generated or repainted.",
+  "frames": [
+    {
+      "source": "pets/nashor/gifs/nashor_burrow_left.gif",
+      "sourceFrame": 11,
+      "sourceDurationMs": 100,
+      "sourceCrop": [
+        428,
+        261,
+        684,
+        453
+      ],
+      "output": "pets/nashor/frames/drag-left/00.png",
+      "bounds": [
+        9,
+        36,
+        247,
+        176
+      ]
+    },
+    {
+      "source": "pets/nashor/gifs/nashor_burrow_left.gif",
+      "sourceFrame": 12,
+      "sourceDurationMs": 100,
+      "sourceCrop": [
+        426,
+        261,
+        682,
+        453
+      ],
+      "output": "pets/nashor/frames/drag-left/01.png",
+      "bounds": [
+        9,
+        40,
+        247,
+        176
+      ]
+    },
+    {
+      "source": "pets/nashor/gifs/nashor_burrow_left.gif",
+      "sourceFrame": 13,
+      "sourceDurationMs": 100,
+      "sourceCrop": [
+        418,
+        261,
+        674,
+        453
+      ],
+      "output": "pets/nashor/frames/drag-left/02.png",
+      "bounds": [
+        9,
+        42,
+        247,
+        176
+      ]
+    },
+    {
+      "source": "pets/nashor/gifs/nashor_burrow_left.gif",
+      "sourceFrame": 14,
+      "sourceDurationMs": 100,
+      "sourceCrop": [
+        406,
+        261,
+        662,
+        453
+      ],
+      "output": "pets/nashor/frames/drag-left/03.png",
+      "bounds": [
+        9,
+        42,
+        247,
+        176
+      ]
+    },
+    {
+      "source": "pets/nashor/gifs/nashor_burrow_left.gif",
+      "sourceFrame": 15,
+      "sourceDurationMs": 100,
+      "sourceCrop": [
+        390,
+        261,
+        646,
+        453
+      ],
+      "output": "pets/nashor/frames/drag-left/04.png",
+      "bounds": [
+        9,
+        40,
+        247,
+        176
+      ]
+    },
+    {
+      "source": "pets/nashor/gifs/nashor_burrow_right.gif",
+      "sourceFrame": 11,
+      "sourceDurationMs": 100,
+      "sourceCrop": [
+        416,
+        261,
+        672,
+        453
+      ],
+      "output": "pets/nashor/frames/drag-right/00.png",
+      "bounds": [
+        9,
+        36,
+        247,
+        176
+      ]
+    },
+    {
+      "source": "pets/nashor/gifs/nashor_burrow_right.gif",
+      "sourceFrame": 12,
+      "sourceDurationMs": 100,
+      "sourceCrop": [
+        418,
+        261,
+        674,
+        453
+      ],
+      "output": "pets/nashor/frames/drag-right/01.png",
+      "bounds": [
+        9,
+        40,
+        247,
+        176
+      ]
+    },
+    {
+      "source": "pets/nashor/gifs/nashor_burrow_right.gif",
+      "sourceFrame": 13,
+      "sourceDurationMs": 100,
+      "sourceCrop": [
+        426,
+        261,
+        682,
+        453
+      ],
+      "output": "pets/nashor/frames/drag-right/02.png",
+      "bounds": [
+        9,
+        42,
+        247,
+        176
+      ]
+    },
+    {
+      "source": "pets/nashor/gifs/nashor_burrow_right.gif",
+      "sourceFrame": 14,
+      "sourceDurationMs": 100,
+      "sourceCrop": [
+        438,
+        261,
+        694,
+        453
+      ],
+      "output": "pets/nashor/frames/drag-right/03.png",
+      "bounds": [
+        9,
+        42,
+        247,
+        176
+      ]
+    },
+    {
+      "source": "pets/nashor/gifs/nashor_burrow_right.gif",
+      "sourceFrame": 15,
+      "sourceDurationMs": 100,
+      "sourceCrop": [
+        454,
+        261,
+        710,
+        453
+      ],
+      "output": "pets/nashor/frames/drag-right/04.png",
+      "bounds": [
+        9,
+        40,
+        247,
+        176
+      ]
+    },
+    {
+      "source": "pets/nashor/gifs/nashor_burrow_left.gif",
+      "sourceFrame": 10,
+      "sourceDurationMs": 110,
+      "sourceCrop": [
+        380,
+        261,
+        636,
+        453
+      ],
+      "output": "pets/nashor/frames/drag.png",
+      "bounds": [
+        81,
+        131,
+        175,
+        176
+      ]
+    }
+  ]
+}
