@@ -106,23 +106,6 @@
       "licenseStatus": "未单独声明素材许可"
     },
     {
-      "id": "shuangyan-crate-duo",
-      "name": "双燕 · 箱中搭档",
-      "description": "双人搭档，含等待、审阅、失败和跳跃反馈。",
-      "tags": [
-        "双人",
-        "像素"
-      ],
-      "version": "1.0.0",
-      "file": "shuangyan-crate-duo-1.0.0.zip",
-      "sizeBytes": 1563689,
-      "sha256": "03a85bee6c42f786e66b045f6785fc7fc10a8dd0c9ad60010c33f3db5a8a42b8",
-      "sourceSha256": "757c71bd40ff72a8971175ec32e3317509f3258c3168202fd71588615bf2bbb2",
-      "downloadUrl": "https://github.com/Maxwilldoit/Pets/releases/download/snapshot-assets-v1/shuangyan-crate-duo-1.0.0.zip",
-      "previewUrl": "https://raw.githubusercontent.com/Maxwilldoit/Pets/main/catalog/previews/shuangyan-crate-duo.png",
-      "licenseStatus": "未单独声明素材许可"
-    },
-    {
       "id": "hoop-23",
       "name": "Hoop 23",
       "description": "运球、后仰与扣篮；大动作保留脚底定位。",

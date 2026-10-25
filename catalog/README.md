@@ -2,7 +2,7 @@
 
 [浏览仓库](https://github.com/Maxwilldoit/Pets) · [下载素材包](https://github.com/Maxwilldoit/Pets/releases/tag/snapshot-assets-v1) · [机器可读目录](../catalog.json)
 
-这里维护 Snapshot 可下载的桌宠素材：**目录、预览图与动作清单进 Git，供应用下载的 GIF ZIP 放在 GitHub Releases**。原始 ZIP 同时保存在 [`sources/archives/`](../sources/archives/)，桌面端宠物包保存在 [`pets/`](../pets/)。应用按需下载，安装包无需携带全部素材。当前目录包含 10 套素材。
+这里维护 Snapshot 可下载的桌宠素材：**目录、预览图与动作清单进 Git，供应用下载的 GIF ZIP 放在 GitHub Releases**。原始 ZIP 同时保存在 [`sources/archives/`](../sources/archives/)，桌面端宠物包保存在 [`pets/`](../pets/)。应用按需下载，安装包无需携带全部素材。当前目录包含 9 套素材。
 
 在 Snapshot「桌面伴侣 → 素材库」中浏览并导入。也可从 Release 下载 ZIP，再拖进「桌面伴侣」页。导入后素材保存在应用数据目录；同一只从库里重新导入会更新素材并保留自定义名字。
 
@@ -14,7 +14,6 @@
 | Clawd | <img src="previews/clawd.png" width="72" alt="Clawd"> | 工作、成功、报错、睡觉 |
 | 纳什 · 初版 | <img src="previews/nashor-v1.png" width="72" alt="纳什初版"> | 展示、升星、胜利 |
 | 纳什 · 进阶 | <img src="previews/nashor-v2.png" width="72" alt="纳什进阶"> | 钻地、连招、胜利 |
-| 双燕 · 箱中搭档 | <img src="previews/shuangyan-crate-duo.png" width="72" alt="双燕"> | 等待、审阅、失败 |
 | Hoop 23 | <img src="previews/hoop-23.png" width="72" alt="Hoop 23"> | 运球、后仰、扣篮 |
 | Kuro · 持刀客 | <img src="previews/kuro-blade.png" width="72" alt="Kuro"> | 挥手、拔刀、探头 |
 | Momo | <img src="previews/momo.png" width="72" alt="Momo"> | 待机、走路、挥手 |
@@ -83,4 +82,4 @@ Snapshot 会从点击轮播中排除事件专用 GIF。本库把反馈动作复�
 
 ## 素材许可
 
-当前 10 套素材均标记为「未单独声明素材许可」。公开下载不等于授予开放许可或商业使用许可；此说明没有替任何角色、品牌或素材权利人作出授权。代码许可与素材许可分别管理。后续贡献应附上作者、来源和明确的适用许可。
+当前 9 套素材均标记为「未单独声明素材许可」。公开下载不等于授予开放许可或商业使用许可；此说明没有替任何角色、品牌或素材权利人作出授权。代码许可与素材许可分别管理。后续贡献应附上作者、来源和明确的适用许可。
