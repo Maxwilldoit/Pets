@@ -11,7 +11,7 @@ export function loginItemOptions({
   if (!packaged) return { path: execPath, args: [appRoot] };
   // electron-builder's portable launcher extracts the app into a temporary
   // directory and deletes it on exit. Register the downloaded launcher instead.
-  if (platform === 'win32' && typeof portableExecutableFile === 'string' && path.isAbsolute(portableExecutableFile)) {
+  if (platform === 'win32' && typeof portableExecutableFile === 'string' && path.win32.isAbsolute(portableExecutableFile)) {
     return { path: portableExecutableFile };
   }
   return {};
