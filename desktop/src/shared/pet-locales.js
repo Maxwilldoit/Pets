@@ -5,7 +5,7 @@ const EN_PETS = {
   },
   'clawd-xmas': {
     name: 'Clawd (Christmas)',
-    description: 'A festive Clawd variant wearing a Santa hat.',
+    description: 'A festive Clawd variant wearing a Santa hat, with left and right walking animations.',
   },
   'hoop-23': {
     name: 'High Flyer 23',
