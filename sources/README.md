@@ -4,6 +4,7 @@
 - `momo/`：Momo 制作过程中的原始图、动作行、参考图与检查用帧图片，保留原目录结构。
 - `clawd/`：Clawd 左右行走的生成图集、制作参数与动画预览；实际使用的透明 PNG 帧保存在 `pets/clawd/frames/`。
 - `clawd-xmas/`：Clawd 圣诞版左右行走的生成图集、制作参数与动画预览；实际使用的透明 PNG 帧保存在 `pets/clawd-xmas/frames/`。
+- `nashor/`：纳什男爵拖拽遁地帧的来源与裁切记录；实际使用的透明 PNG 帧保存在 `pets/nashor/frames/`。
 - 可直接供桌面端使用的宠物清单和素材见 [`pets/`](../pets/)。Snapshot 发布包由 `scripts/build-snapshot-library.py` 从原始 ZIP 构建，继续通过 GitHub Releases 分发。
 
 这些文件随 Git 仓库保存。素材许可沿用各原包的已有声明；公开保存不额外授予使用许可。

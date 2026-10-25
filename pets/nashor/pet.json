@@ -3,7 +3,7 @@
   "id": "nashor",
   "name": "纳什男爵",
   "description": "紫色虚空巨虫。会摇摆、升星、普攻、吐酸，还会遁地移动。",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "tags": ["怪物", "动作"],
   "scale": 0.45,
   "behavior": {"click": "attack", "doubleClick": "ultimate-acid"},
@@ -13,6 +13,30 @@
   },
   "animations": {
     "idle": {"src": "gifs/nashor_idle.gif"},
+    "drag": {"src": "frames/drag.png", "anchor": [128.5, 174], "mirror": false},
+    "drag-left": {
+      "frames": [
+        "frames/drag-left/00.png",
+        "frames/drag-left/01.png",
+        "frames/drag-left/02.png",
+        "frames/drag-left/03.png",
+        "frames/drag-left/04.png"
+      ],
+      "fps": 10,
+      "anchor": [128.5, 174]
+    },
+    "drag-right": {
+      "frames": [
+        "frames/drag-right/00.png",
+        "frames/drag-right/01.png",
+        "frames/drag-right/02.png",
+        "frames/drag-right/03.png",
+        "frames/drag-right/04.png"
+      ],
+      "fps": 10,
+      "anchor": [128.5, 174]
+    },
+    "fall": {"src": "gifs/nashor_idle.gif"},
     "sway": {"src": "gifs/nashor_sway.gif", "label": "揣手摇摆", "weight": 2},
     "starup": {"src": "gifs/nashor_starup.gif", "label": "升星"},
     "showcase": {"src": "gifs/nashor_showcase.gif", "label": "姿态展示"},
