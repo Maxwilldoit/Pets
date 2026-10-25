@@ -27,10 +27,6 @@ const EN_PETS = {
     name: 'Baron Nashor',
     description: 'A purple creature with attack, victory, and burrow animations.',
   },
-  'shuangyan-crate-duo': {
-    name: 'Smoking Duo',
-    description: 'Two pixel characters seated on crates.',
-  },
   yamada: {
     name: 'Yamada',
     description: 'A pixel character in a leather jacket, with standing and seated animations.',
@@ -57,7 +53,6 @@ const EN_TAGS = {
   '怪物': 'Monster',
   '动作': 'Action',
   'Q版': 'Chibi',
-  '双人': 'Duo',
 };
 
 // Translate the manifest label, since an animation key can describe a different action.

@@ -16,7 +16,6 @@ const EXPECTED = {
   makima: { name: 'Makima', tags: ['Pixel art', 'Character'] },
   momo: { name: 'Momo', tags: ['Pixel art', 'Animal', 'Codex', 'In progress'] },
   nashor: { name: 'Baron Nashor', tags: ['Monster', 'Action'] },
-  'shuangyan-crate-duo': { name: 'Smoking Duo', tags: ['Chibi', 'Duo', 'Codex'] },
   yamada: { name: 'Yamada', tags: ['Pixel art', 'Character'] },
   'yamada-clerk': { name: 'Yamada (Clerk)', tags: ['Pixel art', 'Character'] },
   'yamada-q': { name: 'Yamada (Chibi)', tags: ['Chibi', 'Character', 'Codex'] },
@@ -71,8 +70,8 @@ function assertDisplayOnly(original, english) {
   }
 }
 
-test('覆盖真实 pets/ 中的全部 11 只内置宠物', () => {
-  assert.equal(Object.keys(EXPECTED).length, 11);
+test('覆盖真实 pets/ 中的全部 10 只内置宠物', () => {
+  assert.equal(Object.keys(EXPECTED).length, 10);
   assert.deepEqual(bundled.map(({ raw }) => raw.id).sort(), Object.keys(EXPECTED).sort());
 });
 
@@ -128,7 +127,6 @@ test('动作名称忠实于 manifest label，保留姿态、组合动作和方�
     ['nashor', 'burrow-left', 'Burrow left'],
     ['nashor', 'burrow-right', 'Burrow right'],
     ['yamada-q', 'running', 'Busy'],
-    ['shuangyan-crate-duo', 'running', 'Busy'],
   ];
   for (const [id, animation, expected] of cases) {
     const { raw } = bundled.find((entry) => entry.raw.id === id);
