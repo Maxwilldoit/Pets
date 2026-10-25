@@ -38,6 +38,7 @@ let dpr = window.devicePixelRatio || 1;
 let dirty = true;
 let shown = { anim: null, idx: -1, flip: false };
 let lastBounds = null;
+let lastPointerOrigin = null;
 
 const brainSettings = (s) => ({ wander: s.wander, randomActions: s.randomActions, gravity: s.gravity });
 
@@ -96,7 +97,8 @@ let readySent = false;
 
 function tick() {
   const now = performance.now();
-  const v = brain.update((now - prev) / 1000);
+  // 按下后先稳住窗口，越过拖拽阈值或松手后再继续推进。
+  const v = brain.update(press && !press.dragging ? 0 : (now - prev) / 1000);
   prev = now;
   if ((window.devicePixelRatio || 1) !== dpr) relayout();
 
@@ -107,8 +109,12 @@ function tick() {
     hitTestPending = true;
   }
   const frameChanged = draw(v);
-  if (pointer && !press && (frameChanged || hitTestPending)) {
-    setIgnore(!hit(pointer.x, pointer.y));
+  // setBounds 是异步提交的；按原生窗口实际到达的位置重算静止鼠标的命中。
+  const origin = { x: window.screenX ?? 0, y: window.screenY ?? 0 };
+  const originChanged = !lastPointerOrigin || origin.x !== lastPointerOrigin.x || origin.y !== lastPointerOrigin.y;
+  lastPointerOrigin = origin;
+  if (pointer && !press && (frameChanged || hitTestPending || originChanged)) {
+    setIgnore(!hit(pointer.x - origin.x, pointer.y - origin.y));
     hitTestPending = false;
   }
   if (!readySent) {
@@ -152,6 +158,13 @@ function setIgnore(value) {
 
 let press = null;
 
+function rememberPointer(e) {
+  pointer = {
+    x: Number.isFinite(e.screenX) ? e.screenX : (window.screenX ?? 0) + e.clientX,
+    y: Number.isFinite(e.screenY) ? e.screenY : (window.screenY ?? 0) + e.clientY,
+  };
+}
+
 // 单击：立刻切到下一个动作。不做双击判定——等待 280ms 会让每次切换都发涩；
 // brain 里的双击本来也只是「再切一个」。
 function onClick() {
@@ -162,38 +175,83 @@ function endPress(cancelled) {
   const p = press;
   press = null;
   if (!p) return;
+  // 先清会话，再释放捕获，避免 lostpointercapture 把松手重复处理。
+  try {
+    if (canvas.hasPointerCapture?.(p.pointerId)) canvas.releasePointerCapture(p.pointerId);
+  } catch { /* 原生窗口移动时捕获可能已经失效。 */ }
   if (p.dragging) brain.release();
   else if (!cancelled) onClick();
   hitTestPending = true;
 }
 
-window.addEventListener('mousemove', (e) => {
-  pointer = { x: e.clientX, y: e.clientY };
-  if (!press) setIgnore(!hit(e.clientX, e.clientY));
-});
-document.addEventListener('mouseleave', () => {
-  pointer = null;
-  if (!press) setIgnore(true);
-});
-canvas.addEventListener('pointerdown', (e) => {
-  if (e.button !== 0 || !hit(e.clientX, e.clientY)) return;
-  pointer = { x: e.clientX, y: e.clientY };
-  canvas.setPointerCapture(e.pointerId);
-  press = { x: e.screenX, y: e.screenY, dragging: false };
-});
-canvas.addEventListener('pointermove', (e) => {
-  pointer = { x: e.clientX, y: e.clientY };
+function movePress(e) {
   if (!press) return;
+  if (e.pointerId !== undefined && e.pointerId !== press.pointerId) return;
+  // 补收窗口外的松手：下次移动已没有左键时，清理会话但不补发点击。
+  if (typeof e.buttons === 'number' && !(e.buttons & 1)) {
+    endPress(true);
+    return;
+  }
   if (!press.dragging) {
     if (Math.hypot(e.screenX - press.x, e.screenY - press.y) < 4) return;
     press.dragging = true;
     brain.grab(press.x, press.y);
   }
+  // 同一物理移动可能同时产生 pointermove 与兼容 mousemove，只推进一次。
+  if (e.screenX === press.lastX && e.screenY === press.lastY) return;
+  press.lastX = e.screenX;
+  press.lastY = e.screenY;
   brain.dragTo(e.screenX, e.screenY);
+}
+
+window.addEventListener('mousemove', (e) => {
+  rememberPointer(e);
+  // Electron 穿透窗口转发的 mousemove 也必须能驱动拖拽。
+  if (press?.pointerType === 'mouse') movePress(e);
+  if (!press) setIgnore(!hit(e.clientX, e.clientY));
+}, true);
+document.addEventListener('mouseleave', () => {
+  if (!press) {
+    pointer = null;
+    setIgnore(true);
+  }
 });
-canvas.addEventListener('pointerup', () => endPress(false));
-canvas.addEventListener('pointercancel', () => endPress(true));
-canvas.addEventListener('lostpointercapture', () => endPress(true));
+canvas.addEventListener('pointerdown', (e) => {
+  if (e.button !== 0 || !hit(e.clientX, e.clientY)) return;
+  const pointerType = e.pointerType || 'mouse';
+  if (press) {
+    if (pointerType !== 'mouse' || press.pointerType !== 'mouse') return;
+    endPress(true);
+  }
+  rememberPointer(e);
+  press = { pointerId: e.pointerId, pointerType, x: e.screenX, y: e.screenY, dragging: false };
+  setIgnore(false);
+  try { canvas.setPointerCapture(e.pointerId); } catch { /* mousemove 路径仍可继续拖动。 */ }
+});
+canvas.addEventListener('pointermove', (e) => {
+  if (press && e.pointerId !== press.pointerId) return;
+  rememberPointer(e);
+  movePress(e);
+});
+window.addEventListener('pointerup', (e) => {
+  if (press?.pointerId === e.pointerId && e.button === 0) endPress(false);
+}, true);
+window.addEventListener('mouseup', (e) => {
+  if (e.button === 0 && press?.pointerType === 'mouse') endPress(false);
+}, true);
+window.addEventListener('pointercancel', (e) => {
+  if (press?.pointerId === e.pointerId) endPress(true);
+}, true);
+window.addEventListener('lostpointercapture', (e) => {
+  if (!press || press.pointerId !== e.pointerId) return;
+  if (press.pointerType !== 'mouse') {
+    endPress(true);
+    return;
+  }
+  // 搬动原生窗口时可能丢捕获；尝试恢复，鼠标事件路径继续兜底。
+  try { canvas.setPointerCapture(press.pointerId); } catch { /* 指针已释放时由 mouseup/buttons 清理。 */ }
+}, true);
+window.addEventListener('blur', () => endPress(true));
 window.addEventListener('contextmenu', (e) => {
   e.preventDefault();
   if (hit(e.clientX, e.clientY)) host.showMenu();
