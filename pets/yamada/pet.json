@@ -3,7 +3,7 @@
   "id": "yamada",
   "name": "山田",
   "description": "穿皮夹克的像素山田。拖着走会迈步，双击坐下抽根烟。",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "tags": [
     "像素",
     "人物"
@@ -57,6 +57,32 @@
         "frames/walkg_l_7.png"
       ],
       "stepDistance": 10,
+      "fps": 4.3
+    },
+    "drag-right": {
+      "frames": [
+        "frames/walkg_r_0.png",
+        "frames/walkg_r_1.png",
+        "frames/walkg_r_2.png",
+        "frames/walkg_r_3.png",
+        "frames/walkg_r_4.png",
+        "frames/walkg_r_5.png",
+        "frames/walkg_r_6.png",
+        "frames/walkg_r_7.png"
+      ],
+      "fps": 4.3
+    },
+    "drag-left": {
+      "frames": [
+        "frames/walkg_l_0.png",
+        "frames/walkg_l_1.png",
+        "frames/walkg_l_2.png",
+        "frames/walkg_l_3.png",
+        "frames/walkg_l_4.png",
+        "frames/walkg_l_5.png",
+        "frames/walkg_l_6.png",
+        "frames/walkg_l_7.png"
+      ],
       "fps": 4.3
     },
     "wave": {
