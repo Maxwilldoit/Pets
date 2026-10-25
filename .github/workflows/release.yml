@@ -185,6 +185,8 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: write
+      id-token: write
+      attestations: write
     env:
       RELEASE_TAG: ${{ needs.validate.outputs.tag }}
       EXPECTED_COMMIT: ${{ needs.validate.outputs.commit }}
@@ -216,6 +218,11 @@ jobs:
 
       - name: Require exactly eight packages and generate SHA256SUMS
         run: node scripts/release-artifacts.mjs aggregate "$RELEASE_TAG" release-downloads release-packages
+
+      - name: Attest the eight packages and SHA256SUMS
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: release-packages/*
 
       - name: Create or resume draft, verify all nine assets, then publish
         env:
