@@ -1,7 +1,7 @@
 const EN_PETS = {
   clawd: {
     name: 'Clawd',
-    description: 'An orange pixel crab with work, gesture, and idle animations.',
+    description: 'An orange pixel crab with left and right walking, work, gesture, and idle animations.',
   },
   'clawd-xmas': {
     name: 'Clawd (Christmas)',
@@ -62,6 +62,8 @@ const EN_TAGS = {
 
 // Translate the manifest label, since an animation key can describe a different action.
 const EN_LABELS = {
+  '向右行走': 'Walk right',
+  '向左行走': 'Walk left',
   '睡觉': 'Sleep',
   '思考': 'Think',
   '打字': 'Type',

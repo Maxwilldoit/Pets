@@ -1,0 +1,37 @@
+{
+  "pet": "clawd",
+  "version": "1.1.0",
+  "generator": "built-in image_gen",
+  "reference": "pets/clawd/gifs/clawd-crabwalk.gif",
+  "sourceSheet": "walk-generated-sheet.png",
+  "sourceSheetSize": [
+    1254,
+    1254
+  ],
+  "layout": {
+    "columns": 4,
+    "rows": 4,
+    "readingOrder": [
+      "walk-right frames 0–7 (top two rows)",
+      "walk-left frames 0–7 (bottom two rows)"
+    ]
+  },
+  "frameSize": [
+    256,
+    256
+  ],
+  "fps": 8,
+  "anchor": [
+    128,
+    192
+  ],
+  "pixelGrid": 8,
+  "palette": [
+    "#d87656",
+    "#be684d",
+    "#000000",
+    "transparent"
+  ],
+  "preparation": "Extract cells from the generated sheet, reduce onto the existing pixel grid, restore flat source colors and solid rectangular features, connect feet to the body, and align the shared foot baseline. Save PNG frames at 256×256 with binary alpha. The preview alternates 120/130 ms because GIF timing has 10 ms precision.",
+  "finalPrompt": "Use case: identity-preserve. Image1 is the EDIT TARGET: a 4x4 Clawd walk sprite sheet with 8 right-facing frames in the top two rows and 8 left-facing frames in the bottom two rows. Image2 is the ORIGINAL CHARACTER REFERENCE. Refine ONLY the pixel-art execution of Image1 to precisely match the original reference. Keep all 16 placements, phase order, eye positions that distinguish walking right versus left, and 4-column/4-row sprite sheet layout. Target exactly1024x1024 with256x256cells. Replace every textured/gradient orange fill with EXACT flat source palette: upper body and all limbs #d87656, lower body #be684d, eyes #000000, and fully transparent background. No gradients, no lighting, no texture, no outlines, no antialiasing: crisp orthogonal chunky pixel edges, ALL visible pixels fully opaque, invisible pixels alpha0, use nearest-neighbor pixel-art aesthetic. The eight frames must be one smooth 8-phase alternating walking cycle with the body staying in-place. Correct the detached floating feet: every leg is a short connected solid rectangular extension from the underside of the lower body, even when a leg is raised. Feet should never be separate floating rectangles. Keep the original crab's body and legs a single connected silhouette. All sprites have a common foot baseline near192 within each256cell, all are centered with the SAME main body width128px and total width184px; tiny8px body bob is allowed with complementary short/long legs. Make the bottom eight frames exact left-facing matching counterparts. No green, red, white or other matte background; preserve genuine transparent PNG alpha. No labels, guides, lines, extra objects, accessories or shadows. Retain the original simple Clawd identity from Image2."
+}

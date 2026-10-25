@@ -2,17 +2,49 @@
   "$schema": "../../schema/pet.schema.json",
   "id": "clawd",
   "name": "Clawd",
-  "description": "橘色像素小螃蟹，会思考、敲键盘、扫地、跳舞，困了就睡。",
-  "version": "1.0.0",
+  "description": "橘色像素小螃蟹，支持左右行走，会思考、敲键盘、扫地、跳舞，困了就睡。",
+  "version": "1.1.0",
   "tags": ["像素", "螃蟹"],
   "scale": 0.5,
   "pixelated": true,
   "speed": 45,
   "behavior": {"click": "jump-happy", "doubleClick": "dance"},
-  "codex": {"waiting": "listening"},
+  "codex": {"waiting": "listening", "running-right": "walk-right", "running-left": "walk-left"},
   "animations": {
     "idle": {"src": "gifs/clawd-idle.gif"},
     "walk": {"src": "gifs/clawd-crabwalk.gif", "mirror": false},
+    "walk-right": {
+      "frames": [
+        "frames/walk-right/00.png",
+        "frames/walk-right/01.png",
+        "frames/walk-right/02.png",
+        "frames/walk-right/03.png",
+        "frames/walk-right/04.png",
+        "frames/walk-right/05.png",
+        "frames/walk-right/06.png",
+        "frames/walk-right/07.png"
+      ],
+      "fps": 8,
+      "anchor": [128, 192],
+      "label": "向右行走",
+      "weight": 0
+    },
+    "walk-left": {
+      "frames": [
+        "frames/walk-left/00.png",
+        "frames/walk-left/01.png",
+        "frames/walk-left/02.png",
+        "frames/walk-left/03.png",
+        "frames/walk-left/04.png",
+        "frames/walk-left/05.png",
+        "frames/walk-left/06.png",
+        "frames/walk-left/07.png"
+      ],
+      "fps": 8,
+      "anchor": [128, 192],
+      "label": "向左行走",
+      "weight": 0
+    },
     "sleep": {"src": "gifs/clawd-sleep.gif", "label": "睡觉", "weight": 0},
     "think": {"src": "gifs/clawd-think.gif", "label": "思考", "repeat": 2},
     "type": {"src": "gifs/clawd-type.gif", "label": "打字", "repeat": 3},
