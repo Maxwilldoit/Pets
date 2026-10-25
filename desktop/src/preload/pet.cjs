@@ -6,6 +6,8 @@ contextBridge.exposeInMainWorld('petHost', {
   ready: () => ipcRenderer.send('petwin:ready'),
   setBounds: (bounds) => ipcRenderer.send('petwin:bounds', bounds),
   setIgnoreMouse: (ignore) => ipcRenderer.send('petwin:ignore-mouse', ignore),
+  startDragPolling: () => ipcRenderer.send('petwin:drag-start'),
+  stopDragPolling: () => ipcRenderer.send('petwin:drag-stop'),
   showMenu: () => ipcRenderer.send('petwin:menu'),
   savePosition: (pos) => ipcRenderer.send('petwin:position', pos),
   log: (level, message) => ipcRenderer.send('petwin:log', level, String(message)),

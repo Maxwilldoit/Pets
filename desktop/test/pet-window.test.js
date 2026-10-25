@@ -25,7 +25,7 @@ const initialSettings = { size: 1, wander: false, randomActions: false, gravity:
 
 function makeHost(settings) {
   let command;
-  const calls = { commands: [], ignores: [], bounds: [] };
+  const calls = { commands: [], ignores: [], bounds: [], dragStarts: 0, dragStops: 0 };
   const host = {
     init: async () => ({
       record: {
@@ -51,6 +51,8 @@ function makeHost(settings) {
     send(message) { calls.commands.push({ type: message.type, delivered: !!command }); command?.(message); },
     setBounds(bounds) { calls.bounds.push({ ...bounds }); },
     setIgnoreMouse(ignore) { calls.ignores.push(ignore); },
+    startDragPolling() { calls.dragStarts++; },
+    stopDragPolling() { calls.dragStops++; },
     savePosition() {}, ready() {}, log() {}, showMenu() {},
   };
   return { host, calls };
@@ -354,37 +356,82 @@ test('捕获失败或鼠标丢失捕获后，window mousemove 和 mouseup 仍能
   }
 });
 
-test('漏收松手后 buttons0 清理会话不补点击，取消后下一次点击仍正常', async (t) => {
+test('鼠标移动即使只有 buttons=0 也能拖动，真实 mouseup 结束且不补点击', async (t) => {
   const { page, input, window } = await readyPetWindow({ settings: { gravity: false } });
   const release = t.mock.method(page.brain, 'release');
+  const click = t.mock.method(page.brain, 'click');
+  const beforeX = page.brain.view.x;
   const down = input('pointerdown');
-  input('mousemove', { screenX: down.screenX + 30, buttons: 1 });
+  const moving = { screenX: down.screenX + 30, screenY: down.screenY - 10, buttons: 0 };
+  input('mousemove', moving);
   assert.equal(page.brain.view.mode, 'drag');
-  const draggedX = page.brain.view.x;
-  input('mousemove', { screenX: down.screenX + 500, buttons: 0 });
-  input('pointerup');
-  input('mouseup');
+  assert.equal(page.brain.view.x, beforeX + 30);
+  input('mouseup', { ...moving, buttons: 0 }, window);
   assert.deepEqual([page.brain.view.mode, page.brain.view.anim], ['idle', 'idle']);
-  assert.equal(page.brain.view.x, draggedX, 'the first move with no left button must not drag further');
   assert.equal(release.mock.callCount(), 1);
+  assert.equal(click.mock.callCount(), 0);
+});
 
-  input('pointerdown', { pointerId: 2 });
-  input('mousemove', { buttons: 0 });
-  input('pointerup', { pointerId: 2 });
-  input('mouseup');
-  assert.deepEqual([page.brain.view.mode, page.brain.view.anim], ['idle', 'idle'], 'missing up below the threshold must not become a click');
-  input('pointerdown', { pointerId: 3 });
-  input('pointerup', { pointerId: 3 });
-  input('mouseup');
+test('透明窗口只派发兼容 mousedown 时仍能开始拖动', async (t) => {
+  const petWindow = await readyPetWindow({ settings: { gravity: false } });
+  const { page, input, window, canvas } = petWindow;
+  const release = t.mock.method(page.brain, 'release');
+  const click = t.mock.method(page.brain, 'click');
+  const beforeX = page.brain.view.x;
+  const down = input('mousedown', {}, canvas);
+  assert.equal(page.ignoring, false);
+  input('mousemove', { screenX: down.screenX + 20, screenY: down.screenY - 8, buttons: 1 });
+  assert.equal(page.brain.view.mode, 'drag');
+  assert.equal(page.brain.view.x, beforeX + 20);
+  input('mouseup', { screenX: down.screenX + 20, screenY: down.screenY - 8, buttons: 0 }, window);
+  assert.deepEqual([page.brain.view.mode, page.brain.view.anim], ['idle', 'idle']);
+  assert.equal(release.mock.callCount(), 1);
+  assert.equal(click.mock.callCount(), 0);
+});
+
+test('捕获失败时 window pointermove 仍能驱动拖动，异指针事件不影响当前会话', async (t) => {
+  const petWindow = await readyPetWindow({ captureFails: true, settings: { gravity: false } });
+  const { page, input, window } = petWindow;
+  const release = t.mock.method(page.brain, 'release');
+  const beforeX = page.brain.view.x;
+  const down = input('pointerdown', { pointerId: 7 });
+  input('pointermove', { pointerId: 99, screenX: down.screenX + 200, buttons: 1 }, window);
+  assert.equal(page.brain.view.mode, 'idle');
+  input('pointermove', { pointerId: 7, screenX: down.screenX + 25, buttons: 1 }, window);
+  assert.equal(page.brain.view.mode, 'drag');
+  assert.equal(page.brain.view.x, beforeX + 25);
+  input('mouseup', { screenX: down.screenX + 25, buttons: 0 }, window);
+  input('pointerup', { pointerId: 7, buttons: 0 }, window);
+  assert.deepEqual([page.brain.view.mode, page.brain.view.anim], ['idle', 'idle']);
+  assert.equal(release.mock.callCount(), 1);
+});
+
+test('画布收不到任何移动事件时，主进程光标轮询仍能拖动并在松手后停止', async (t) => {
+  const { page, host, calls, input, window } = await readyPetWindow({ settings: { gravity: false } });
+  const release = t.mock.method(page.brain, 'release');
+  const beforeX = page.brain.view.x;
+  const down = input('pointerdown');
+  assert.equal(calls.dragStarts, 1);
+  host.send({ type: 'drag-cursor', x: down.screenX + 26, y: down.screenY - 12 });
+  assert.equal(page.brain.view.mode, 'drag');
+  assert.equal(page.brain.view.x, beforeX + 26);
+  input('mouseup', { screenX: down.screenX + 26, screenY: down.screenY - 12, buttons: 0 }, window);
+  assert.deepEqual([page.brain.view.mode, page.brain.view.anim], ['idle', 'idle']);
+  assert.equal(release.mock.callCount(), 1);
+  assert.equal(calls.dragStops, 1);
+});
+
+test('漏收 mouseup 后，下一次点击会替换旧手势并只推进一次动作', async (t) => {
+  const { page, input } = await readyPetWindow({ settings: { gravity: false } });
+  const release = t.mock.method(page.brain, 'release');
+  const down = input('pointerdown', { pointerId: 2 });
+  input('mousemove', { screenX: down.screenX + 20, buttons: 1 });
+  assert.equal(page.brain.view.mode, 'drag');
+  const next = input('pointerdown', { pointerId: 3 });
+  assert.equal(release.mock.callCount(), 1, 'starting a new press must close the stale drag');
+  input('pointerup', { ...next, pointerId: 3, buttons: 0 });
+  input('mouseup', { ...next, buttons: 0 });
   assert.equal(page.brain.view.anim, 'wave');
-  input('pointerdown', { pointerId: 4 });
-  input('blur', {}, window);
-  input('pointerup', { pointerId: 4 });
-  input('mouseup');
-  assert.equal(page.brain.view.anim, 'wave', 'blur must cancel a pending click');
-  input('pointerdown', { pointerId: 5 });
-  input('pointerup', { pointerId: 5 });
-  assert.equal(page.brain.view.anim, 'bow');
 });
 
 test('静止指针按延迟生效的实际窗口原点重命中，无新帧或新 bounds 也能更新穿透', async () => {

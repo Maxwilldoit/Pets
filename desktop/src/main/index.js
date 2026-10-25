@@ -32,6 +32,7 @@ let tray = null;
 let panelWin = null;
 let petWin = null;
 let petKey = null;
+let dragPollTimer = null;
 let resolvedLocale = 'en';
 let t = createTranslator(resolvedLocale);
 
@@ -160,9 +161,11 @@ function openPet(key) {
   });
   petWin = win;
   win.setIgnoreMouseEvents(true, { forward: true });
+  win.on('hide', () => { if (petWin === win) stopDragPolling(); });
   lockDown(win);
   win.on('closed', () => {
     if (petWin !== win) return;
+    stopDragPolling();
     petWin = null;
     petKey = null;
     broadcast();
@@ -173,8 +176,14 @@ function openPet(key) {
   return true;
 }
 
+function stopDragPolling() {
+  if (dragPollTimer) clearInterval(dragPollTimer);
+  dragPollTimer = null;
+}
+
 function closePet() {
   const win = petWin;
+  stopDragPolling();
   petWin = null;
   petKey = null;
   win?.destroy();
@@ -383,6 +392,22 @@ function registerIpc() {
     if (Object.values(r).every(Number.isFinite)) petWin.setBounds(r);
   });
   ipcMain.on('petwin:ignore-mouse', (e, ignore) => fromPet(e) && petWin.setIgnoreMouseEvents(!!ignore, { forward: true }));
+  ipcMain.on('petwin:drag-start', (e) => {
+    if (!fromPet(e)) return;
+    stopDragPolling();
+    let previous = screen.getCursorScreenPoint();
+    dragPollTimer = setInterval(() => {
+      if (!petWin || petWin.isDestroyed() || petWin.webContents.isDestroyed()) {
+        stopDragPolling();
+        return;
+      }
+      const point = screen.getCursorScreenPoint();
+      if (point.x === previous.x && point.y === previous.y) return;
+      previous = point;
+      petWin.webContents.send('petwin:command', { type: 'drag-cursor', x: point.x, y: point.y });
+    }, 16);
+  });
+  ipcMain.on('petwin:drag-stop', (e) => fromPet(e) && stopDragPolling());
   ipcMain.on('petwin:menu', (e) => {
     if (!fromPet(e)) return;
     const menu = petMenu();

@@ -175,6 +175,7 @@ function endPress(cancelled) {
   const p = press;
   press = null;
   if (!p) return;
+  host.stopDragPolling?.();
   // 先清会话，再释放捕获，避免 lostpointercapture 把松手重复处理。
   try {
     if (canvas.hasPointerCapture?.(p.pointerId)) canvas.releasePointerCapture(p.pointerId);
@@ -186,12 +187,9 @@ function endPress(cancelled) {
 
 function movePress(e) {
   if (!press) return;
-  if (e.pointerId !== undefined && e.pointerId !== press.pointerId) return;
-  // 补收窗口外的松手：下次移动已没有左键时，清理会话但不补发点击。
-  if (typeof e.buttons === 'number' && !(e.buttons & 1)) {
-    endPress(true);
-    return;
-  }
+  if (press.pointerId !== null && e.pointerId !== undefined && e.pointerId !== press.pointerId) return;
+  // 穿透窗口转发移动事件时，部分设备/平台不会带上左键位；不能据此结束拖动。
+  // 释放由 window 的 pointerup / mouseup（以及下一次 press 替换和 blur）负责。
   if (!press.dragging) {
     if (Math.hypot(e.screenX - press.x, e.screenY - press.y) < 4) return;
     press.dragging = true;
@@ -212,11 +210,11 @@ window.addEventListener('mousemove', (e) => {
 }, true);
 document.addEventListener('mouseleave', () => {
   if (!press) {
-    pointer = null;
+    // 保留最后的屏幕坐标：自由走动把窗口挪回静止鼠标下方时，tick 仍可恢复命中。
     setIgnore(true);
   }
 });
-canvas.addEventListener('pointerdown', (e) => {
+function startPress(e) {
   if (e.button !== 0 || !hit(e.clientX, e.clientY)) return;
   const pointerType = e.pointerType || 'mouse';
   if (press) {
@@ -224,15 +222,26 @@ canvas.addEventListener('pointerdown', (e) => {
     endPress(true);
   }
   rememberPointer(e);
-  press = { pointerId: e.pointerId, pointerType, x: e.screenX, y: e.screenY, dragging: false };
-  setIgnore(false);
-  try { canvas.setPointerCapture(e.pointerId); } catch { /* mousemove 路径仍可继续拖动。 */ }
+  press = { pointerId: Number.isFinite(e.pointerId) ? e.pointerId : null, pointerType, x: e.screenX, y: e.screenY, dragging: false };
+  // 每次有效按下都强制恢复原生交互，避免缓存值与窗口实际穿透状态不同步。
+  ignoring = false;
+  host.setIgnoreMouse(false);
+  if (pointerType === 'mouse') host.startDragPolling?.();
+  if (press.pointerId !== null) {
+    try { canvas.setPointerCapture(press.pointerId); } catch { /* mousemove 路径仍可继续拖动。 */ }
+  }
+}
+
+canvas.addEventListener('pointerdown', startPress);
+// 部分透明窗口/输入设备只派发兼容 mouse 事件；mousedown 作为起点兜底。
+canvas.addEventListener('mousedown', (e) => {
+  if (!press) startPress(e);
 });
-canvas.addEventListener('pointermove', (e) => {
-  if (press && e.pointerId !== press.pointerId) return;
+window.addEventListener('pointermove', (e) => {
+  if (!press || (press.pointerId !== null && e.pointerId !== press.pointerId)) return;
   rememberPointer(e);
   movePress(e);
-});
+}, true);
 window.addEventListener('pointerup', (e) => {
   if (press?.pointerId === e.pointerId && e.button === 0) endPress(false);
 }, true);
@@ -262,6 +271,9 @@ window.addEventListener('contextmenu', (e) => {
 function applyCommand(cmd) {
   if (cmd.type === 'play') brain.play(cmd.name);
   else if (cmd.type === 'areas') brain.setAreas(cmd.areas);
+  else if (cmd.type === 'drag-cursor' && press?.pointerType === 'mouse') {
+    movePress({ screenX: cmd.x, screenY: cmd.y, buttons: 1 });
+  }
   else if (cmd.type === 'settings') {
     document.documentElement.lang = cmd.locale;
     document.title = cmd.title ?? document.title;
