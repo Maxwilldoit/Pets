@@ -2,7 +2,7 @@
 
 [浏览仓库](https://github.com/Maxwilldoit/Pets) · [下载素材包](https://github.com/Maxwilldoit/Pets/releases/tag/snapshot-assets-v1) · [机器可读目录](../catalog.json)
 
-这里维护 Snapshot 可下载的桌宠素材：**目录、预览图与动作清单进 Git，供应用下载的 GIF ZIP 放在 GitHub Releases**。原始 ZIP 同时保存在 [`sources/archives/`](../sources/archives/)，桌面端宠物包保存在 [`pets/`](../pets/)。应用按需下载，安装包无需携带全部素材。当前目录包含 9 套素材。
+这里维护 Snapshot 可下载的桌宠素材：**目录、预览图与动作清单进 Git，供应用下载的 GIF / WebM ZIP 放在 GitHub Releases**。原始 ZIP 同时保存在 [`sources/archives/`](../sources/archives/)，桌面端宠物包保存在 [`pets/`](../pets/)。应用按需下载，安装包无需携带全部素材。当前目录包含 10 套素材。
 
 在 Snapshot「桌面伴侣 → 素材库」中浏览并导入。也可从 Release 下载 ZIP，再拖进「桌面伴侣」页。导入后素材保存在应用数据目录；同一只从库里重新导入会更新素材并保留自定义名字。
 
@@ -17,12 +17,13 @@
 | Hoop 23 | <img src="previews/hoop-23.png" width="72" alt="Hoop 23"> | 运球、后仰、扣篮 |
 | Kuro · 持刀客 | <img src="previews/kuro-blade.png" width="72" alt="Kuro"> | 挥手、拔刀、探头 |
 | Momo | <img src="previews/momo.png" width="72" alt="Momo"> | 待机、走路、挥手 |
+| 大肥鱼 | <img src="previews/dsh-pet-whale.png" width="72" alt="大肥鱼"> | 百余段透明 WebM、点击回应、拖拽和自主动作 |
 
 ## 格式与下载
 
 根目录的 `catalog.json` 使用 `version: 1`，`assets` 每项包含：稳定 `id`、显示名、简介、标签、素材 `version`、Release 文件名 `file`、`sizeBytes`、`sha256`、`downloadUrl`、`previewUrl`、`licenseStatus`。`sourceSha256` 记录构建用原包的校验值，便于追溯。
 
-- ZIP 仅含 GIF、根级 `pet.json` 和 `ASSET-LICENSE.txt`；不带应用设置、凭证或生成用中间素材。
+- ZIP 仅含 GIF / WebM、根级 `pet.json` 和 `ASSET-LICENSE.txt`；不带应用设置、凭证或生成用中间素材。
 - 应用只从本仓库的目录和 Release 读取，限制包大小为 100 MB，核对实际字节数和 SHA-256 后再导入。
 - 下载失败或校验失败可以重试。导入后的宠物离线可用。
 - 本目录的 `pet.json` 是 **Snapshot 的事件/锚点格式**。`pets/<id>/pet.json` 是本仓库 Electron 桌面端的格式，两者有各自的读取入口；本版在线导入入口位于 Snapshot。
@@ -66,12 +67,19 @@ Snapshot 会从点击轮播中排除事件专用 GIF。本库把反馈动作复�
 ## 维护与发布
 
 1. 在 `sources.json` 明确列出本次允许发布的原 ZIP、显示信息及动作映射。构建脚本仅处理清单列出的文件。
-2. 准备 Python 3.10+ 和 Pillow 10+。使用仓库保存的原 ZIP，运行：
+2. 准备 Python 3.10+；构建 GIF 预览和走路归一化时再安装 Pillow 10+。WebM 素材原样复制，其 144 × 144 预览图随仓库保存。使用仓库保存的原 ZIP，运行：
 
    ```sh
    python -m pip install Pillow
    python scripts/build-snapshot-library.py --source-dir sources/archives
    python scripts/build-snapshot-library.py --check --archives
+   ```
+
+   只更新一份条目、避免重算其他 GIF 时，给两条命令都加 `--only <素材 id>`，例如：
+
+   ```sh
+   python scripts/build-snapshot-library.py --source-dir sources/archives --only dsh-pet-whale
+   python scripts/build-snapshot-library.py --check --archives --only dsh-pet-whale
    ```
 
 3. 检查 `catalog/previews/`、`catalog/manifests/`、生成的目录和 `dist/snapshot-assets-v1/`。包中自动写入 `ASSET-LICENSE.txt`；发布前确认适用许可和公开范围。
@@ -82,4 +90,4 @@ Snapshot 会从点击轮播中排除事件专用 GIF。本库把反馈动作复�
 
 ## 素材许可
 
-当前 9 套素材均标记为「未单独声明素材许可」。公开下载不等于授予开放许可或商业使用许可；此说明没有替任何角色、品牌或素材权利人作出授权。代码许可与素材许可分别管理。后续贡献应附上作者、来源和明确的适用许可。
+当前 10 套素材均标记为「未单独声明素材许可」。公开下载不等于授予开放许可或商业使用许可；此说明没有替任何角色、品牌或素材权利人作出授权。代码许可与素材许可分别管理。后续贡献应附上作者、来源和明确的适用许可。

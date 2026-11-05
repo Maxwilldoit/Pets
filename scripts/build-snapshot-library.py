@@ -2,9 +2,11 @@
 """Build only the explicitly listed public ZIPs from sources/archives.
 
 Build: python scripts/build-snapshot-library.py --source-dir /path/to/zips
+Build one catalog entry without touching the others: add --only <asset-id>
 Check tracked metadata: python scripts/build-snapshot-library.py --check
 Check release archives too: add --archives
-Building previews / normalized walking GIFs requires Pillow >= 10.
+Building GIF previews / normalized walking GIFs requires Pillow >= 10.
+GIF and transparent WebM media are copied unchanged into the public ZIP.
 """
 from __future__ import annotations
 
@@ -75,59 +77,106 @@ def normalized_walk(data, idle, anchor):
     return output.getvalue()
 
 
-def build(source_dir):
-    from PIL import Image
+def build(source_dir, only=None):
     config = read_json(ROOT / "catalog/sources.json")
     destination = ROOT / "dist" / config["release"]
     destination.mkdir(parents=True, exist_ok=True)
+    catalog_path = ROOT / "catalog.json"
+    previous = read_json(catalog_path)["assets"] if catalog_path.is_file() else []
+    existing = {asset["id"]: asset for asset in previous}
     assets = []
     for spec in config["assets"]:
+        if only and spec["id"] not in only:
+            if spec["id"] in existing:
+                assets.append(existing[spec["id"]])
+            continue
         # Never enumerate the input folder: this file is the publication allowlist.
         source = source_dir / spec["source"]
         with ZipFile(source) as archive:
-            gifs = {name: archive.read(name) for name in archive.namelist() if name.lower().endswith(".gif")}
+            media = {
+                name: archive.read(name)
+                for name in archive.namelist()
+                if name.lower().endswith((".gif", ".webm"))
+            }
             manifest = json.loads(archive.read("pet.json")) if "pet.json" in archive.namelist() else None
-        idle = Image.open(io.BytesIO(gifs[spec["idle"]])).convert("RGBA")
-        box = idle.getbbox()
-        anchor = [(box[0] + box[2]) / 2, box[3]]
+        if not media or spec["idle"] not in media:
+            raise ValueError(f"{spec['id']}: idle media is missing from {spec['source']}")
+        gifs = {name: data for name, data in media.items() if name.lower().endswith(".gif")}
+        idle = None
+        box = None
         if manifest is None:
-            manifest = {"version": 1, "base": {"width": idle.width, "height": idle.height, "anchor": anchor}, "animations": {}}
+            if gifs:
+                from PIL import Image
+                idle = Image.open(io.BytesIO(gifs[spec["idle"]])).convert("RGBA")
+                box = idle.getbbox()
+                anchor = [(box[0] + box[2]) / 2, box[3]]
+                base = {"width": idle.width, "height": idle.height, "anchor": anchor}
+            elif spec.get("base"):
+                base = spec["base"]
+            else:
+                raise ValueError(f"{spec['id']}: WebM source needs a base canvas")
+            if (not isinstance(base.get("width"), (int, float)) or base["width"] <= 0
+                    or not isinstance(base.get("height"), (int, float)) or base["height"] <= 0
+                    or not isinstance(base.get("anchor"), list) or len(base["anchor"]) != 2):
+                raise ValueError(f"{spec['id']}: invalid base canvas")
+            manifest = {"version": 1, "base": base, "animations": {}}
         base = manifest["base"]
         anchor = base["anchor"]
         for entry in spec.get("normalizeWalks", []):
+            if idle is None:
+                from PIL import Image
+                idle = Image.open(io.BytesIO(gifs[spec["idle"]])).convert("RGBA")
+                box = idle.getbbox()
             gifs[entry] = normalized_walk(gifs[entry], idle, anchor)
-        for name, data in gifs.items():
-            image = Image.open(io.BytesIO(data)).convert("RGBA")
-            bounds = image.getbbox()
-            point = anchor if image.size == (base["width"], base["height"]) else [(bounds[0] + bounds[2]) / 2, bounds[3]]
+        for name, data in {**media, **gifs}.items():
+            if name.lower().endswith(".webm"):
+                point = anchor
+            else:
+                from PIL import Image
+                image = Image.open(io.BytesIO(data)).convert("RGBA")
+                bounds = image.getbbox()
+                point = anchor if image.size == (base["width"], base["height"]) else [(bounds[0] + bounds[2]) / 2, bounds[3]]
             manifest["animations"].setdefault(name, {"anchor": point})
 
         # Dedicated copies let feedback mappings coexist with click-to-cycle originals.
         aliases = {}
-        for action in ("success", "failure", "recording", "paused", "resumed"):
-            if action not in spec:
-                continue
-            entry = spec[action]
-            alias = f"feedback/{action}.gif"
-            gifs[alias] = gifs[entry]
-            manifest["animations"][alias] = dict(manifest["animations"][entry])
-            aliases[action] = alias
-        manifest["events"] = {}
-        for event in ("capture.success", "polish.success", "recording.stopped"):
-            manifest["events"][event] = aliases["success"]
-        if "failure" in aliases:
-            for event in ("capture.failure", "polish.failure", "recording.failure"):
-                manifest["events"][event] = aliases["failure"]
-        manifest["events"]["recording.started"] = aliases.get("resumed", aliases["success"])
-        manifest["events"]["shortcuts.resumed"] = aliases.get("resumed", aliases["success"])
-        manifest["events"]["shortcuts.paused"] = aliases["paused"]
-        manifest["states"] = {"shortcuts-paused": aliases["paused"]}
-        if "recording" in aliases:
-            manifest["states"]["recording"] = aliases["recording"]
+        if gifs:
+            for action in ("success", "failure", "recording", "paused", "resumed"):
+                if action not in spec:
+                    continue
+                entry = spec[action]
+                alias = f"feedback/{action}.gif"
+                gifs[alias] = gifs[entry]
+                manifest["animations"][alias] = dict(manifest["animations"][entry])
+                aliases[action] = alias
+            manifest["events"] = {}
+            for event in ("capture.success", "polish.success", "recording.stopped"):
+                manifest["events"][event] = aliases["success"]
+            if "failure" in aliases:
+                for event in ("capture.failure", "polish.failure", "recording.failure"):
+                    manifest["events"][event] = aliases["failure"]
+            manifest["events"]["recording.started"] = aliases.get("resumed", aliases["success"])
+            manifest["events"]["shortcuts.resumed"] = aliases.get("resumed", aliases["success"])
+            manifest["events"]["shortcuts.paused"] = aliases["paused"]
+            manifest["states"] = {"shortcuts-paused": aliases["paused"]}
+            if "recording" in aliases:
+                manifest["states"]["recording"] = aliases["recording"]
+        else:
+            event_entries = spec.get("events", {})
+            state_entries = spec.get("states", {})
+            unknown = set(event_entries) - EVENTS | set(state_entries) - STATES
+            missing = {entry for entry in [*event_entries.values(), *state_entries.values()] if entry not in media}
+            if unknown:
+                raise ValueError(f"{spec['id']}: unknown events or states: {sorted(unknown)}")
+            if missing:
+                raise ValueError(f"{spec['id']}: mapped media is missing: {sorted(missing)}")
+            manifest["events"] = dict(event_entries)
+            manifest["states"] = dict(state_entries)
         write_json(ROOT / f"catalog/manifests/{spec['id']}.json", manifest)
         file_name = f"{spec['id']}-{VERSION}.zip"
-        license_text = f"{spec['name']}\n素材许可：{LICENSE}。\n公开提供下载不表示授予开放许可或商业使用许可。\n来源：{REPOSITORY}\n"
-        contents = {**gifs, "pet.json": (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode(),
+        upstream = f"\n上游素材：{spec['sourceUrl']}" if spec.get("sourceUrl") else ""
+        license_text = f"{spec['name']}\n素材许可：{LICENSE}。\n公开提供下载不表示授予开放许可或商业使用许可。\n来源：{REPOSITORY}{upstream}\n"
+        contents = {**media, **gifs, "pet.json": (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode(),
                     "ASSET-LICENSE.txt": license_text.encode()}
         with ZipFile(destination / file_name, "w", compression=ZIP_DEFLATED, compresslevel=9) as archive:
             for name, data in sorted(contents.items()):
@@ -138,24 +187,28 @@ def build(source_dir):
                 info.external_attr = 0o644 << 16
                 archive.writestr(info, data)
         data = (destination / file_name).read_bytes()
-        preview = idle.crop(box)
-        preview.thumbnail((128, 128), Image.Resampling.LANCZOS)
-        canvas = Image.new("RGBA", (144, 144))
-        canvas.alpha_composite(preview, ((144 - preview.width) // 2, 136 - preview.height))
         preview_path = ROOT / f"catalog/previews/{spec['id']}.png"
         preview_path.parent.mkdir(parents=True, exist_ok=True)
-        canvas.save(preview_path, optimize=True)
+        if gifs:
+            from PIL import Image
+            preview = idle.crop(box)
+            preview.thumbnail((128, 128), Image.Resampling.LANCZOS)
+            canvas = Image.new("RGBA", (144, 144))
+            canvas.alpha_composite(preview, ((144 - preview.width) // 2, 136 - preview.height))
+            canvas.save(preview_path, optimize=True)
+        elif not preview_path.is_file():
+            raise ValueError(f"{spec['id']}: keep a tracked 144x144 PNG preview for WebM sources")
         assets.append({"id": spec["id"], "name": spec["name"], "description": spec["description"],
                        "tags": spec["tags"], "version": VERSION, "file": file_name,
                        "sizeBytes": len(data), "sha256": hash_bytes(data), "sourceSha256": hash_bytes(source.read_bytes()),
                        "downloadUrl": f"{REPOSITORY}/releases/download/{config['release']}/{file_name}",
                        "previewUrl": f"{RAW}/catalog/previews/{spec['id']}.png", "licenseStatus": LICENSE})
-        print(f"Built {spec['id']}: {len(gifs)} GIFs, {len(data)} bytes")
+        print(f"Built {spec['id']}: {len(media)} media files, {len(data)} bytes")
     write_json(ROOT / "catalog.json", {"version": 1, "assets": assets})
     (destination / "SHA256SUMS.txt").write_text("".join(f"{asset['sha256']}  {asset['file']}\n" for asset in assets), encoding="utf-8")
 
 
-def check(archives=False):
+def check(archives=False, only=None):
     config = read_json(ROOT / "catalog/sources.json")
     catalog = read_json(ROOT / "catalog.json")
     assert catalog["version"] == 1
@@ -175,6 +228,8 @@ def check(archives=False):
         assert manifest["version"] == 1 and set(manifest["events"]) <= EVENTS and set(manifest["states"]) <= STATES
         assert all(entry in manifest["animations"] for entry in [*manifest["events"].values(), *manifest["states"].values()])
         if archives:
+            if only and asset["id"] not in only:
+                continue
             path = ROOT / "dist" / config["release"] / asset["file"]
             data = path.read_bytes()
             assert len(data) == asset["sizeBytes"] and hash_bytes(data) == asset["sha256"]
@@ -183,22 +238,28 @@ def check(archives=False):
                 assert json.loads(archive.read("pet.json")) == manifest
                 for name in archive.namelist():
                     assert ".." not in PurePosixPath(name).parts and not PurePosixPath(name).is_absolute()
-                    assert name.endswith(".gif") or name in {"pet.json", "ASSET-LICENSE.txt"}
+                    assert name.lower().endswith((".gif", ".webm")) or name in {"pet.json", "ASSET-LICENSE.txt"}
                 for name in manifest["animations"]:
-                    assert archive.read(name)[:6] in (b"GIF87a", b"GIF89a")
+                    header = archive.read(name)[:6]
+                    if name.lower().endswith(".gif"):
+                        assert header in (b"GIF87a", b"GIF89a")
+                    else:
+                        assert header.startswith(b"\x1a\x45\xdf\xa3"), name
     print(f"Validated {len(assets)} public catalog entries" + (" and release ZIPs" if archives else ""))
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-dir", type=Path)
+    parser.add_argument("--only", action="append", default=[],
+                        help="build only these asset ids; other catalog entries stay unchanged")
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--archives", action="store_true")
     args = parser.parse_args()
     if args.source_dir:
-        build(args.source_dir)
-        check(True)
+        build(args.source_dir, set(args.only) or None)
+        check(True, set(args.only) or None)
     elif args.check:
-        check(args.archives)
+        check(args.archives, set(args.only) or None)
     else:
         parser.error("provide --source-dir or --check")
