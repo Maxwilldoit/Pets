@@ -155,6 +155,24 @@
       "downloadUrl": "https://github.com/Maxwilldoit/Pets/releases/download/snapshot-assets-v1/momo-1.0.0.zip",
       "previewUrl": "https://raw.githubusercontent.com/Maxwilldoit/Pets/main/catalog/previews/momo.png",
       "licenseStatus": "未单独声明素材许可"
+    },
+    {
+      "id": "dsh-pet-whale",
+      "name": "大肥鱼",
+      "description": "蓝色鲸鱼女仆，内置百余段透明动画，支持点击、拖拽和自主动作。",
+      "tags": [
+        "WebM",
+        "鲸鱼",
+        "多动作"
+      ],
+      "version": "1.0.0",
+      "file": "dsh-pet-whale-1.0.0.zip",
+      "sizeBytes": 54082154,
+      "sha256": "0858bfb307300e5c1dce70276e543852201a5bc8194dc7a980f43e2411437a5f",
+      "sourceSha256": "222c186003d21722714d517118083fe48898d194f463c1cada2f3ec722a4e7b2",
+      "downloadUrl": "https://github.com/Maxwilldoit/Pets/releases/download/snapshot-assets-v1/dsh-pet-whale-1.0.0.zip",
+      "previewUrl": "https://raw.githubusercontent.com/Maxwilldoit/Pets/main/catalog/previews/dsh-pet-whale.png",
+      "licenseStatus": "未单独声明素材许可"
     }
   ]
 }

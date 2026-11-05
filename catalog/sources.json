@@ -10,6 +10,31 @@
     {"id":"nashor-v2","name":"纳什 · 进阶","source":"nashor_pet_v2.zip","description":"加入钻地移动与连招，胜利动作回应任务完成。","tags":["怪兽","特效"],"idle":"nashor_pet_v2/gifs/nashor_idle.gif","success":"nashor_pet_v2/gifs/nashor_victory_v2.gif","recording":"nashor_pet_v2/gifs/nashor_sway.gif","paused":"nashor_pet_v2/gifs/nashor_idle.gif","resumed":"nashor_pet_v2/gifs/nashor_starup.gif","normalizeWalks":["nashor_pet_v2/gifs/nashor_burrow_left.gif","nashor_pet_v2/gifs/nashor_burrow_right.gif"]},
     {"id":"hoop-23","name":"Hoop 23","source":"hoop-23-gifs.zip","description":"运球、后仰与扣篮；大动作保留脚底定位。","tags":["篮球","人物"],"idle":"hoop-23-idle.gif","success":"hoop-23-wave.gif","recording":"hoop-23-spin-ball.gif","paused":"hoop-23-arms-crossed.gif","resumed":"hoop-23-wave.gif"},
     {"id":"kuro-blade","name":"Kuro · 持刀客","source":"kuro-blade-gifs.zip","description":"持刀角色，挥手、拔刀与探头动作。","tags":["人物","像素"],"idle":"kuro-blade-idle.gif","success":"kuro-blade-wave.gif","recording":"kuro-blade-peek.gif","paused":"kuro-blade-idle.gif","resumed":"kuro-blade-wave.gif"},
-    {"id":"momo","name":"Momo","source":"momo-gifs.zip","description":"小巧的像素伙伴，用挥手回应成功。","tags":["可爱","像素"],"idle":"momo-idle.gif","success":"momo-waving.gif","paused":"momo-idle.gif","resumed":"momo-waving.gif"}
+    {"id":"momo","name":"Momo","source":"momo-gifs.zip","description":"小巧的像素伙伴，用挥手回应成功。","tags":["可爱","像素"],"idle":"momo-idle.gif","success":"momo-waving.gif","paused":"momo-idle.gif","resumed":"momo-waving.gif"},
+    {
+      "id": "dsh-pet-whale",
+      "name": "大肥鱼",
+      "source": "dsh-pet-whale-webm.zip",
+      "sourceUrl": "https://github.com/PC2005-cloud/dsh-pet",
+      "description": "蓝色鲸鱼女仆，内置百余段透明动画，支持点击、拖拽和自主动作。",
+      "tags": ["WebM", "鲸鱼", "多动作"],
+      "idle": "待机呼吸休闲.webm",
+      "base": {"width": 640, "height": 360, "anchor": [320, 330]},
+      "events": {
+        "capture.success": "工作状态-雀跃庆祝.webm",
+        "capture.failure": "工作状态-垂头叹气冒汗.webm",
+        "recording.started": "工作状态-忙碌点按.webm",
+        "recording.stopped": "工作状态-雀跃庆祝.webm",
+        "recording.failure": "工作状态-垂头叹气冒汗.webm",
+        "polish.success": "工作状态-雀跃庆祝.webm",
+        "polish.failure": "工作状态-垂头叹气冒汗.webm",
+        "shortcuts.paused": "工作状态-原地踱步张望.webm",
+        "shortcuts.resumed": "工作状态-雀跃庆祝.webm"
+      },
+      "states": {
+        "recording": "工作状态-忙碌点按.webm",
+        "shortcuts-paused": "工作状态-原地踱步张望.webm"
+      }
+    }
   ]
 }
