@@ -125,7 +125,7 @@ button { font: inherit; color: inherit; }
 .btn-ghost { background: transparent; border-color: transparent; }
 .btn-ghost:hover { background: var(--panel-2); border-color: var(--line); }
 .btn-icon { width: 32px; padding: 0; }
-.btn svg, .search svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.btn svg, .search svg { flex: none; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .btn-primary { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
 .btn-primary:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
 .btn-lg { height: 40px; padding: 0 18px; font-size: 15px; border-radius: 14px; }
@@ -364,7 +364,7 @@ body.is-ready .library { animation: rise 0.18s ease-out; }
 .stage-sub { margin-top: 2px; font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .stage-cta { position: relative; display: flex; gap: 8px; }
 .stage-cta .btn-primary { flex: 1; }
-.stage-cta .btn-icon { flex: none; width: 40px; }
+.stage-cta .btn-icon { flex: none; width: 40px; padding: 0; }
 .stage-cta .btn-icon svg circle { fill: currentColor; stroke: none; }
 
 .menu {
