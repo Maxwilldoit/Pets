@@ -5,6 +5,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { PetBrain } from '../src/shared/brain.js';
 import { createTranslator, resolveLanguage } from '../src/shared/i18n.js';
+import { entranceAnimation, waveAnimation } from '../src/renderer/lib/panel-model.js';
 import { computeLayout, drawFrame, frameIndex } from '../src/renderer/lib/player.js';
 
 globalThis.OffscreenCanvas = class {
@@ -23,9 +24,9 @@ globalThis.OffscreenCanvas = class {
 
 const initialSettings = { size: 1, wander: false, randomActions: false, gravity: true };
 
-function makeHost(settings) {
+function makeHost(settings, { withJumping = false } = {}) {
   let command;
-  const calls = { commands: [], ignores: [], bounds: [] };
+  const calls = { commands: [], ignores: [], bounds: [], byes: [] };
   const host = {
     init: async () => ({
       record: {
@@ -36,6 +37,7 @@ function makeHost(settings) {
             walk: { mirror: true },
             wave: { label: 'Wave' },
             bow: { label: 'Bow' },
+            ...(withJumping ? { jumping: { label: 'Jump' } } : {}),
           },
           behavior: { click: 'wave' }, scale: 1, speed: 50, pixelated: true,
         },
@@ -52,12 +54,13 @@ function makeHost(settings) {
     setBounds(bounds) { calls.bounds.push({ ...bounds }); },
     setIgnoreMouse(ignore) { calls.ignores.push(ignore); },
     savePosition() {}, ready() {}, log() {}, showMenu() {},
+    bye() { calls.byes.push(true); },
   };
   return { host, calls };
 }
 
-async function startPetWindow({ settings, animatedIdle = false, captureFails = false, applyBoundsImmediately = true } = {}) {
-  const { host, calls } = makeHost(settings);
+async function startPetWindow({ settings, animatedIdle = false, captureFails = false, applyBoundsImmediately = true, withJumping = false, reducedMotion = false } = {}) {
+  const { host, calls } = makeHost(settings, { withJumping });
   let resolveLoading;
   const loading = new Promise((resolve) => { resolveLoading = resolve; });
   let now = 1;
@@ -114,6 +117,7 @@ async function startPetWindow({ settings, animatedIdle = false, captureFails = f
     ...eventTarget(),
     petHost: host, devicePixelRatio: 1,
     screenX: 0, screenY: 0,
+    ...(reducedMotion ? { matchMedia: () => ({ matches: true }) } : {}),
   };
   function applyBounds(bounds = calls.bounds.at(-1)) {
     window.screenX = bounds.x;
@@ -160,7 +164,7 @@ async function startPetWindow({ settings, animatedIdle = false, captureFails = f
       source: (index) => ({ image: frames[index].img, sx: 0, sy: 0, exact: true }),
     };
   }
-  const anims = { idle: animation(animatedIdle), walk: animation(), wave: animation(), bow: animation() };
+  const anims = { idle: animation(animatedIdle), walk: animation(), wave: animation(), bow: animation(), ...(withJumping ? { jumping: animation() } : {}) };
   const source = fs.readFileSync(path.resolve(import.meta.dirname, '../src/renderer/pet/pet.js'), 'utf8')
     .replace(/^import .*;\r?\n/gm, '');
   const running = new vm.Script(`(async () => { ${source}\n return { brain, get settings() { return settings; }, get layout() { return layout; }, get ignoring() { return ignoring; }, hit, tick }; })()`)
@@ -171,6 +175,7 @@ async function startPetWindow({ settings, animatedIdle = false, captureFails = f
       },
       createTranslator, resolveLanguage,
       computeLayout, drawFrame, frameIndex, loadPetAnimations: () => loading,
+      entranceAnimation, waveAnimation,
       performance: { now: () => now }, setInterval() {}, navigator: { language: 'en' },
     });
   await Promise.resolve();
@@ -413,4 +418,37 @@ test('静止指针按延迟生效的实际窗口原点重命中，无新帧或�
   page.tick();
   assert.equal(calls.bounds.length, requestCount);
   assert.equal(page.ignoring, false, 'moving the actual window back must restore the hit without another cursor event');
+});
+
+test('登场时播一次跳跃类动作，播完回待机', async () => {
+  const petWindow = await readyPetWindow({ withJumping: true });
+  assert.equal(petWindow.page.brain.view.anim, 'jumping');
+  runFor(petWindow, 1200);
+  assert.equal(petWindow.page.brain.view.mode, 'idle');
+  assert.equal(petWindow.calls.byes.length, 0);
+});
+
+test('没有跳跃类动作时登场不额外播动作', async () => {
+  const petWindow = await readyPetWindow();
+  assert.equal(petWindow.page.brain.view.anim, 'idle');
+});
+
+test('收到 leave 先挥手，挥完才告别关窗', async () => {
+  const petWindow = await readyPetWindow();
+  petWindow.host.send({ type: 'leave' });
+  assert.equal(petWindow.page.brain.view.anim, 'wave');
+  assert.equal(petWindow.calls.byes.length, 0);
+  runFor(petWindow, 500);
+  assert.equal(petWindow.calls.byes.length, 0, '挥手没挥完不能关窗');
+  runFor(petWindow, 600);
+  assert.equal(petWindow.calls.byes.length, 1);
+  runFor(petWindow, 2000);
+  assert.equal(petWindow.calls.byes.length, 1, '告别只发一次');
+});
+
+test('减少动画时 leave 不挥手直接告别', async () => {
+  const petWindow = await readyPetWindow({ reducedMotion: true });
+  petWindow.host.send({ type: 'leave' });
+  assert.equal(petWindow.calls.byes.length, 1);
+  assert.equal(petWindow.page.brain.view.anim, 'idle');
 });
