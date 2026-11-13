@@ -266,6 +266,12 @@ function cardHtml(r) {
   </article>`;
 }
 
+const adoptHtml = () => `<button class="card adopt" id="adopt" type="button">
+  <span class="adopt-plus" aria-hidden="true">＋</span>
+  <span class="adopt-title">${t('adopt.title')}</span>
+  <span class="adopt-hint">${t('adopt.hint')}</span>
+</button>`;
+
 function renderGrid() {
   for (const p of cardPreviews.values()) p.dispose();
   cardPreviews.clear();
@@ -273,20 +279,15 @@ function renderGrid() {
   const list = validRecords().filter(matches);
   if (!list.length) {
     const has = validRecords().length > 0;
+    // 库全空时也要保留领养格子：它是唯一的导入入口，空状态文案也指着它。
     els.grid.innerHTML = `<div class="empty"><canvas class="empty-avatar" width="72" height="72"></canvas>
       <strong>${t(has ? 'empty.searchTitle' : 'empty.libraryTitle')}</strong>
-      <span>${t(has ? 'empty.searchBody' : 'empty.libraryBody')}</span></div>`;
+      <span>${t(has ? 'empty.searchBody' : 'empty.libraryBody')}</span></div>` + (has ? '' : adoptHtml());
     const avatar = els.grid.querySelector('.empty-avatar');
     const cur = byKey(state.selected) ?? validRecords()[0];
     if (avatar && cur) paintAvatar(avatar, cur);
   } else {
-    els.grid.innerHTML =
-      list.map(cardHtml).join('') +
-      `<button class="card adopt" id="adopt" type="button">
-        <span class="adopt-plus" aria-hidden="true">＋</span>
-        <span class="adopt-title">${t('adopt.title')}</span>
-        <span class="adopt-hint">${t('adopt.hint')}</span>
-      </button>`;
+    els.grid.innerHTML = list.map(cardHtml).join('') + adoptHtml();
     for (const card of els.grid.querySelectorAll('.card:not(.adopt)')) {
       const record = byKey(card.dataset.key);
       const preview = new Preview(card.querySelector('canvas'), record, 0.8);
@@ -669,7 +670,8 @@ els.grid.addEventListener('click', (e) => {
 });
 els.grid.addEventListener('dblclick', (e) => {
   const card = e.target.closest('.card:not(.adopt)');
-  if (card) sendToDesktop();
+  // 和键盘 Enter 一致：已经在桌面上就收回来，而不是重建窗口。
+  if (card) (isLive(card.dataset.key) ? recall() : sendToDesktop());
 });
 els.grid.addEventListener('mouseover', (e) => {
   const card = e.target.closest('.card:not(.adopt)');
