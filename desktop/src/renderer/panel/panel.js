@@ -364,7 +364,8 @@ function enterStage(r) {
   if (reduced()) { playStageIdle(r); return; }
   if (entrance) {
     els.stageAnim.textContent = animLabel(r.pet, entrance);
-    stagePreview.play(entrance, { once: true, onEnd: () => playStageIdle(r) });
+    // 登场动作可能很长；若期间已开始放到桌面/收回来，别用过场待机盖掉行走过渡。
+    stagePreview.play(entrance, { once: true, onEnd: () => { if (!state.phase && stagePreview?.name === entrance) playStageIdle(r); } });
   } else {
     els.stage.classList.remove('bounce');
     void els.stage.offsetWidth;
