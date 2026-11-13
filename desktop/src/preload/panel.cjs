@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld('pets', {
   state: () => ipcRenderer.invoke('app:state'),
   activate: (key) => ipcRenderer.invoke('pet:activate', key),
   setVisible: (visible) => ipcRenderer.invoke('pet:visible', visible),
+  recall: () => ipcRenderer.invoke('pet:recall'),
   play: (name) => ipcRenderer.invoke('pet:play', name),
   setSettings: (patch) => ipcRenderer.invoke('settings:set', patch),
   openFolder: (target) => ipcRenderer.invoke('folder:open', target),

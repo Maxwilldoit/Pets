@@ -2,6 +2,7 @@
 // 窗口大小 = 舞台（能装下所有动画），宠物脚底锚点固定在舞台的 (ax, ay)，移动窗口就是移动宠物。
 import { PetBrain } from '../../shared/brain.js';
 import { createTranslator, resolveLanguage } from '../../shared/i18n.js';
+import { entranceAnimation, waveAnimation } from '../lib/panel-model.js';
 import { computeLayout, drawFrame, frameIndex, loadPetAnimations } from '../lib/player.js';
 
 const host = window.petHost;
@@ -72,6 +73,25 @@ const brain = new PetBrain({
   position: init.position,
 });
 
+// 登场：出现时播一次跳跃类动作，播完自然回待机；系统「减少动画」时直接待机。
+const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
+const entrance = entranceAnimation(pet);
+if (entrance && !reduceMotion) brain.play(entrance);
+
+// 离场：收到 leave 先挥手，挥完再通知主进程关窗（tick 里计时，不另开定时器）。
+let leaveAt = 0;
+function startLeave() {
+  if (leaveAt) return;
+  if (reduceMotion) {
+    host.bye();
+    return;
+  }
+  const name = waveAnimation(pet);
+  brain.play(name);
+  const ms = (anims[name]?.totalMs ?? 600) * (pet.animations[name]?.repeat ?? 1);
+  leaveAt = performance.now() + Math.min(ms, 2500);
+}
+
 // ---------------------------------------------------------------- 绘制与移动
 
 function draw(v) {
@@ -97,6 +117,10 @@ let readySent = false;
 
 function tick() {
   const now = performance.now();
+  if (leaveAt && now >= leaveAt) {
+    leaveAt = 0;
+    host.bye();
+  }
   // 按下后先稳住窗口，越过拖拽阈值或松手后再继续推进。
   const v = brain.update(press && !press.dragging ? 0 : (now - prev) / 1000);
   prev = now;
@@ -168,6 +192,7 @@ function rememberPointer(e) {
 // 单击：立刻切到下一个动作。不做双击判定——等待 280ms 会让每次切换都发涩；
 // brain 里的双击本来也只是「再切一个」。
 function onClick() {
+  if (leaveAt) return; // 正在告别，不再切动作
   brain.click();
 }
 
@@ -261,6 +286,7 @@ window.addEventListener('contextmenu', (e) => {
 
 function applyCommand(cmd) {
   if (cmd.type === 'play') brain.play(cmd.name);
+  else if (cmd.type === 'leave') startLeave();
   else if (cmd.type === 'areas') brain.setAreas(cmd.areas);
   else if (cmd.type === 'settings') {
     document.documentElement.lang = cmd.locale;

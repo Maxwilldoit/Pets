@@ -4,6 +4,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('petHost', {
   init: () => ipcRenderer.invoke('petwin:init'),
   ready: () => ipcRenderer.send('petwin:ready'),
+  bye: () => ipcRenderer.send('petwin:bye'),
   setBounds: (bounds) => ipcRenderer.send('petwin:bounds', bounds),
   setIgnoreMouse: (ignore) => ipcRenderer.send('petwin:ignore-mouse', ignore),
   showMenu: () => ipcRenderer.send('petwin:menu'),

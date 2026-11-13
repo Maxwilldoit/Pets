@@ -377,6 +377,8 @@ function registerIpc() {
     return { record: publicRecord(record), locale: resolvedLocale, settings: settings.data, areas: workAreas(), position: initialPosition(), debug: DEBUG };
   });
   ipcMain.on('petwin:ready', (e) => fromPet(e) && petWin.showInactive());
+  // 桌宠挥完手告别后才真正关窗（控制面板「收回来」的离场过渡）。
+  ipcMain.on('petwin:bye', (e) => fromPet(e) && hidePet());
   ipcMain.on('petwin:bounds', (e, b) => {
     if (!fromPet(e) || !b) return;
     const r = { x: Math.round(b.x), y: Math.round(b.y), width: Math.max(1, Math.round(b.width)), height: Math.max(1, Math.round(b.height)) };
@@ -416,6 +418,12 @@ function registerIpc() {
   ipcMain.handle('pet:play', (_e, name) => {
     sendPet({ type: 'play', name });
     return !!petWin;
+  });
+  ipcMain.handle('pet:recall', () => {
+    // 还在加载素材的窗口没法播挥手，直接收；否则等它挥手告别（petwin:bye）。
+    if (!petWin || petWin.webContents.isLoading()) hidePet();
+    else sendPet({ type: 'leave' });
+    return true;
   });
   ipcMain.handle('settings:set', (_e, patch) => {
     applySettings(patch ?? {});
