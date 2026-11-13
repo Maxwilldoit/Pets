@@ -116,10 +116,11 @@ test('窗口按看得见的部分算高度，不会在脚下方堆出空白死�
   };
   const layout = computeLayout(pet, anims, 1);
   // 内容最高处：walk 头顶 10（锚点 220 → up = 210）；idle 头顶 100（锚点 300 → up = 200）
-  assert.equal(layout.stage.ay, 210);
-  // 内容最低处就是所有动画的脚底（= 各自锚点），所以脚下方不该有任何空间
+  // 各边留 1px 余量，锚点跟着偏移 1
+  assert.equal(layout.stage.ay, 211);
+  // 内容最低处就是所有动画的脚底（= 各自锚点），脚下方只留 1px 余量
   const feet = layout.stage.ay;
-  assert.equal(layout.stage.h, feet);
+  assert.equal(layout.stage.h, feet + 1);
 });
 
 test('帧画框的透明留白不会被算进窗口尺寸', () => {
@@ -132,9 +133,9 @@ test('帧画框的透明留白不会被算进窗口尺寸', () => {
   const layout = computeLayout(pet, anims, 1);
   assert.equal(layout.anchors.idle[1], 380);
   assert.equal(layout.anchors.walk[1], 100);
-  // up = max(380-300, 100-20) = 80 ; down = 0
-  assert.equal(layout.stage.ay, 80);
-  // 高度 = up + down = 80（若误用整帧画框会得到 400）
+  // up = max(380-300, 100-20) = 80 ; down = 0 ; 各边留 1px 余量
+  assert.equal(layout.stage.ay, 81);
+  // 高度 = up + down + 2 = 82（若误用整帧画框会得到 400）
   assert.ok(layout.stage.h < 200, '窗口高度应该贴合内容而不是整帧画框，实际 ' + layout.stage.h);
 });
 

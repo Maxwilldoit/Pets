@@ -15,7 +15,6 @@ const MIME = {
   jpg: 'image/jpeg',
   jpeg: 'image/jpeg',
 };
-const ALPHA_HIT = 40;
 
 export function assetUrl(base, rel) {
   return base + rel.split('/').map(encodeURIComponent).join('/');
@@ -78,7 +77,7 @@ class Anim {
     if (this._groundY === undefined) {
       let low = -Infinity;
       for (let i = 0; i < this.frames.length; i++) {
-        const b = opaqueBounds(this, i);
+        const b = layoutBounds(this, i);
         if (b) low = Math.max(low, b.y1);
       }
       this._groundY = Number.isFinite(low) ? low : this.box.h;
@@ -141,16 +140,17 @@ class DecodedAnim extends Anim {
     let first = null;
     let ground = -Infinity;
     // 先完整过一遍，拿到每帧时长；只保留第一帧，其余按需再解码。
-    // 顺手量一下每帧的不透明底边（这里帧已经在手上，不额外花解码成本），
-    // 得到这个动画的「脚底」位置：切动画时脚才不会跳。
+    // 帧就在手上，顺手量好每帧的不透明包围盒存到 frame 上（不额外花解码成本）：
+    // 布局时直接用，既得到「脚底」位置（切动画时脚不跳），也不会像 source(i)
+    // 那样在布局阶段退回第 0 帧、把跳跃/伸展这类超出首帧的帧量错。
     for (let i = 0; i < count; i++) {
       const { image } = await decoder.decode({ frameIndex: i });
       const us = image.duration;
       const duration = def.fps ? 1000 / def.fps : us ? Math.max(20, us / 1000) : count > 1 ? 100 : 1000;
       const frame = { duration, w: image.displayWidth, h: image.displayHeight, x: 0, y: 0 };
+      frame.bounds = imageBounds(image, frame);
       frames.push(frame);
-      const bottom = imageBottom(image, frame);
-      if (bottom !== null) ground = Math.max(ground, bottom);
+      if (frame.bounds) ground = Math.max(ground, frame.bounds.y1);
       if (i === 0) first = image;
       else image.close();
     }
@@ -235,19 +235,39 @@ export async function loadPetAnimations(pet, base, onError = () => {}) {
   return anims;
 }
 
-/** 单个已解码帧绘到自己的画框后，不透明像素的底边（画框坐标）；整帧透明时返回 null。 */
-function imageBottom(image, frame) {
+/**
+ * 扫出不透明包围盒（alpha > 0，画框坐标）；整帧透明时返回 null。
+ * 布局边界要把光晕、影子这类低透明度边缘也算进去，否则窗口会把它们裁掉；
+ * 点击穿透判定另用阈值（pet.js 的 ALPHA_HIT），不受这里影响。
+ */
+function scanBounds(data, w, h, ox, oy) {
+  let x0 = w;
+  let y0 = h;
+  let x1 = -1;
+  let y1 = -1;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      if (data[(y * w + x) * 4 + 3] > 0) {
+        if (x < x0) x0 = x;
+        if (x > x1) x1 = x;
+        if (y < y0) y0 = y;
+        y1 = y;
+      }
+    }
+  }
+  if (x1 < 0) return null;
+  return { x0: x0 + ox, y0: y0 + oy, x1: x1 + 1 + ox, y1: y1 + 1 + oy };
+}
+
+/** 单个已解码帧绘到自己的画框后，不透明像素的包围盒（画框坐标）；整帧透明时返回 null。 */
+function imageBounds(image, frame) {
   const w = frame.w;
   const h = frame.h;
   if (!w || !h) return null;
   const canvas = new OffscreenCanvas(w, h);
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
   ctx.drawImage(image, 0, 0, w, h);
-  const { data } = ctx.getImageData(0, 0, w, h);
-  for (let y = h - 1; y >= 0; y--) {
-    for (let x = 0; x < w; x++) if (data[(y * w + x) * 4 + 3] > ALPHA_HIT) return y + 1 + frame.y;
-  }
-  return null;
+  return scanBounds(ctx.getImageData(0, 0, w, h).data, w, h, frame.x, frame.y);
 }
 
 /** 第 i 帧不透明像素的包围盒（画框坐标）。 */
@@ -257,23 +277,12 @@ export function opaqueBounds(anim, i = 0, src = anim.source(i)) {
   const canvas = new OffscreenCanvas(f.w, f.h);
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
   ctx.drawImage(src.image, src.sx, src.sy, f.w, f.h, 0, 0, f.w, f.h);
-  const { data } = ctx.getImageData(0, 0, f.w, f.h);
-  let x0 = f.w;
-  let y0 = f.h;
-  let x1 = -1;
-  let y1 = -1;
-  for (let y = 0; y < f.h; y++) {
-    for (let x = 0; x < f.w; x++) {
-      if (data[(y * f.w + x) * 4 + 3] > ALPHA_HIT) {
-        if (x < x0) x0 = x;
-        if (x > x1) x1 = x;
-        if (y < y0) y0 = y;
-        y1 = y;
-      }
-    }
-  }
-  if (x1 < 0) return null;
-  return { x0: x0 + f.x, y0: y0 + f.y, x1: x1 + 1 + f.x, y1: y1 + 1 + f.y };
+  return scanBounds(ctx.getImageData(0, 0, f.w, f.h).data, f.w, f.h, f.x, f.y);
+}
+
+/** 布局用的帧边界：动图在解码时已量好存在 frame.bounds 上，优先用，不再为布局额外解码。 */
+function layoutBounds(anim, i) {
+  return anim.frames[i].bounds ?? opaqueBounds(anim, i);
 }
 
 /**
@@ -285,7 +294,7 @@ export function opaqueBounds(anim, i = 0, src = anim.source(i)) {
  */
 export function computeLayout(pet, anims, scale) {
   const idle = anims.idle;
-  const ib = opaqueBounds(idle, 0) ?? { x0: 0, y0: 0, x1: idle.box.w, y1: idle.box.h };
+  const ib = layoutBounds(idle, 0) ?? { x0: 0, y0: 0, x1: idle.box.w, y1: idle.box.h };
   const anchors = {};
   let half = 0;
   let up = 0;
@@ -298,7 +307,7 @@ export function computeLayout(pet, anims, scale) {
       // 按「看得见的部分」算窗口范围，而不是整帧画框：画框里常有整片透明留白，
       // 一旦各动画的脚底锚点不同，这些留白就会在脚下方堆出一块空白，
       // 窗口跟着变大、还会盖住任务栏或伸出屏幕外，看起来就像「点了没反应」。
-      const b = opaqueBounds(a, i) ?? { x0: f.x, y0: f.y, x1: f.x + f.w, y1: f.y + f.h };
+      const b = layoutBounds(a, i) ?? { x0: f.x, y0: f.y, x1: f.x + f.w, y1: f.y + f.h };
       // 左右对称，镜像后也放得下
       half = Math.max(half, ax - b.x0, b.x1 - ax);
       up = Math.max(up, ay - b.y0);
@@ -310,7 +319,8 @@ export function computeLayout(pet, anims, scale) {
   return {
     scale,
     anchors,
-    stage: { w: Math.ceil(2 * half * scale), h: Math.ceil((up + down) * scale), ax: half * scale, ay: up * scale },
+    // 取整后各边再留 1px 余量：缩放后的半像素不至于被窗口边缘切掉。
+    stage: { w: Math.ceil(2 * half * scale) + 2, h: Math.ceil((up + down) * scale) + 2, ax: half * scale + 1, ay: up * scale + 1 },
     body: { left: (iax - ib.x0) * scale, right: (ib.x1 - iax) * scale, top: (iay - ib.y0) * scale, bottom: down * scale },
   };
 }
