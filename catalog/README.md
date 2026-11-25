@@ -17,7 +17,7 @@
 | Hoop 23 | <img src="previews/hoop-23.png" width="72" alt="Hoop 23"> | 运球、后仰、扣篮 |
 | Kuro · 持刀客 | <img src="previews/kuro-blade.png" width="72" alt="Kuro"> | 挥手、拔刀、探头 |
 | Momo | <img src="previews/momo.png" width="72" alt="Momo"> | 待机、走路、挥手 |
-| 大肥鱼 | <img src="previews/dsh-pet-whale.png" width="72" alt="大肥鱼"> | 百余段透明 WebM、点击回应、拖拽和自主动作 |
+| 大肥鱼 | <img src="previews/dsh-pet-whale.png" width="72" alt="大肥鱼"> | 百余段透明 WebM、点击逗弄、拖拽抛掷、弹弓发射、哄睡/叫醒与随机动作（形象遵循 CC BY-NC-SA 4.0 非商业许可，源自 [PC2005-cloud/dsh-pet](https://github.com/PC2005-cloud/dsh-pet)，原型 `@上善无形`，设计 `@ZipZipPipe`） |
 
 ## 格式与下载
 
