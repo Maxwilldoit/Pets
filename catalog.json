@@ -159,20 +159,21 @@
     {
       "id": "dsh-pet-whale",
       "name": "大肥鱼",
-      "description": "蓝色鲸鱼女仆，内置百余段透明动画，支持点击、拖拽和自主动作。",
+      "description": "女仆鲸鱼娘（社区二创），内置百余段透明动画，支持点击逗弄、拖拽抛掷、弹弓发射、哄睡/叫醒与随机动作。",
       "tags": [
         "WebM",
         "鲸鱼",
-        "多动作"
+        "多动作",
+        "物理互动"
       ],
-      "version": "1.0.0",
-      "file": "dsh-pet-whale-1.0.0.zip",
-      "sizeBytes": 54082154,
-      "sha256": "0858bfb307300e5c1dce70276e543852201a5bc8194dc7a980f43e2411437a5f",
-      "sourceSha256": "222c186003d21722714d517118083fe48898d194f463c1cada2f3ec722a4e7b2",
-      "downloadUrl": "https://github.com/Maxwilldoit/Pets/releases/download/snapshot-assets-v1/dsh-pet-whale-1.0.0.zip",
+      "version": "1.1.0",
+      "file": "dsh-pet-whale-1.1.0.zip",
+      "sizeBytes": 55017696,
+      "sha256": "6ee63d76b98db50279f2deef473148141629c93f8d4ceeb87c2268ed2dbd9dba",
+      "sourceSha256": "67a7c5646860e7489d77af03367ef13d528712491ea60ca861bfc5895c54e473",
+      "downloadUrl": "https://github.com/Maxwilldoit/Pets/releases/download/snapshot-assets-v1/dsh-pet-whale-1.1.0.zip",
       "previewUrl": "https://raw.githubusercontent.com/Maxwilldoit/Pets/main/catalog/previews/dsh-pet-whale.png",
-      "licenseStatus": "未单独声明素材许可"
+      "licenseStatus": "CC BY-NC-SA 4.0（非商业）· 动作配置 MIT"
     }
   ]
 }

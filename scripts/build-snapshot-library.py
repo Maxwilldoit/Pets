@@ -77,6 +77,66 @@ def normalized_walk(data, idle, anchor):
     return output.getvalue()
 
 
+def validate_behavior(spec_id, behavior, available):
+    if not isinstance(behavior, dict):
+        raise ValueError(f"{spec_id}: behavior must be an object")
+    ref_w = behavior.get("referenceWidth", 0)
+    if not isinstance(ref_w, (int, float)) or ref_w <= 0:
+        raise ValueError(f"{spec_id}: behavior.referenceWidth must be > 0")
+    weights = behavior.get("weights")
+    if not isinstance(weights, dict) or set(weights) != {"idle", "turn", "move", "action"}:
+        raise ValueError(f"{spec_id}: behavior.weights must define idle/turn/move/action")
+    if not all(isinstance(v, (int, float)) and v >= 0 for v in weights.values()):
+        raise ValueError(f"{spec_id}: behavior.weights must be non-negative numbers")
+
+    referenced = []
+    for pool_key in ("idle", "clicks", "drag", "turn"):
+        pool = behavior.get(pool_key, [])
+        if not isinstance(pool, list) or not all(isinstance(item, str) for item in pool):
+            raise ValueError(f"{spec_id}: behavior.{pool_key} must be a list of strings")
+        referenced.extend(pool)
+    if not behavior.get("idle") or not behavior.get("drag") or not behavior.get("clicks"):
+        raise ValueError(f"{spec_id}: behavior must include non-empty idle, drag, and clicks")
+
+    sleep = behavior.get("sleep")
+    if sleep is not None:
+        if not isinstance(sleep, dict) or set(sleep) != {"start", "loop", "end"}:
+            raise ValueError(f"{spec_id}: behavior.sleep must define start/loop/end")
+        for phase, entries in sleep.items():
+            if not isinstance(entries, list) or not entries or not all(isinstance(item, str) for item in entries):
+                raise ValueError(f"{spec_id}: behavior.sleep.{phase} must be a non-empty list of strings")
+            referenced.extend(entries)
+
+    for move in behavior.get("moves", []):
+        if not isinstance(move, dict) or not isinstance(move.get("entry"), str):
+            raise ValueError(f"{spec_id}: invalid behavior.moves item")
+        for field in ("minDistance", "maxDistance", "leadMs", "tailMs"):
+            if not isinstance(move.get(field), (int, float)) or move[field] < 0:
+                raise ValueError(f"{spec_id}: invalid behavior.moves.{field}")
+        if move["maxDistance"] < move["minDistance"] or move["maxDistance"] <= 0:
+            raise ValueError(f"{spec_id}: behavior.moves maxDistance must be >= minDistance and > 0")
+        referenced.append(move["entry"])
+
+    for category in behavior.get("categories", []):
+        if (not isinstance(category, dict) or not isinstance(category.get("id"), str)
+                or not isinstance(category.get("weight"), (int, float)) or category["weight"] <= 0
+                or not isinstance(category.get("entries"), list) or not category["entries"]
+                or not all(isinstance(item, str) for item in category["entries"])):
+            raise ValueError(f"{spec_id}: invalid behavior.categories item")
+        referenced.extend(category["entries"])
+
+    interactions = behavior.get("interactions")
+    if interactions is not None:
+        if not isinstance(interactions, dict) or not set(interactions) <= {"throw", "slingshot", "sleep"}:
+            raise ValueError(f"{spec_id}: invalid behavior.interactions")
+        if not all(isinstance(v, bool) for v in interactions.values()):
+            raise ValueError(f"{spec_id}: behavior.interactions values must be booleans")
+
+    missing = sorted({entry for entry in referenced if entry not in available})
+    if missing:
+        raise ValueError(f"{spec_id}: behavior references missing media: {missing}")
+
+
 def build(source_dir, only=None):
     config = read_json(ROOT / "catalog/sources.json")
     destination = ROOT / "dist" / config["release"]
@@ -172,11 +232,23 @@ def build(source_dir, only=None):
                 raise ValueError(f"{spec['id']}: mapped media is missing: {sorted(missing)}")
             manifest["events"] = dict(event_entries)
             manifest["states"] = dict(state_entries)
+        all_media = {**media, **gifs}
+        if "behavior" in spec:
+            validate_behavior(spec["id"], spec["behavior"], all_media)
+            manifest["behavior"] = spec["behavior"]
         write_json(ROOT / f"catalog/manifests/{spec['id']}.json", manifest)
-        file_name = f"{spec['id']}-{VERSION}.zip"
+        asset_version = spec.get("version", VERSION)
+        asset_license = spec.get("licenseStatus", LICENSE)
+        file_name = f"{spec['id']}-{asset_version}.zip"
         upstream = f"\n上游素材：{spec['sourceUrl']}" if spec.get("sourceUrl") else ""
-        license_text = f"{spec['name']}\n素材许可：{LICENSE}。\n公开提供下载不表示授予开放许可或商业使用许可。\n来源：{REPOSITORY}{upstream}\n"
-        contents = {**media, **gifs, "pet.json": (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode(),
+        extra_notice = f"\n{spec['licenseNotice']}" if spec.get("licenseNotice") else ""
+        usage_note = (
+            "本素材依上述协议授权（严禁任何形式商业化使用）。"
+            if asset_license != LICENSE
+            else "公开提供下载不表示授予开放许可或商业使用许可。"
+        )
+        license_text = f"{spec['name']}\n素材许可：{asset_license}。\n{usage_note}\n来源：{REPOSITORY}{upstream}{extra_notice}\n"
+        contents = {**all_media, "pet.json": (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode(),
                     "ASSET-LICENSE.txt": license_text.encode()}
         with ZipFile(destination / file_name, "w", compression=ZIP_DEFLATED, compresslevel=9) as archive:
             for name, data in sorted(contents.items()):
@@ -199,10 +271,10 @@ def build(source_dir, only=None):
         elif not preview_path.is_file():
             raise ValueError(f"{spec['id']}: keep a tracked 144x144 PNG preview for WebM sources")
         assets.append({"id": spec["id"], "name": spec["name"], "description": spec["description"],
-                       "tags": spec["tags"], "version": VERSION, "file": file_name,
+                       "tags": spec["tags"], "version": asset_version, "file": file_name,
                        "sizeBytes": len(data), "sha256": hash_bytes(data), "sourceSha256": hash_bytes(source.read_bytes()),
                        "downloadUrl": f"{REPOSITORY}/releases/download/{config['release']}/{file_name}",
-                       "previewUrl": f"{RAW}/catalog/previews/{spec['id']}.png", "licenseStatus": LICENSE})
+                       "previewUrl": f"{RAW}/catalog/previews/{spec['id']}.png", "licenseStatus": asset_license})
         print(f"Built {spec['id']}: {len(media)} media files, {len(data)} bytes")
     write_json(ROOT / "catalog.json", {"version": 1, "assets": assets})
     (destination / "SHA256SUMS.txt").write_text("".join(f"{asset['sha256']}  {asset['file']}\n" for asset in assets), encoding="utf-8")
@@ -214,19 +286,27 @@ def check(archives=False, only=None):
     assert catalog["version"] == 1
     assets = catalog["assets"]
     assert len({a["id"] for a in assets}) == len(assets)
-    assert {a["id"] for a in assets} == {s["id"] for s in config["assets"]}
+    specs_by_id = {s["id"]: s for s in config["assets"]}
+    assert {a["id"] for a in assets} == set(specs_by_id)
     for asset in assets:
+        spec = specs_by_id[asset["id"]]
+        expected_version = spec.get("version", VERSION)
+        expected_license = spec.get("licenseStatus", LICENSE)
         assert re.fullmatch(r"[a-z0-9-]{1,64}", asset["id"])
+        assert asset["version"] == expected_version
         assert asset["file"] == f"{asset['id']}-{asset['version']}.zip"
         assert asset["downloadUrl"] == f"{REPOSITORY}/releases/download/{config['release']}/{asset['file']}"
         assert asset["previewUrl"] == f"{RAW}/catalog/previews/{asset['id']}.png"
         assert re.fullmatch(r"[a-f0-9]{64}", asset["sha256"])
         assert 0 < asset["sizeBytes"] <= 100 * 1024 * 1024
-        assert asset["licenseStatus"] == LICENSE
+        assert asset["licenseStatus"] == expected_license
         assert (ROOT / f"catalog/previews/{asset['id']}.png").is_file()
         manifest = read_json(ROOT / f"catalog/manifests/{asset['id']}.json")
         assert manifest["version"] == 1 and set(manifest["events"]) <= EVENTS and set(manifest["states"]) <= STATES
         assert all(entry in manifest["animations"] for entry in [*manifest["events"].values(), *manifest["states"].values()])
+        if "behavior" in spec or "behavior" in manifest:
+            assert manifest.get("behavior") == spec.get("behavior")
+            validate_behavior(asset["id"], manifest["behavior"], set(manifest["animations"]))
         if archives:
             if only and asset["id"] not in only:
                 continue
