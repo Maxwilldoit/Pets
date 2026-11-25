@@ -41,7 +41,7 @@
       "behavior": {
         "id": "dsh-pet",
         "referenceWidth": 462,
-        "weights": {"idle": 10, "turn": 5, "move": 5, "action": 80},
+        "weights": {"idle": 60, "turn": 5, "move": 5, "action": 30},
         "idle": ["待机呼吸休闲.webm"],
         "clicks": [
           "点击回应-开心跃动.webm",
